@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{form_type}} - RecoupYou Fitness</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+        }
+        .header {
+            background: linear-gradient(135deg, #fc9dca 0%, #fc9dca 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .content {
+            background: white;
+            padding: 30px;
+            border: 1px solid #e0e0e0;
+            border-radius: 0 0 10px 10px;
+        }
+        .form-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #fc9dca;
+        }
+        .field-group {
+            margin-bottom: 15px;
+        }
+        .field-label {
+            font-weight: bold;
+            color: #fc9dca;
+            margin-bottom: 5px;
+        }
+        .field-value {
+            color: #333;
+            padding: 8px 0;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        .badge {
+            background: #fc9dca;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌸 RecoupYou Fitness</h1>
+        <p>New Form Submission</p>
+    </div>
+
+    <div class="content">
+        <!-- Personal Training Form -->
+        {{#if_equals form_type "personal_training"}}
+        <div class="badge">Personal Training Application</div>
+        <div class="form-section">
+            <h3>Personal Training with Coach Dee</h3>
+            <div class="field-group">
+                <div class="field-label">Full Name:</div>
+                <div class="field-value">{{full_name}}</div>
+            </div>
+            <div class="field-group">
+                <div class="field-label">WhatsApp Number:</div>
+                <div class="field-value">{{whatsapp}}</div>
+            </div>
+            <div class="field-group">
+                <div class="field-label">Age:</div>
+                <div class="field-value">{{age}}</div>
+            </div>
+            <div class="field-group">
+                <div class="field-label">Fitness Goals:</div>
+                <div class="field-value">{{goals}}</div>
+            </div>
+            <div class="field-group">
+                <div class="field-label">Selected Package:</div>
+                <div class="field-value">{{package}}</div>
+            </div>
+            {{#if additional_info}}
+            <div class="field-group">
+                <div class="field-label">Additional Information:</div>
+                <div class="field-value">{{additional_info}}</div>
+            </div>
+            {{/if}}
+        </div>
+        {{/if_equals}}
+
+        <!-- Online Coaching Form -->
+        {{#if_equals form_type "online_coaching"}}
+        <div class="badge">Online 1:1 Coaching Application</div>
+        <div class="form-section">
+            <h3>Online Coaching Application</h3>
+            <div class="field-group">
+                <div class="field-label">Full Name:</div>
+                <div class="field-value">{{full_name}}</div>
+            </div>
+            <div class="field-group">
+                <div class="field-label">Email:</div>
+                <div class="field-value">{{email}}</div>
+            </div>
+            <div class="field-group">
+                <div class="field-label">WhatsApp Number:</div>
+                <div class="field-value">{{whatsapp}}</div>
+            </div>
+            <div class="field-group">
+                <div class="field-label">Instagram Handle:</div>
+                <div class="field-value">{{instagram}}</div>
+            </div>
+            <div class="field-group">
+                <div class="field-label">Age:</div>
+                <div class="field-value">{{age}}</div>
+            </div>
+            <div class="field-group">
+                <div class="field-label">Fitness Level:</div>
+                <div class="field-value">{{fitness_level}}</div>
+            </div>
+            <div class="field-group">
+                <div class="field-label">Fitness Goals:</div>
+                <div class="field-value">{{goals}}</div>
+            </div>
+            <div class="field-group">
+                <div class="field-label">Gym Access:</div>
+                <div class="field-value">{{gym_access}}</div>
+            </div>
+            <div class="field-group">
+                <div class="field-label">Dietary Restrictions:</div>
+                <div class="field-value">{{dietary_restrictions}}</div>
+            </div>
+            <div class="field-group">
+                <div class="field-label">Selected Package:</div>
+                <div class="field-value">{{package}}</div>
+            </div>
+            {{#if start_date}}
+            <div class="field-group">
+                <div class="field-label">Preferred Start Date:</div>
+                <div class="field-value">{{start_date}}</div>
+            </div>
+            {{/if}}
+            {{#if additional_info}}
+            <div class="field-group">
+                <div class="field-label">Additional Information:</div>
+                <div class="field-value">{{additional_info}}</div>
+            </div>
+            {{/if}}
+        </div>
+        {{/if_equals}}
+
+        <!-- Wednesday RSVP Summary -->
+        {{#if_equals form_type "wednesday_rsvp"}}
+        <div class="badge">Wednesday Class RSVP Summary</div>
+        <div class="form-section">
+            <h3>Wednesday 5AM Group Class - Week of {{week}}</h3>
+            <div class="field-group">
+                <div class="field-label">Total Participants:</div>
+                <div class="field-value">{{participant_count}}</div>
+            </div>
+            <div class="field-group">
+                <div class="field-label">RSVP List:</div>
+                <div class="field-value" style="white-space: pre-line;">{{participant_list}}</div>
+            </div>
+            <div class="field-group">
+                <div class="field-label">Class Details:</div>
+                <div class="field-value">
+                    • Date: This Wednesday<br>
+                    • Time: 5:00 AM (South African Time)<br>
+                    • Location: RecoupYou Gym<br>
+                    • Duration: 45 minutes
+                </div>
+            </div>
+            <p style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 5px; border-left: 4px solid #ffc107;">
+                <strong>Note:</strong> This email was automatically sent on Tuesday at 8:30 PM SAST when RSVP deadline closed.
+            </p>
+        </div>
+        {{/if_equals}}
+    </div>
+
+    <div class="footer">
+        <p>RecoupYou Ladies Only Fitness Studio</p>
+        <p>This is an automated email from your fitness website contact form.</p>
+    </div>
+</body>
+</html>
