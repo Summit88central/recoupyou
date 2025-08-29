@@ -157,8 +157,17 @@ export const sendMembershipEmail = async (formData: any) => {
     // Re-initialize EmailJS to ensure it's properly set up
     emailjs.init(EMAILJS_PUBLIC_KEY);
 
+    const coachEmail =
+      process.env.NEXT_PUBLIC_COACH_EMAIL || "recoupyou@gmail.com";
+
     const templateParams = {
-      to_email: process.env.NEXT_PUBLIC_COACH_EMAIL || "coach@example.com",
+      // Multiple recipient email field names for EmailJS template compatibility
+      to_email: coachEmail,
+      reply_to: coachEmail,
+      user_email: coachEmail,
+      recipient_email: coachEmail,
+
+      // Form data
       from_name: formData.fullName,
       from_email: formData.email,
       date_of_birth: formData.dateOfBirth,
