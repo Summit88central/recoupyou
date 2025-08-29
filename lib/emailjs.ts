@@ -160,28 +160,32 @@ export const sendMembershipEmail = async (formData: any) => {
     const coachEmail =
       process.env.NEXT_PUBLIC_COACH_EMAIL || "recoupyou@gmail.com";
 
-    const templateParams = {
-      // Multiple recipient email field names for EmailJS template compatibility
-      to_email: coachEmail,
-      reply_to: coachEmail,
-      user_email: coachEmail,
-      recipient_email: coachEmail,
+    // DEBUG: Log the actual email being used
+    console.log("[v0] DEBUG: Coach email being used:", coachEmail);
+    console.log(
+      "[v0] DEBUG: Environment COACH_EMAIL:",
+      process.env.NEXT_PUBLIC_COACH_EMAIL
+    );
 
-      // Form data
-      from_name: formData.fullName,
-      from_email: formData.email,
-      date_of_birth: formData.dateOfBirth,
+    const templateParams = {
+      // Recipient email - matching template expectations
+      to_email: coachEmail,
+
+      // Form data - MUST match the template variables exactly
+      fullName: formData.fullName,
+      email: formData.email,
+      phoneNumber: formData.phone,
+      dateOfBirth: formData.dateOfBirth,
       address: formData.address,
-      phone: formData.phone,
-      emergency_name: formData.emergencyName,
-      emergency_phone: formData.emergencyPhone,
-      emergency_relationship: formData.emergencyRelationship,
-      medical_conditions: formData.medicalConditions,
-      membership_plan: formData.membershipPlan,
-      additional_services: formData.additionalServices.join(", "),
-      start_date: formData.startDate,
-      hear_about: formData.hearAbout,
-      form_type: "Gym Membership Application",
+      emergencyContactName: formData.emergencyName,
+      emergencyContactPhone: formData.emergencyPhone,
+      emergencyContactRelationship: formData.emergencyRelationship,
+      medicalConditions: formData.medicalConditions,
+      medications: formData.medications || "None specified",
+      injuries: formData.injuries || "None specified",
+      fitnessGoals: formData.goals || "Not specified",
+      membershipType: formData.membershipPlan,
+      additionalServices: formData.additionalServices?.join(", ") || "None",
     };
 
     console.log("[v0] Sending email with params:", templateParams);
