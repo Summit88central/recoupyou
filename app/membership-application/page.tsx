@@ -139,7 +139,7 @@ export default function MembershipApplicationPage() {
               Gym Membership
             </Badge>
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
-              RecoupYou Ladies Only Fitness Studio
+              Membership Application
             </h1>
             <p className="text-lg text-gray-600">
               Join our exclusive ladies-only fitness community

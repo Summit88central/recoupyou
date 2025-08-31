@@ -1,17 +1,23 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { ArrowLeft, Loader2 } from "lucide-react"
-import Link from "next/link"
-import { sendPersonalTrainingEmail } from "@/lib/emailjs"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ArrowLeft, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { sendPersonalTrainingEmail } from "@/lib/emailjs";
 
 export default function BookPersonalTrainingPage() {
   const [formData, setFormData] = useState({
@@ -21,20 +27,20 @@ export default function BookPersonalTrainingPage() {
     goals: "",
     package: "",
     additionalInfo: "",
-  })
+  });
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isSubmitted, setIsSubmitted] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+    e.preventDefault();
+    setIsSubmitting(true);
 
     try {
-      const result = await sendPersonalTrainingEmail(formData)
+      const result = await sendPersonalTrainingEmail(formData);
 
       if (result.success) {
-        setIsSubmitted(true)
+        setIsSubmitted(true);
         // Reset form
         setFormData({
           fullName: "",
@@ -43,21 +49,25 @@ export default function BookPersonalTrainingPage() {
           goals: "",
           package: "",
           additionalInfo: "",
-        })
+        });
       } else {
-        alert("There was an error sending your application. Please try again or contact us directly.")
+        alert(
+          "There was an error sending your application. Please try again or contact us directly."
+        );
       }
     } catch (error) {
-      console.error("Form submission error:", error)
-      alert("There was an error sending your application. Please try again or contact us directly.")
+      console.error("Form submission error:", error);
+      alert(
+        "There was an error sending your application. Please try again or contact us directly."
+      );
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   if (isSubmitted) {
     return (
@@ -67,13 +77,19 @@ export default function BookPersonalTrainingPage() {
             <Card>
               <CardContent className="p-8">
                 <div className="text-6xl mb-4">🌸</div>
-                <h1 className="text-2xl font-bold text-gray-900 mb-4">Thank You!</h1>
+                <h1 className="text-2xl font-bold text-gray-900 mb-4">
+                  Thank You!
+                </h1>
                 <p className="text-gray-600 mb-6">
-                  Your personal training application has been submitted successfully. Coach Dee will get in touch within
-                  the next 48 hours to get you started!
+                  Your personal training application has been submitted
+                  successfully. Coach Dee will get in touch within the next 48
+                  hours to get you started!
                 </p>
                 <div className="space-y-2 text-sm text-gray-500">
-                  <p>Feel free to reach out via Instagram DM if you have any questions.</p>
+                  <p>
+                    Feel free to reach out via Instagram DM or Whatsapp if you
+                    have any questions.
+                  </p>
                 </div>
                 <Link href="/personal-training" className="inline-block mt-6">
                   <Button
@@ -88,7 +104,7 @@ export default function BookPersonalTrainingPage() {
           </div>
         </div>
       </main>
-    )
+    );
   }
 
   return (
@@ -106,19 +122,24 @@ export default function BookPersonalTrainingPage() {
 
           <Card className="border-gray-200">
             <CardHeader>
-              <CardTitle className="text-gray-900">Train with Coach Dee</CardTitle>
+              <CardTitle className="text-gray-900">
+                Train with Coach Dee
+              </CardTitle>
               <CardDescription>
-                Fill in the form below to get started. You must be comfortable with a minimum 3-month commitment.
+                Fill in the form below to get started. You must be comfortable
+                with a minimum 3-month contract.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="fullName">What is your full name? *</Label>
+                  <Label htmlFor="fullName">Full name? *</Label>
                   <Input
                     id="fullName"
                     value={formData.fullName}
-                    onChange={(e) => handleInputChange("fullName", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("fullName", e.target.value)
+                    }
                     required
                   />
                 </div>
@@ -129,7 +150,9 @@ export default function BookPersonalTrainingPage() {
                     id="whatsapp"
                     placeholder="e.g. +27 72 932 4503"
                     value={formData.whatsapp}
-                    onChange={(e) => handleInputChange("whatsapp", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("whatsapp", e.target.value)
+                    }
                     required
                   />
                 </div>
@@ -146,7 +169,9 @@ export default function BookPersonalTrainingPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="goals">What are your main fitness goals? *</Label>
+                  <Label htmlFor="goals">
+                    What are your main fitness goals? *
+                  </Label>
                   <Textarea
                     id="goals"
                     placeholder="e.g. get stronger, weight loss, muscle building, fat loss, improve general fitness & physique goals etc"
@@ -158,14 +183,21 @@ export default function BookPersonalTrainingPage() {
 
                 <div className="space-y-3">
                   <Label>Choose package *</Label>
-                  <RadioGroup value={formData.package} onValueChange={(value) => handleInputChange("package", value)}>
+                  <RadioGroup
+                    value={formData.package}
+                    onValueChange={(value) =>
+                      handleInputChange("package", value)
+                    }
+                  >
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="monthly" id="monthly" />
                       <Label htmlFor="monthly">R2,400/monthly</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="bundle" id="bundle" />
-                      <Label htmlFor="bundle">R6,500 once off payment (3 months bundle)</Label>
+                      <Label htmlFor="bundle">
+                        R6,500 once off payment (3 months bundle)
+                      </Label>
                     </div>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="session" id="session" />
@@ -175,11 +207,15 @@ export default function BookPersonalTrainingPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="additionalInfo">Is there anything else you would like us to know?</Label>
+                  <Label htmlFor="additionalInfo">
+                    Is there anything else you would like us to know?
+                  </Label>
                   <Textarea
                     id="additionalInfo"
                     value={formData.additionalInfo}
-                    onChange={(e) => handleInputChange("additionalInfo", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("additionalInfo", e.target.value)
+                    }
                   />
                 </div>
 
@@ -200,9 +236,13 @@ export default function BookPersonalTrainingPage() {
 
                 <div className="text-center text-sm text-gray-600">
                   <p className="font-semibold">THANK YOU!</p>
-                  <p>I will get in touch in the next 48h on how to get started. 🌸</p>
+                  <p>
+                    I will get in touch in the next 48h on how to get started.
+                    🌸
+                  </p>
                   <p className="mt-2">
-                    Feel free to reach out via Instagram DM or drop any questions about personal training below!
+                    Feel free to reach out via Instagram DM or drop any
+                    questions about personal training below!
                   </p>
                 </div>
               </form>
@@ -211,5 +251,5 @@ export default function BookPersonalTrainingPage() {
         </div>
       </div>
     </main>
-  )
+  );
 }

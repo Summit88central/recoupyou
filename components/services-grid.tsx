@@ -93,7 +93,7 @@ export function ServicesGrid() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
                   <div className="relative h-full w-full p-5 sm:p-6 flex flex-col justify-end text-white">
                     <h3 className="text-2xl font-semibold tracking-tight drop-shadow">
-                      In-Person Training
+                      In-Person Personal Training
                     </h3>
                     <div className="mt-3">
                       <a

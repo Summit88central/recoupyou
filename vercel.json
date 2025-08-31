@@ -1,7 +1,7 @@
 {
   "crons": [
     {
-      "path": "/api/send-weekly-rsvp-email",
+      "path": "/api/send-weekly-rsvp",
       "schedule": "30 18 * * 2"
     }
   ]

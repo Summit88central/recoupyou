@@ -21,6 +21,7 @@ export default function WednesdayRSVPPage() {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
+    phoneNumber: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -84,11 +85,10 @@ export default function WednesdayRSVPPage() {
             <CardContent className="space-y-4">
               <div className="p-4 bg-gray-50 rounded-lg">
                 <p className="text-sm text-gray-600">
-                  <strong>Next Class:</strong> Wednesday at 5:00 PM
+                  <strong>Next Class:</strong> Wednesday at 5:10 AM
                   <br />
-                  <strong>Location:</strong> RecoupYou Gym
+                  <strong>Location:</strong> 72 Kleineberg Street
                   <br />
-                  <strong>What to bring:</strong> Water bottle & towel
                 </p>
               </div>
               <Link href="/">
@@ -133,14 +133,14 @@ export default function WednesdayRSVPPage() {
                   <span className="font-medium">Date:</span> This Wednesday
                 </div>
                 <div>
-                  <span className="font-medium">Time:</span> 5:00 PM
+                  <span className="font-medium">Time:</span> 5:10 AM
                 </div>
                 <div>
                   <span className="font-medium">Duration:</span> 45 minutes
                 </div>
                 <div className="flex items-center gap-1">
                   <Users className="h-4 w-4" />
-                  <span className="font-medium">Spots Available</span>
+                  <span className="font-medium">Limited Spots Available</span>
                 </div>
               </div>
             </CardContent>
@@ -183,6 +183,20 @@ export default function WednesdayRSVPPage() {
                   </div>
                 </div>
 
+                <div className="space-y-2">
+                  <Label htmlFor="phoneNumber">Phone Number *</Label>
+                  <Input
+                    id="phoneNumber"
+                    name="phoneNumber"
+                    type="tel"
+                    required
+                    placeholder="e.g., +27 82 123 4567"
+                    value={formData.phoneNumber}
+                    onChange={handleInputChange}
+                    className="border-gray-300 focus:border-[#fc9dca] focus:ring-[#fc9dca]"
+                  />
+                </div>
+
                 {error && (
                   <div className="p-3 bg-red-50 border border-red-200 rounded-md">
                     <p className="text-sm text-red-600">{error}</p>
@@ -194,9 +208,7 @@ export default function WednesdayRSVPPage() {
                     Before you RSVP:
                   </h4>
                   <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• Please arrive 10 minutes early</li>
-                    <li>• Bring water and a towel</li>
-                    <li>• Suitable for all fitness levels</li>
+                    <li>• Please arrive 5 - 10 minutes early</li>
                   </ul>
                 </div>
 

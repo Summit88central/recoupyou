@@ -22,9 +22,7 @@ export default function WednesdayClassPage() {
               Wednesday Group Fitness Class
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Join Coach Dee every Wednesday for a high-energy group fitness
-              session. Perfect for all fitness levels - come sweat it out with
-              the community!
+              Join Coach Dee every Wednesday for a HIIT group workout.
             </p>
           </div>
 
@@ -40,7 +38,7 @@ export default function WednesdayClassPage() {
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-3">
                   <Clock className="h-4 w-4 text-gray-500" />
-                  <span>Every Wednesday at 5:00 PM</span>
+                  <span>Every Wednesday at 5:10 AM</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <MapPin className="h-4 w-4 text-gray-500" />
@@ -62,7 +60,6 @@ export default function WednesdayClassPage() {
                   <li>• 45-minute high-intensity workout</li>
                   <li>• Strength and conditioning exercises</li>
                   <li>• Suitable for all fitness levels</li>
-                  <li>• Bring water and a towel</li>
                   <li>• Wear comfortable workout attire</li>
                 </ul>
               </CardContent>
@@ -98,9 +95,8 @@ export default function WednesdayClassPage() {
             </h3>
             <ul className="text-sm text-gray-600 space-y-1">
               <li>• RSVP deadline: Every Tuesday at 8:30 PM</li>
-              <li>• Please arrive 10 minutes early for check-in</li>
-
-              <li>• Contact Coach Dee on Instagram for any questions</li>
+              <li>• Please arrive 5 - 10 minutes early for check-in</li>
+              <li>• Contact us on Whatsapp or Instagram for any questions</li>
             </ul>
           </div>
         </div>
