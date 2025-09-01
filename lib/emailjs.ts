@@ -171,21 +171,20 @@ export const sendMembershipEmail = async (formData: any) => {
       // Recipient email - matching template expectations
       to_email: coachEmail,
 
-      // Form data - MUST match the template variables exactly
+      // Fixed field names to match template exactly:
       fullName: formData.fullName,
       email: formData.email,
-      phoneNumber: formData.phone,
+      phone: formData.phone,
       dateOfBirth: formData.dateOfBirth,
       address: formData.address,
-      emergencyContactName: formData.emergencyName,
-      emergencyContactPhone: formData.emergencyPhone,
-      emergencyContactRelationship: formData.emergencyRelationship,
+      emergencyName: formData.emergencyName,
+      emergencyPhone: formData.emergencyPhone,
+      emergencyRelationship: formData.emergencyRelationship,
       medicalConditions: formData.medicalConditions,
-      medications: formData.medications || "None specified",
-      injuries: formData.injuries || "None specified",
-      fitnessGoals: formData.goals || "Not specified",
-      membershipType: formData.membershipPlan,
+      membershipPlan: formData.membershipPlan,
       additionalServices: formData.additionalServices?.join(", ") || "None",
+      startDate: formData.startDate || "Not specified",
+      hearAbout: formData.hearAbout || "Not specified",
     };
 
     console.log("[v0] Sending email with params:", templateParams);
