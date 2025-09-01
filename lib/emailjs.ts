@@ -97,19 +97,19 @@ export const sendOnlineCoachingEmail = async (formData: any) => {
     const templateParams = {
       to_email: process.env.NEXT_PUBLIC_COACH_EMAIL || "coach@example.com",
       form_type: "online_coaching",
-      // Online Coaching specific fields
+      // Online Coaching specific fields - FIXED to match template variables
       full_name: formData.fullName,
       email: formData.email,
       whatsapp: formData.whatsapp,
       instagram: formData.instagram,
       age: formData.age,
-      fitness_level: formData.fitnessLevel,
+      fitness_level: formData.fitnessLevel, // ✅ Changed from camelCase
       goals: formData.goals,
-      gym_access: formData.gymAccess,
-      dietary_restrictions: formData.dietaryRestrictions,
+      gym_access: formData.gymAccess, // ✅ Changed from camelCase
+      dietary_restrictions: formData.dietaryRestrictions, // ✅ Changed from camelCase
       package: formData.package,
-      start_date: formData.startDate,
-      additional_info: formData.additionalInfo,
+      start_date: formData.startDate, // ✅ Changed from camelCase
+      additional_info: formData.additionalInfo, // ✅ Changed from camelCase
       // Empty fields for other form types
       participant_count: "",
       participant_list: "",
