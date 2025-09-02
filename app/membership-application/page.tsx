@@ -20,6 +20,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Clock, MapPin, Users, Loader2 } from "lucide-react";
 import { sendMembershipEmail } from "@/lib/emailjs";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export default function MembershipApplicationPage() {
   const [formData, setFormData] = useState({
@@ -46,35 +52,55 @@ export default function MembershipApplicationPage() {
     setIsSubmitting(true);
 
     try {
-      const result = await sendMembershipEmail(formData);
-
-      if (result.success) {
-        setIsSubmitted(true);
-        // Reset form
-        setFormData({
-          fullName: "",
-          dateOfBirth: "",
-          address: "",
-          phone: "",
-          email: "",
-          emergencyName: "",
-          emergencyPhone: "",
-          emergencyRelationship: "",
-          medicalConditions: "",
-          membershipPlan: "",
-          additionalServices: [],
-          startDate: "",
-          hearAbout: "",
+      // Insert into Supabase
+      const { data: insertData, error: insertError } = await supabase
+        .from("membership_applications")
+        .insert({
+          full_name: formData.fullName,
+          date_of_birth: formData.dateOfBirth,
+          address: formData.address,
+          phone: formData.phone,
+          email: formData.email,
+          emergency_name: formData.emergencyName,
+          emergency_phone: formData.emergencyPhone,
+          emergency_relationship: formData.emergencyRelationship,
+          medical_conditions: formData.medicalConditions,
+          membership_plan: formData.membershipPlan,
+          additional_services: formData.additionalServices,
+          start_date: formData.startDate,
+          hear_about: formData.hearAbout,
         });
-      } else {
-        alert(
-          "There was an error sending your application. Please try again or contact us directly."
-        );
+
+      if (insertError) throw insertError;
+
+      // Send email
+      const emailResult = await sendMembershipEmail(formData);
+
+      if (!emailResult.success) {
+        throw new Error("Email sending failed");
       }
+
+      setIsSubmitted(true);
+      // Reset form
+      setFormData({
+        fullName: "",
+        dateOfBirth: "",
+        address: "",
+        phone: "",
+        email: "",
+        emergencyName: "",
+        emergencyPhone: "",
+        emergencyRelationship: "",
+        medicalConditions: "",
+        membershipPlan: "",
+        additionalServices: [],
+        startDate: "",
+        hearAbout: "",
+      });
     } catch (error) {
       console.error("Form submission error:", error);
       alert(
-        "There was an error sending your application. Please try again or contact us directly."
+        "There was an error submitting your application. Please try again or contact us directly."
       );
     } finally {
       setIsSubmitting(false);
@@ -351,7 +377,7 @@ export default function MembershipApplicationPage() {
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem
-                          value="monthly"
+                          value="Month to Month – R450 + R120 joining fee"
                           id="monthly-membership"
                         />
                         <Label htmlFor="monthly-membership">
@@ -360,7 +386,7 @@ export default function MembershipApplicationPage() {
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem
-                          value="contract"
+                          value="3 months contract – R400/month + R100 joining fee"
                           id="contract-membership"
                         />
                         <Label htmlFor="contract-membership">

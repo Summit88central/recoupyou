@@ -1,73 +1,64 @@
 import emailjs from "@emailjs/browser";
 
-// EmailJS configuration - these will be set via environment variables
-// NOTE: NEXT_PUBLIC_EMAILJS_PUBLIC_KEY is INTENTIONALLY exposed to the client
-// This is the correct and secure way to use EmailJS - the "public key" is designed
-// to be client-accessible and is required for browser-side email sending
+// EmailJS configuration
 const EMAILJS_SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "";
-const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || ""; // This is safe to expose - it's a PUBLIC key
+const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || "";
 
-// Template IDs for the 2-template approach
 const TEMPLATES = {
-  UNIFIED: process.env.NEXT_PUBLIC_EMAILJS_UNIFIED_TEMPLATE || "", // For Personal Training, Online Coaching, Wednesday RSVP
-  MEMBERSHIP: process.env.NEXT_PUBLIC_EMAILJS_MEMBERSHIP_TEMPLATE || "", // For Gym Membership only
+  UNIFIED: process.env.NEXT_PUBLIC_EMAILJS_UNIFIED_TEMPLATE || "",
+  MEMBERSHIP: process.env.NEXT_PUBLIC_EMAILJS_MEMBERSHIP_TEMPLATE || "",
 };
 
-console.log("[v0] EmailJS Environment Variables Check:");
-console.log("[v0] Service ID:", EMAILJS_SERVICE_ID ? "✓ Set" : "✗ Missing");
-console.log("[v0] Public Key:", EMAILJS_PUBLIC_KEY ? "✓ Set" : "✗ Missing");
-console.log(
-  "[v0] Unified Template:",
-  TEMPLATES.UNIFIED ? "✓ Set" : "✗ Missing"
-);
-console.log(
-  "[v0] Membership Template:",
-  TEMPLATES.MEMBERSHIP ? "✓ Set" : "✗ Missing"
-);
-
-// Initialize EmailJS with public key (this is the standard EmailJS implementation)
-if (typeof window !== "undefined") {
-  if (!EMAILJS_PUBLIC_KEY) {
-    console.error(
-      "[v0] EmailJS Error: Public key is missing from environment variables"
-    );
-  } else {
-    console.log("[v0] Initializing EmailJS with public key");
-    emailjs.init(EMAILJS_PUBLIC_KEY);
-  }
+// Initialize EmailJS
+if (typeof window !== "undefined" && EMAILJS_PUBLIC_KEY) {
+  emailjs.init(EMAILJS_PUBLIC_KEY);
 }
+
+// Simplified helper to define all variables for the UNIFIED template
+const createUnifiedTemplateParams = () => ({
+  // Conditional flags (as strings: "true" for truthy, "" for falsy)
+  is_online_coaching: "",
+  is_personal_training: "",
+
+  // All possible fields from the remaining blocks
+  full_name: "",
+  email: "",
+  whatsapp: "",
+  instagram: "",
+  age: "",
+  fitness_level: "",
+  goals: "",
+  gym_access: "",
+  dietary_restrictions: "",
+  package: "",
+  start_date: "",
+  additional_info: "",
+});
 
 export const sendPersonalTrainingEmail = async (formData: any) => {
   try {
-    // Check if all required environment variables are present
-    if (!EMAILJS_SERVICE_ID || !EMAILJS_PUBLIC_KEY || !TEMPLATES.UNIFIED) {
+    if (!EMAILJS_SERVICE_ID || !TEMPLATES.UNIFIED) {
       throw new Error(
-        "Missing EmailJS environment variables. Please check your project settings."
+        "Missing EmailJS environment variables for UNIFIED template."
       );
     }
 
-    // Re-initialize EmailJS to ensure it's properly set up
-    emailjs.init(EMAILJS_PUBLIC_KEY);
-
     const templateParams = {
-      to_email: process.env.NEXT_PUBLIC_COACH_EMAIL || "coach@example.com",
-      form_type: "personal_training",
-      // Personal Training specific fields
-      full_name: formData.fullName,
-      whatsapp: formData.whatsapp,
-      age: formData.age,
-      goals: formData.goals,
-      package: formData.package,
-      additional_info: formData.additionalInfo,
-      // Empty fields for other form types
-      email: "",
-      instagram: "",
-      fitness_level: "",
-      gym_access: "",
-      dietary_restrictions: "",
-      start_date: "",
-      participant_count: "",
-      participant_list: "",
+      ...createUnifiedTemplateParams(),
+      to_email: String(
+        process.env.NEXT_PUBLIC_COACH_EMAIL || "coach@example.com"
+      ),
+
+      // Set the flag to "true" for this form (string value)
+      is_personal_training: "true",
+
+      // Populate data for this form, ensuring strings
+      full_name: String(formData.fullName || ""),
+      whatsapp: String(formData.whatsapp || ""),
+      age: String(formData.age || ""),
+      goals: String(formData.goals || ""),
+      package: String(formData.package || ""),
+      additional_info: String(formData.additionalInfo || ""),
     };
 
     const response = await emailjs.send(
@@ -77,42 +68,41 @@ export const sendPersonalTrainingEmail = async (formData: any) => {
     );
     return { success: true, response };
   } catch (error) {
-    console.error("EmailJS Error:", error);
+    console.error("Personal Training EmailJS Error:", error);
     return { success: false, error };
   }
 };
 
 export const sendOnlineCoachingEmail = async (formData: any) => {
   try {
-    // Check if all required environment variables are present
-    if (!EMAILJS_SERVICE_ID || !EMAILJS_PUBLIC_KEY || !TEMPLATES.UNIFIED) {
+    if (!EMAILJS_SERVICE_ID || !TEMPLATES.UNIFIED) {
       throw new Error(
-        "Missing EmailJS environment variables. Please check your project settings."
+        "Missing EmailJS environment variables for UNIFIED template."
       );
     }
 
-    // Re-initialize EmailJS to ensure it's properly set up
-    emailjs.init(EMAILJS_PUBLIC_KEY);
-
     const templateParams = {
-      to_email: process.env.NEXT_PUBLIC_COACH_EMAIL || "coach@example.com",
-      form_type: "online_coaching",
-      // Online Coaching specific fields - FIXED to match template variables
-      full_name: formData.fullName,
-      email: formData.email,
-      whatsapp: formData.whatsapp,
-      instagram: formData.instagram,
-      age: formData.age,
-      fitness_level: formData.fitnessLevel, // ✅ Changed from camelCase
-      goals: formData.goals,
-      gym_access: formData.gymAccess, // ✅ Changed from camelCase
-      dietary_restrictions: formData.dietaryRestrictions, // ✅ Changed from camelCase
-      package: formData.package,
-      start_date: formData.startDate, // ✅ Changed from camelCase
-      additional_info: formData.additionalInfo, // ✅ Changed from camelCase
-      // Empty fields for other form types
-      participant_count: "",
-      participant_list: "",
+      ...createUnifiedTemplateParams(),
+      to_email: String(
+        process.env.NEXT_PUBLIC_COACH_EMAIL || "coach@example.com"
+      ),
+
+      // Set the flag to "true" for this form (string value)
+      is_online_coaching: "true",
+
+      // Populate data for this form, ensuring strings
+      full_name: String(formData.fullName || ""),
+      email: String(formData.email || ""),
+      whatsapp: String(formData.whatsapp || ""),
+      instagram: String(formData.instagram || ""),
+      age: String(formData.age || ""),
+      fitness_level: String(formData.fitnessLevel || ""),
+      goals: String(formData.goals || ""),
+      gym_access: String(formData.gymAccess || ""),
+      dietary_restrictions: String(formData.dietaryRestrictions || ""),
+      package: String(formData.package || ""),
+      start_date: String(formData.startDate || ""),
+      additional_info: String(formData.additionalInfo || ""),
     };
 
     const response = await emailjs.send(
@@ -122,81 +112,54 @@ export const sendOnlineCoachingEmail = async (formData: any) => {
     );
     return { success: true, response };
   } catch (error) {
-    console.error("EmailJS Error:", error);
+    console.error("Online Coaching EmailJS Error:", error);
     return { success: false, error };
   }
 };
 
+// The membership function remains unchanged, but apply similar string conversions if numeric or boolean fields are added in the future.
 export const sendMembershipEmail = async (formData: any) => {
   try {
-    console.log("[v0] Attempting to send membership email...");
-    console.log("[v0] Service ID:", EMAILJS_SERVICE_ID ? "✓ Set" : "✗ Missing");
-    console.log("[v0] Public Key:", EMAILJS_PUBLIC_KEY ? "✓ Set" : "✗ Missing");
-    console.log(
-      "[v0] Template ID:",
-      TEMPLATES.MEMBERSHIP ? "✓ Set" : "✗ Missing"
-    );
-
-    // Check if all required environment variables are present
-    if (!EMAILJS_SERVICE_ID) {
+    if (!EMAILJS_SERVICE_ID || !TEMPLATES.MEMBERSHIP) {
       throw new Error(
-        "NEXT_PUBLIC_EMAILJS_SERVICE_ID is not set in environment variables"
+        "Missing EmailJS environment variables for MEMBERSHIP template."
       );
     }
-    if (!EMAILJS_PUBLIC_KEY) {
-      throw new Error(
-        "NEXT_PUBLIC_EMAILJS_PUBLIC_KEY is not set in environment variables"
-      );
-    }
-    if (!TEMPLATES.MEMBERSHIP) {
-      throw new Error(
-        "NEXT_PUBLIC_EMAILJS_MEMBERSHIP_TEMPLATE is not set in environment variables"
-      );
-    }
-
-    // Re-initialize EmailJS to ensure it's properly set up
-    emailjs.init(EMAILJS_PUBLIC_KEY);
-
-    const coachEmail =
-      process.env.NEXT_PUBLIC_COACH_EMAIL || "recoupyou@gmail.com";
-
-    // DEBUG: Log the actual email being used
-    console.log("[v0] DEBUG: Coach email being used:", coachEmail);
-    console.log(
-      "[v0] DEBUG: Environment COACH_EMAIL:",
-      process.env.NEXT_PUBLIC_COACH_EMAIL
-    );
 
     const templateParams = {
-      // Recipient email - matching template expectations
-      to_email: coachEmail,
-
-      // Fixed field names to match template exactly:
-      fullName: formData.fullName,
-      email: formData.email,
-      phone: formData.phone,
-      dateOfBirth: formData.dateOfBirth,
-      address: formData.address,
-      emergencyName: formData.emergencyName,
-      emergencyPhone: formData.emergencyPhone,
-      emergencyRelationship: formData.emergencyRelationship,
-      medicalConditions: formData.medicalConditions,
-      membershipPlan: formData.membershipPlan,
-      additionalServices: formData.additionalServices?.join(", ") || "None",
-      startDate: formData.startDate || "Not specified",
-      hearAbout: formData.hearAbout || "Not specified",
+      to_email: String(
+        process.env.NEXT_PUBLIC_COACH_EMAIL || "recoupyou@gmail.com"
+      ),
+      fullName: String(formData.fullName || ""),
+      email: String(formData.email || ""),
+      phone: String(formData.phone || ""), // Aligned to match {{phone}}
+      dateOfBirth: String(formData.dateOfBirth || ""),
+      address: String(formData.address || ""),
+      emergencyName: String(formData.emergencyName || ""), // Aligned to match {{emergencyName}}
+      emergencyPhone: String(formData.emergencyPhone || ""), // Aligned to match {{emergencyPhone}}
+      emergencyRelationship: String(formData.emergencyRelationship || ""), // Aligned to match {{emergencyRelationship}}
+      medicalConditions: String(formData.medicalConditions || "Not specified"),
+      medications: String(formData.medications || "None specified"), // Retained; add to template if needed
+      injuries: String(formData.injuries || "None specified"), // Retained; add to template if needed
+      fitnessGoals: String(formData.goals || "Not specified"), // Retained; add to template if needed
+      membershipPlan: String(formData.membershipPlan || ""), // Aligned to match {{membershipPlan}}
+      additionalServices: String(
+        formData.additionalServices?.join(", ") || "None"
+      ),
+      startDate: String(formData.startDate || ""), // Added to match {{startDate}}
+      hearAbout: String(formData.hearAbout || ""), // Added to match {{hearAbout}}
     };
 
-    console.log("[v0] Sending email with params:", templateParams);
+    console.log("Sending membership email with params:", templateParams);
     const response = await emailjs.send(
       EMAILJS_SERVICE_ID,
       TEMPLATES.MEMBERSHIP,
       templateParams
     );
-    console.log("[v0] Email sent successfully:", response);
+    console.log("Membership email sent successfully:", response);
     return { success: true, response };
   } catch (error) {
-    console.error("[v0] EmailJS Error:", error);
+    console.error("Membership EmailJS Error:", error);
     return { success: false, error };
   }
 };

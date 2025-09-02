@@ -6,8 +6,8 @@ export default function HomePage() {
     <>
       <HeroSection />
 
-      <main className="min-h-screen bg-white pt-16">
-        <div className="container mx-auto px-4 py-16">
+      <main className="min-h-screen bg-white">
+        <div className="container mx-auto py-16">
           <ServicesGrid />
         </div>
       </main>

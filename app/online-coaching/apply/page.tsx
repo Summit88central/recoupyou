@@ -1,17 +1,29 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { ArrowLeft, Loader2 } from "lucide-react"
-import Link from "next/link"
-import { sendOnlineCoachingEmail } from "@/lib/emailjs"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ArrowLeft, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { sendOnlineCoachingEmail } from "@/lib/emailjs";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export default function ApplyOnlineCoachingPage() {
   const [formData, setFormData] = useState({
@@ -27,49 +39,72 @@ export default function ApplyOnlineCoachingPage() {
     package: "",
     startDate: "",
     additionalInfo: "",
-  })
+  });
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isSubmitted, setIsSubmitted] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+    e.preventDefault();
+    setIsSubmitting(true);
 
     try {
-      const result = await sendOnlineCoachingEmail(formData)
+      // Insert into Supabase
+      const { data: insertData, error: insertError } = await supabase
+        .from("online_coaching_applications")
+        .insert({
+          full_name: formData.fullName,
+          email: formData.email,
+          whatsapp: formData.whatsapp,
+          instagram: formData.instagram,
+          age: formData.age,
+          fitness_level: formData.fitnessLevel,
+          goals: formData.goals,
+          gym_access: formData.gymAccess,
+          dietary_restrictions: formData.dietaryRestrictions,
+          package: formData.package,
+          start_date: formData.startDate,
+          additional_info: formData.additionalInfo,
+        });
 
-      if (result.success) {
-        setIsSubmitted(true)
-        // Reset form
-        setFormData({
-          fullName: "",
-          email: "",
-          whatsapp: "",
-          instagram: "",
-          age: "",
-          fitnessLevel: "",
-          goals: "",
-          gymAccess: "",
-          dietaryRestrictions: "",
-          package: "",
-          startDate: "",
-          additionalInfo: "",
-        })
-      } else {
-        alert("There was an error sending your application. Please try again or contact us directly.")
+      if (insertError) throw insertError;
+
+      // Send email
+      const emailResult = await sendOnlineCoachingEmail(formData);
+
+      if (!emailResult.success) {
+        throw new Error("Email sending failed");
       }
+
+      setIsSubmitted(true);
+      // Reset form
+      setFormData({
+        fullName: "",
+        email: "",
+        whatsapp: "",
+        instagram: "",
+        age: "",
+        fitnessLevel: "",
+        goals: "",
+        gymAccess: "",
+        dietaryRestrictions: "",
+        package: "",
+        startDate: "",
+        additionalInfo: "",
+      });
     } catch (error) {
-      console.error("Form submission error:", error)
-      alert("There was an error sending your application. Please try again or contact us directly.")
+      console.error("Form submission error:", error);
+      alert(
+        "There was an error submitting your application. Please try again or contact us directly."
+      );
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   if (isSubmitted) {
     return (
@@ -79,13 +114,19 @@ export default function ApplyOnlineCoachingPage() {
             <Card>
               <CardContent className="p-8">
                 <div className="text-6xl mb-4">🌸</div>
-                <h1 className="text-2xl font-bold text-gray-900 mb-4">Thank You!</h1>
+                <h1 className="text-2xl font-bold text-gray-900 mb-4">
+                  Thank You!
+                </h1>
                 <p className="text-gray-600 mb-6">
-                  Your online coaching application has been submitted successfully. I will get in touch within the next
-                  48 hours to get you started!
+                  Your online coaching application has been submitted
+                  successfully. I will get in touch within the next 48 hours to
+                  get you started!
                 </p>
                 <div className="space-y-2 text-sm text-gray-500">
-                  <p>Feel free to reach out via Instagram DM if you have any questions about coaching.</p>
+                  <p>
+                    Feel free to reach out via Instagram DM if you have any
+                    questions about coaching.
+                  </p>
                 </div>
                 <Link href="/online-coaching" className="inline-block mt-6">
                   <Button
@@ -100,7 +141,7 @@ export default function ApplyOnlineCoachingPage() {
           </div>
         </div>
       </main>
-    )
+    );
   }
 
   return (
@@ -118,10 +159,13 @@ export default function ApplyOnlineCoachingPage() {
 
           <Card className="border-gray-200">
             <CardHeader>
-              <CardTitle className="text-gray-900">Online 1:1 Coaching Application</CardTitle>
+              <CardTitle className="text-gray-900">
+                Online 1:1 Coaching Application
+              </CardTitle>
               <CardDescription>
-                For women looking for online 1:1 coaching to start or enhance their fitness journey. Please provide
-                accurate information to help us understand your goals and needs.
+                For women looking for online 1:1 coaching to start or enhance
+                their fitness journey. Please provide accurate information to
+                help us understand your goals and needs.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -131,7 +175,9 @@ export default function ApplyOnlineCoachingPage() {
                   <Input
                     id="fullName"
                     value={formData.fullName}
-                    onChange={(e) => handleInputChange("fullName", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("fullName", e.target.value)
+                    }
                     required
                   />
                 </div>
@@ -153,18 +199,24 @@ export default function ApplyOnlineCoachingPage() {
                     id="whatsapp"
                     placeholder="E.g +27 72 932 4503 - start with state code"
                     value={formData.whatsapp}
-                    onChange={(e) => handleInputChange("whatsapp", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("whatsapp", e.target.value)
+                    }
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="instagram">What's your Instagram handle? *</Label>
+                  <Label htmlFor="instagram">
+                    What's your Instagram handle? *
+                  </Label>
                   <Input
                     id="instagram"
                     placeholder="In case your number isn't on WhatsApp"
                     value={formData.instagram}
-                    onChange={(e) => handleInputChange("instagram", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("instagram", e.target.value)
+                    }
                     required
                   />
                 </div>
@@ -184,7 +236,9 @@ export default function ApplyOnlineCoachingPage() {
                   <Label>What is your current fitness level? *</Label>
                   <RadioGroup
                     value={formData.fitnessLevel}
-                    onValueChange={(value) => handleInputChange("fitnessLevel", value)}
+                    onValueChange={(value) =>
+                      handleInputChange("fitnessLevel", value)
+                    }
                   >
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="beginner" id="beginner" />
@@ -202,7 +256,9 @@ export default function ApplyOnlineCoachingPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="goals">What are your main fitness goals? *</Label>
+                  <Label htmlFor="goals">
+                    What are your main fitness goals? *
+                  </Label>
                   <Textarea
                     id="goals"
                     placeholder="e.g. get stronger, weight loss, muscle building, fat loss, improve general fitness & physique goals etc"
@@ -216,7 +272,9 @@ export default function ApplyOnlineCoachingPage() {
                   <Label>Do you have access to a gym? *</Label>
                   <RadioGroup
                     value={formData.gymAccess}
-                    onValueChange={(value) => handleInputChange("gymAccess", value)}
+                    onValueChange={(value) =>
+                      handleInputChange("gymAccess", value)
+                    }
                   >
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="yes" id="gym-yes" />
@@ -228,18 +286,24 @@ export default function ApplyOnlineCoachingPage() {
                     </div>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="willing" id="gym-willing" />
-                      <Label htmlFor="gym-willing">I'm willing to get a gym membership</Label>
+                      <Label htmlFor="gym-willing">
+                        I'm willing to get a gym membership
+                      </Label>
                     </div>
                   </RadioGroup>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="dietaryRestrictions">Do you have any dietary restrictions? *</Label>
+                  <Label htmlFor="dietaryRestrictions">
+                    Do you have any dietary restrictions? *
+                  </Label>
                   <Input
                     id="dietaryRestrictions"
                     placeholder="e.g vegetarian, vegan etc"
                     value={formData.dietaryRestrictions}
-                    onChange={(e) => handleInputChange("dietaryRestrictions", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("dietaryRestrictions", e.target.value)
+                    }
                     required
                   />
                 </div>
@@ -247,36 +311,55 @@ export default function ApplyOnlineCoachingPage() {
                 <div className="space-y-3">
                   <Label>Choose package *</Label>
                   <p className="text-sm text-gray-600">
-                    Please check the internet for conversions if you're using a different currency
+                    Please check the internet for conversions if you're using a
+                    different currency
                   </p>
-                  <RadioGroup value={formData.package} onValueChange={(value) => handleInputChange("package", value)}>
+                  <RadioGroup
+                    value={formData.package}
+                    onValueChange={(value) =>
+                      handleInputChange("package", value)
+                    }
+                  >
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="monthly" id="monthly-online" />
+                      <RadioGroupItem value="R800/month" id="monthly-online" />
                       <Label htmlFor="monthly-online">R800/month</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="bundle-online" id="bundle-online" />
-                      <Label htmlFor="bundle-online">R2,100 once off payment (3 months 1:1 coaching)</Label>
+                      <RadioGroupItem
+                        value="R2,100 once off payment (3 months 1:1 coaching)"
+                        id="bundle-online"
+                      />
+                      <Label htmlFor="bundle-online">
+                        R2,100 once off payment (3 months 1:1 coaching)
+                      </Label>
                     </div>
                   </RadioGroup>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="startDate">When exactly would you like to get started?</Label>
+                  <Label htmlFor="startDate">
+                    When exactly would you like to get started?
+                  </Label>
                   <Input
                     id="startDate"
                     type="date"
                     value={formData.startDate}
-                    onChange={(e) => handleInputChange("startDate", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("startDate", e.target.value)
+                    }
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="additionalInfo">Is there anything else you would like us to know?</Label>
+                  <Label htmlFor="additionalInfo">
+                    Is there anything else you would like us to know?
+                  </Label>
                   <Textarea
                     id="additionalInfo"
                     value={formData.additionalInfo}
-                    onChange={(e) => handleInputChange("additionalInfo", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("additionalInfo", e.target.value)
+                    }
                   />
                 </div>
 
@@ -297,8 +380,14 @@ export default function ApplyOnlineCoachingPage() {
 
                 <div className="text-center text-sm text-gray-600 mt-6">
                   <p className="font-semibold">THANK YOU!</p>
-                  <p>I will get in touch in the next 48h on how to get started. 🌸</p>
-                  <p className="mt-2">Feel free to reach out via Instagram DM or drop any questions about coaching</p>
+                  <p>
+                    I will get in touch in the next 48h on how to get started.
+                    🌸
+                  </p>
+                  <p className="mt-2">
+                    Feel free to reach out via Instagram DM or drop any
+                    questions about coaching
+                  </p>
                 </div>
               </form>
             </CardContent>
@@ -306,5 +395,5 @@ export default function ApplyOnlineCoachingPage() {
         </div>
       </div>
     </main>
-  )
+  );
 }

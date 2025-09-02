@@ -10,7 +10,7 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-white border-t border-zinc-200">
+    <footer id="contact" className="bg-white border-t border-zinc-200">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-6">
         {/* Copyright */}
         <p className="text-xs text-zinc-500">

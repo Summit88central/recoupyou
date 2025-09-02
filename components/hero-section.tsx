@@ -34,9 +34,11 @@ export function HeroSection() {
 
         {/* CTA */}
         <div className="relative z-20 mt-120 flex justify-center">
-          <Button className="bg-[#fc9dca] text-white font-semibold text-base px-12 py-6 rounded-full shadow-[0_0_30px_rgba(252,157,202,0.75)] hover:shadow-[0_0_50px_rgba(252,157,202,0.95)] hover:bg-gray-900 transition min-w-[280px] min-h-[70px]">
-            JOIN MEMBERSHIP <ArrowRight className="h-6 w-6 ml-3" />
-          </Button>
+          <a href="/#services">
+            <Button className="bg-[#fc9dca] text-white font-semibold text-base px-12 py-6 rounded-full shadow-[0_0_30px_rgba(252,157,202,0.75)] hover:shadow-[0_0_50px_rgba(252,157,202,0.95)] hover:bg-gray-900 transition min-w-[280px] min-h-[70px]">
+              JOIN MEMBERSHIP <ArrowRight className="h-6 w-6 ml-3" />
+            </Button>
+          </a>
         </div>
       </section>
     </main>

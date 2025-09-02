@@ -1,0 +1,23 @@
+<!-- public/robots.txt -->
+User-agent: *
+Allow: /
+
+# Block access to admin/private areas (if any)
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /private/
+
+# Allow specific important pages
+Allow: /shop
+Allow: /membership-application
+Allow: /online-coaching
+Allow: /personal-training
+
+# Sitemap location
+Sitemap: https://recoupyou.co.za/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
+
+========================================

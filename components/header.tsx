@@ -1,18 +1,18 @@
-"use client"
-import { useState } from "react"
-import { Menu, X, ShoppingCart } from "lucide-react"
+"use client";
+import { useState } from "react";
+import { Menu, X, ShoppingCart } from "lucide-react";
 
 const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   const menuItems = [
     { name: "Home", href: "/" },
-    { name: "Contact", href: "/contact" },
-    { name: "Programs", href: "/programs" },
+    { name: "Contact", href: "/#contact" },
+    { name: "Programs", href: "/#programs" },
     { name: "Shop", href: "/shop" },
-  ]
+  ];
 
   return (
     <>
@@ -29,7 +29,11 @@ const Header = () => {
           </button>
 
           {/* Logo */}
-          <div className="text-2xl font-bold tracking-wider text-[#fc9dca] xl:ml-0">RY</div>
+          <a href="/">
+            <div className="text-2xl font-bold tracking-wider text-[#fc9dca] xl:ml-0">
+              RY
+            </div>
+          </a>
 
           {/* Desktop Links */}
           <div className="hidden xl:flex items-center space-x-6">
@@ -61,7 +65,10 @@ const Header = () => {
         }`}
       >
         {/* Background overlay */}
-        <div className="absolute inset-0 bg-black/10 backdrop-blur-sm" onClick={toggleMenu} />
+        <div
+          className="absolute inset-0 bg-black/10 backdrop-blur-sm"
+          onClick={toggleMenu}
+        />
 
         {/* Menu panel */}
         <div
@@ -98,7 +105,7 @@ const Header = () => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;

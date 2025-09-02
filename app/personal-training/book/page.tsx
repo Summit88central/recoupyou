@@ -18,6 +18,12 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { sendPersonalTrainingEmail } from "@/lib/emailjs";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export default function BookPersonalTrainingPage() {
   const [formData, setFormData] = useState({
@@ -37,28 +43,41 @@ export default function BookPersonalTrainingPage() {
     setIsSubmitting(true);
 
     try {
-      const result = await sendPersonalTrainingEmail(formData);
-
-      if (result.success) {
-        setIsSubmitted(true);
-        // Reset form
-        setFormData({
-          fullName: "",
-          whatsapp: "",
-          age: "",
-          goals: "",
-          package: "",
-          additionalInfo: "",
+      // Insert into Supabase
+      const { data: insertData, error: insertError } = await supabase
+        .from("personal_training_applications")
+        .insert({
+          full_name: formData.fullName,
+          whatsapp: formData.whatsapp,
+          age: formData.age,
+          goals: formData.goals,
+          package: formData.package,
+          additional_info: formData.additionalInfo,
         });
-      } else {
-        alert(
-          "There was an error sending your application. Please try again or contact us directly."
-        );
+
+      if (insertError) throw insertError;
+
+      // Send email
+      const emailResult = await sendPersonalTrainingEmail(formData);
+
+      if (!emailResult.success) {
+        throw new Error("Email sending failed");
       }
+
+      setIsSubmitted(true);
+      // Reset form
+      setFormData({
+        fullName: "",
+        whatsapp: "",
+        age: "",
+        goals: "",
+        package: "",
+        additionalInfo: "",
+      });
     } catch (error) {
       console.error("Form submission error:", error);
       alert(
-        "There was an error sending your application. Please try again or contact us directly."
+        "There was an error submitting your application. Please try again or contact us directly."
       );
     } finally {
       setIsSubmitting(false);
@@ -190,11 +209,14 @@ export default function BookPersonalTrainingPage() {
                     }
                   >
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="monthly" id="monthly" />
+                      <RadioGroupItem value="R2,400/monthly" id="monthly" />
                       <Label htmlFor="monthly">R2,400/monthly</Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="bundle" id="bundle" />
+                      <RadioGroupItem
+                        value="R6,500 once off payment (3 months bundle)"
+                        id="bundle"
+                      />
                       <Label htmlFor="bundle">
                         R6,500 once off payment (3 months bundle)
                       </Label>

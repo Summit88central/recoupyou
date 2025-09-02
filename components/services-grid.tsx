@@ -2,7 +2,7 @@ import { ArrowRight } from "lucide-react";
 
 export function ServicesGrid() {
   return (
-    <section id="services" className="min-h-full mt-8">
+    <section id="programs" className="min-h-full mt-8">
       <div className="max-w-7xl mx-auto px-6 md:px-8 pb-10 md:pb-14">
         {/* Free Class - Top Banner */}
         <div className="flex flex-col sm:flex-row items-center justify-between mb-8 px-6 py-4 rounded-2xl bg-[#fc9dca]/10">
