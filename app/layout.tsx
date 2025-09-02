@@ -196,7 +196,6 @@ export default function RootLayout({
                   "@id": "https://recoupyou.co.za/#localbusiness",
                   name: "RecoupYou Fitness",
                   image: "https://recoupyou.co.za/gym-image.jpg",
-                  "@id": "https://recoupyou.co.za",
                   url: "https://recoupyou.co.za",
                   telephone: "+27-XX-XXX-XXXX", // Replace with actual phone
                   priceRange: "$$",
