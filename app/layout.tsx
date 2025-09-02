@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     "fitness coach",
     "weight training",
     "fitness transformation",
-    "RecoupYou fitness",
+    "RecoupYou",
   ],
   authors: [{ name: "RecoupYou Fitness Team" }],
   creator: "RecoupYou",
