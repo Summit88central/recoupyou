@@ -1,8 +1,14 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { CheckCircle, Clock, Users, Utensils } from "lucide-react"
-import Link from "next/link"
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle, Clock, Users, Utensils } from "lucide-react";
+import Link from "next/link";
 
 export default function PersonalTrainingPage() {
   return (
@@ -11,10 +17,15 @@ export default function PersonalTrainingPage() {
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="text-center mb-12">
-            <Badge className="mb-4 bg-[#fc9dca] text-white hover:bg-[#f472b6]">In-Person Training</Badge>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Train with Coach Dee</h1>
+            <Badge className="mb-4 bg-[#fc9dca] text-white hover:bg-[#f472b6]">
+              In-Person Training
+            </Badge>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Train with Coach Dee
+            </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Personalised Program + Eating Guide. Get 1:1 coaching to achieve your fitness goals faster than ever.
+              Personalised Program + Eating Guide. Get 1:1 coaching to achieve
+              your fitness goals faster than ever.
             </p>
           </div>
 
@@ -25,22 +36,30 @@ export default function PersonalTrainingPage() {
                 <CheckCircle className="w-6 h-6 text-green-600" />
                 What's Included
               </CardTitle>
-              <CardDescription>Comprehensive training package designed for your success</CardDescription>
+              <CardDescription>
+                Comprehensive training package designed for your success
+              </CardDescription>
             </CardHeader>
             <CardContent className="grid md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
                   <Users className="w-5 h-5 text-[#fc9dca] mt-1" />
                   <div>
-                    <h3 className="font-semibold">4x Individual Training Sessions</h3>
-                    <p className="text-sm text-gray-600">Per week, personalized to your goals</p>
+                    <h3 className="font-semibold">
+                      4x Individual Training Sessions
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      Per week, personalized to your goals
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <Clock className="w-5 h-5 text-[#fc9dca] mt-1" />
                   <div>
                     <h3 className="font-semibold">1x Group Session</h3>
-                    <p className="text-sm text-gray-600">Every Wednesday at 5am</p>
+                    <p className="text-sm text-gray-600">
+                      Every Wednesday at 5am
+                    </p>
                   </div>
                 </div>
               </div>
@@ -49,14 +68,18 @@ export default function PersonalTrainingPage() {
                   <Utensils className="w-5 h-5 text-[#fc9dca] mt-1" />
                   <div>
                     <h3 className="font-semibold">Personalized Eating Guide</h3>
-                    <p className="text-sm text-gray-600">Tailored nutrition plan</p>
+                    <p className="text-sm text-gray-600">
+                      Tailored nutrition plan
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle className="w-5 h-5 text-[#fc9dca] mt-1" />
                   <div>
                     <h3 className="font-semibold">Training Types</h3>
-                    <p className="text-sm text-gray-600">Strength, Conditioning & Group Training</p>
+                    <p className="text-sm text-gray-600">
+                      Strength, Conditioning & Group Training
+                    </p>
                   </div>
                 </div>
               </div>
@@ -143,9 +166,14 @@ export default function PersonalTrainingPage() {
 
           {/* CTA */}
           <div className="text-center">
-            <p className="text-sm text-gray-600 mb-4">Minimum 3-month commitment required for package deals</p>
+            <p className="text-sm text-gray-600 mb-4">
+              Minimum 3-months commitment required for package deals
+            </p>
             <Link href="/personal-training/book">
-              <Button size="lg" className="bg-[#fc9dca] hover:bg-[#f472b6] text-white">
+              <Button
+                size="lg"
+                className="bg-[#fc9dca] hover:bg-[#f472b6] text-white"
+              >
                 Book Your Training Session
               </Button>
             </Link>
@@ -153,5 +181,5 @@ export default function PersonalTrainingPage() {
         </div>
       </div>
     </main>
-  )
+  );
 }

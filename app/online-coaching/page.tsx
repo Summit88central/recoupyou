@@ -1,8 +1,14 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { CheckCircle, Smartphone, Calendar, Heart } from "lucide-react"
-import Link from "next/link"
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle, Smartphone, Calendar, Heart } from "lucide-react";
+import Link from "next/link";
 
 export default function OnlineCoachingPage() {
   return (
@@ -11,10 +17,15 @@ export default function OnlineCoachingPage() {
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="text-center mb-12">
-            <Badge className="mb-4 bg-purple-100 text-purple-800 hover:bg-purple-200">Online Coaching</Badge>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Online 1:1 Coaching</h1>
+            <Badge className="mb-4 bg-purple-100 text-purple-800 hover:bg-purple-200">
+              Online Coaching
+            </Badge>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Online 1:1 Coaching
+            </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              For women looking to start or enhance their fitness journey with personalized online coaching.
+              For women looking to start or enhance their fitness journey with
+              personalized online coaching.
             </p>
           </div>
 
@@ -27,7 +38,8 @@ export default function OnlineCoachingPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-gray-600 text-center">
-                  Train anywhere, anytime with personalized workout plans designed just for you.
+                  Train anywhere, anytime with personalized workout plans
+                  designed just for you.
                 </p>
               </CardContent>
             </Card>
@@ -39,7 +51,8 @@ export default function OnlineCoachingPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-gray-600 text-center">
-                  Get 1:1 coaching support and guidance throughout your fitness journey.
+                  Get 1:1 coaching support and guidance throughout your fitness
+                  journey.
                 </p>
               </CardContent>
             </Card>
@@ -51,7 +64,8 @@ export default function OnlineCoachingPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-gray-600 text-center">
-                  Specifically designed for women at all fitness levels, from beginner to advanced.
+                  Specifically designed for women at all fitness levels, from
+                  beginner to advanced.
                 </p>
               </CardContent>
             </Card>
@@ -88,7 +102,9 @@ export default function OnlineCoachingPage() {
             </Card>
 
             <Card className="border-2 border-pink-200 relative">
-              <Badge className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-pink-600">Best Value</Badge>
+              <Badge className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-pink-600">
+                Best Value
+              </Badge>
               <CardHeader className="text-center">
                 <CardTitle>3-Month Package</CardTitle>
                 <div className="text-3xl font-bold text-pink-600">R2,100</div>
@@ -120,16 +136,19 @@ export default function OnlineCoachingPage() {
           {/* Requirements */}
           <Card className="mb-8 bg-purple-50 border-purple-200">
             <CardHeader>
-              <CardTitle className="text-purple-800">Before You Apply</CardTitle>
+              <CardTitle className="text-purple-800">
+                Before You Apply
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-purple-700 mb-4">
-                Only fill in the form if you're ready to commit to the program for a minimum of 3 months.
+                Only fill in the form if you're ready to commit to the program
+                for a minimum of 3 months.
               </p>
               <ul className="space-y-2 text-sm text-purple-600">
                 <li className="flex items-center gap-2">
                   <CheckCircle className="w-4 h-4" />
-                  Must be committed to a 3-month minimum program
+                  Must be willing to commit for minimum 3 months
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle className="w-4 h-4" />
@@ -154,5 +173,5 @@ export default function OnlineCoachingPage() {
         </div>
       </div>
     </main>
-  )
+  );
 }
