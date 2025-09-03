@@ -2,9 +2,9 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
+  CardDescription,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Smartphone, Calendar, Heart } from "lucide-react";
@@ -70,6 +70,44 @@ export default function OnlineCoachingPage() {
               </CardContent>
             </Card>
           </div>
+
+          {/* All Plans Include */}
+          <Card className="mb-8 bg-purple-50 border-purple-200">
+            <CardHeader>
+              <CardTitle className="text-purple-800">
+                1:1 Coaching Includes
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2 text-sm text-purple-600">
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" />
+                  Personalised workout plan with technique video attached to
+                  each exercise
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" />
+                  Personalised meal plan in accordance with your goals
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" />
+                  Weekly Check-Ins
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" />
+                  1:1 Form Check Video Calls (scheduled)
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" />
+                  Direct Chat with me for support
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" />
+                  Fortnight physique update pictures
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
 
           {/* Pricing */}
           <div className="grid md:grid-cols-2 gap-6 mb-8">
