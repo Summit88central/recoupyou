@@ -85,7 +85,7 @@ export default function WednesdayRSVPPage() {
             <CardContent className="space-y-4">
               <div className="p-4 bg-gray-50 rounded-lg">
                 <p className="text-sm text-gray-600">
-                  <strong>Next Class:</strong> Wednesday at 5:10 AM
+                  <strong>Next Class:</strong> Wednesday at 5:00 AM
                   <br />
                   <strong>Location:</strong> 72 Kleineberg Street
                   <br />
@@ -133,7 +133,7 @@ export default function WednesdayRSVPPage() {
                   <span className="font-medium">Date:</span> This Wednesday
                 </div>
                 <div>
-                  <span className="font-medium">Time:</span> 5:10 AM
+                  <span className="font-medium">Time:</span> 5:00 AM
                 </div>
                 <div>
                   <span className="font-medium">Duration:</span> 45 minutes

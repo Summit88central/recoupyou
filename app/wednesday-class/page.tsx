@@ -38,7 +38,7 @@ export default function WednesdayClassPage() {
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-3">
                   <Clock className="h-4 w-4 text-gray-500" />
-                  <span>Every Wednesday at 5:10 AM</span>
+                  <span>Every Wednesday at 5:00 AM</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <MapPin className="h-4 w-4 text-gray-500" />
