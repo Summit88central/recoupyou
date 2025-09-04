@@ -399,7 +399,8 @@ export default function MembershipApplicationPage() {
                   <div className="space-y-3">
                     <Label>Would you like to purchase any of these? *</Label>
                     <p className="text-sm text-gray-600">
-                      Personal training includes membership fee
+                      Personal training includes membership fee, training and
+                      eating guide
                     </p>
                     <div className="space-y-2">
                       {[
