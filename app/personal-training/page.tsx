@@ -119,7 +119,7 @@ export default function PersonalTrainingPage() {
               <CardHeader className="text-center">
                 <CardTitle>3-Month Bundle</CardTitle>
                 <div className="text-3xl font-bold text-[#fc9dca]">R6,500</div>
-                <CardDescription>Save R1,700!</CardDescription>
+                <CardDescription>Save R700!</CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2 text-sm">
@@ -174,7 +174,7 @@ export default function PersonalTrainingPage() {
                 size="lg"
                 className="bg-[#fc9dca] hover:bg-[#f472b6] text-white"
               >
-                Book Your Training Session
+                Apply For Personal Training
               </Button>
             </Link>
           </div>
