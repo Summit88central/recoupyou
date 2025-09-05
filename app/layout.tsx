@@ -13,18 +13,18 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "RecoupYou - Transform Your Fitness Journey in South Africa",
+    default: "RecoupYou",
     template: "%s | RecoupYou Fitness",
   },
   description:
-    "Leading fitness company in South Africa offering gym memberships, online 1:1 coaching, personal training, and comprehensive fitness guides. Transform your fitness journey with professional trainers and modern facilities.",
+    "Are you in Polokwane? Apply for personal training at our women only gym. Not in Polokwane? Not an issue, build muscle and lose fat or simply move your body with our home or gym guides. Even better, apply for 1:1 coaching for online personalised coaching.",
   keywords: [
-    "fitness South Africa",
-    "gym membership South Africa",
-    "personal trainer South Africa",
+    "fitness Polokwane",
+    "gym membership Polokwane",
+    "personal trainer Polokwane",
     "online fitness coaching",
     "fitness training programs",
-    "gym Johannesburg",
+    "gym polokwane",
     "fitness coach",
     "weight training",
     "fitness transformation",
@@ -42,9 +42,9 @@ export const metadata: Metadata = {
     locale: "en_ZA",
     url: "https://recoupyou.co.za", // Replace with your actual domain
     siteName: "RecoupYou Fitness",
-    title: "RecoupYou - Transform Your Fitness Journey in South Africa",
+    title: "RecoupYou",
     description:
-      "Leading fitness company in South Africa offering gym memberships, online 1:1 coaching, personal training, and comprehensive fitness guides.",
+      "Are you in Polokwane? Apply for personal training at our women only gym. Not in Polokwane? Not an issue, build muscle and lose fat or simply move your body with our home or gym guides. Even better, apply for 1:1 coaching for online personalised coaching.",
     images: [
       {
         url: "/og-image.png", // Create this image (1200x630px)
@@ -53,16 +53,6 @@ export const metadata: Metadata = {
         alt: "RecoupYou Fitness - Transform Your Journey",
       },
     ],
-  },
-
-  // Twitter Card
-  twitter: {
-    card: "summary_large_image",
-    title: "RecoupYou - Transform Your Fitness Journey",
-    description:
-      "Leading fitness company in South Africa offering gym memberships, online coaching, and personal training.",
-    images: ["/twitter-image.jpg"], // Create this image (1200x600px)
-    creator: "@RecoupYou", // Replace with actual Twitter handle
   },
 
   // Robots
@@ -99,11 +89,11 @@ export const metadata: Metadata = {
   // Additional metadata for local business
   other: {
     "geo.region": "ZA-GP",
-    "geo.placename": "Johannesburg, Gauteng, South Africa",
+    "geo.placename": "Polokwane, Limpopo, South Africa",
     "geo.position": "-26.2041;28.0473", // Replace with actual coordinates
     ICBM: "-26.2041, 28.0473", // Replace with actual coordinates
-    "business:contact_data:locality": "Johannesburg",
-    "business:contact_data:region": "Gauteng",
+    "business:contact_data:locality": "Polokwane",
+    "business:contact_data:region": "Limpopo",
     "business:contact_data:country_name": "South Africa",
   },
 };
