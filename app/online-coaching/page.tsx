@@ -114,14 +114,14 @@ export default function OnlineCoachingPage() {
             <Card className="border-2 border-purple-200">
               <CardHeader className="text-center">
                 <CardTitle>Monthly Coaching</CardTitle>
-                <div className="text-3xl font-bold text-purple-600">R800</div>
+                <div className="text-3xl font-bold text-purple-600">R900</div>
                 <CardDescription>Per month</CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-center gap-2">
                     <CheckCircle className="w-4 h-4 text-green-600" />
-                    Personalized workout plans
+                    Personalized workout plans and eating guides
                   </li>
                   <li className="flex items-center gap-2">
                     <CheckCircle className="w-4 h-4 text-green-600" />
@@ -145,26 +145,14 @@ export default function OnlineCoachingPage() {
               </Badge>
               <CardHeader className="text-center">
                 <CardTitle>3-Month Package</CardTitle>
-                <div className="text-3xl font-bold text-pink-600">R2,100</div>
-                <CardDescription>Save R300!</CardDescription>
+                <div className="text-3xl font-bold text-pink-600">R2,250</div>
+                <CardDescription>Save R450!</CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-center gap-2">
                     <CheckCircle className="w-4 h-4 text-green-600" />
                     Everything in monthly
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
-                    3-month commitment
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
-                    Better long-term results
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-600" />
-                    Priority support
                   </li>
                 </ul>
               </CardContent>
