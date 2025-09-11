@@ -94,11 +94,13 @@ export function DashboardTabs({
                       index % 2 === 0 ? "bg-muted/50" : ""
                     }`}
                   >
-                    <div className="flex-1 mr-4">
-                      <h3 className="font-semibold">
+                    {/* ✨ FIX: Added min-w-0 to allow shrinking */}
+                    <div className="min-w-0 flex-1 mr-4">
+                      <h3 className="font-semibold truncate">
                         {rsvp.first_name} {rsvp.last_name}
                       </h3>
-                      <p className="text-sm text-muted-foreground">
+                      {/* ✨ FIX: Added truncate to handle long text */}
+                      <p className="truncate text-sm text-muted-foreground">
                         {rsvp.phone_number}
                       </p>
                     </div>
@@ -161,9 +163,13 @@ export function DashboardTabs({
                       index % 2 === 0 ? "bg-muted/50" : ""
                     }`}
                   >
-                    <div className="flex-1 mr-4">
-                      <h3 className="font-semibold">{app.full_name}</h3>
-                      <p className="text-sm text-muted-foreground">
+                    {/* ✨ FIX: Added min-w-0 to allow shrinking */}
+                    <div className="min-w-0 flex-1 mr-4">
+                      <h3 className="font-semibold truncate">
+                        {app.full_name}
+                      </h3>
+                      {/* ✨ FIX: Added truncate to handle long text */}
+                      <p className="truncate text-sm text-muted-foreground">
                         {app.email}
                       </p>
                     </div>
@@ -197,7 +203,7 @@ export function DashboardTabs({
         </Card>
       </TabsContent>
 
-      {/* ✨ START: Added Missing Memberships Tab */}
+      {/* Memberships Tab */}
       <TabsContent value="memberships">
         <Card>
           <CardHeader>
@@ -220,9 +226,13 @@ export function DashboardTabs({
                       index % 2 === 0 ? "bg-muted/50" : ""
                     }`}
                   >
-                    <div className="flex-1 mr-4">
-                      <h3 className="font-semibold">{membership.full_name}</h3>
-                      <p className="text-sm text-muted-foreground">
+                    {/* ✨ FIX: Added min-w-0 to allow shrinking */}
+                    <div className="min-w-0 flex-1 mr-4">
+                      <h3 className="font-semibold truncate">
+                        {membership.full_name}
+                      </h3>
+                      {/* ✨ FIX: Added truncate to handle long text */}
+                      <p className="truncate text-sm text-muted-foreground">
                         {membership.email}
                       </p>
                     </div>
@@ -259,9 +269,8 @@ export function DashboardTabs({
           </CardContent>
         </Card>
       </TabsContent>
-      {/* ✨ END: Added Missing Memberships Tab */}
 
-      {/* ✨ START: Added Missing Personal Training Tab */}
+      {/* Personal Training Tab */}
       <TabsContent value="training">
         <Card>
           <CardHeader>
@@ -286,9 +295,13 @@ export function DashboardTabs({
                       index % 2 === 0 ? "bg-muted/50" : ""
                     }`}
                   >
-                    <div className="flex-1 mr-4">
-                      <h3 className="font-semibold">{training.full_name}</h3>
-                      <p className="text-sm text-muted-foreground">
+                    {/* ✨ FIX: Added min-w-0 to allow shrinking */}
+                    <div className="min-w-0 flex-1 mr-4">
+                      <h3 className="font-semibold truncate">
+                        {training.full_name}
+                      </h3>
+                      {/* ✨ FIX: Added truncate to handle long text */}
+                      <p className="truncate text-sm text-muted-foreground">
                         {training.whatsapp}
                       </p>
                     </div>
@@ -321,7 +334,6 @@ export function DashboardTabs({
           </CardContent>
         </Card>
       </TabsContent>
-      {/* ✨ END: Added Missing Personal Training Tab */}
     </Tabs>
   );
 }
