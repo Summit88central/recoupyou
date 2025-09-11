@@ -321,12 +321,12 @@ export default function ApplyOnlineCoachingPage() {
                     }
                   >
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="R800/month" id="monthly-online" />
+                      <RadioGroupItem value="R900/month" id="monthly-online" />
                       <Label htmlFor="monthly-online">R900/month</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem
-                        value="R2,100 once off payment (3 months 1:1 coaching)"
+                        value="R2,250 once off payment (3 months 1:1 coaching)"
                         id="bundle-online"
                       />
                       <Label htmlFor="bundle-online">
