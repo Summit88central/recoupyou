@@ -28,7 +28,6 @@ const DetailItem = ({
   label: string;
   value?: string | null;
 }) => {
-  // Don't render the item if the value is missing/empty
   if (!value) return null;
   return (
     <div className="grid grid-cols-3 gap-2 py-2 border-b">
@@ -84,7 +83,8 @@ export function DetailsDialog({
           )}
 
           {/* --- ONLINE COACHING DETAILS --- */}
-          {type === "coaching" && "goals" in item && (
+          {/* FIX: Changed "email" to "instagram" for a unique type guard */}
+          {type === "coaching" && "instagram" in item && (
             <>
               <DetailGroup title="Personal Information" />
               <DetailItem label="Name" value={item.full_name} />
@@ -162,22 +162,24 @@ export function DetailsDialog({
           )}
 
           {/* --- PERSONAL TRAINING DETAILS --- */}
-          {type === "training" && "package" in item && (
-            <>
-              <DetailGroup title="Client Information" />
-              <DetailItem label="Name" value={item.full_name} />
-              <DetailItem label="WhatsApp" value={item.whatsapp} />
-              <DetailItem label="Age" value={item.age} />
+          {type === "training" &&
+            "package" in item &&
+            !("instagram" in item) && (
+              <>
+                <DetailGroup title="Client Information" />
+                <DetailItem label="Name" value={item.full_name} />
+                <DetailItem label="WhatsApp" value={item.whatsapp} />
+                <DetailItem label="Age" value={item.age} />
 
-              <DetailGroup title="Training Goals" />
-              <DetailItem label="Package" value={item.package} />
-              <DetailItem label="Goals" value={item.goals} />
-              <DetailItem
-                label="Additional Info"
-                value={item.additional_info}
-              />
-            </>
-          )}
+                <DetailGroup title="Training Goals" />
+                <DetailItem label="Package" value={item.package} />
+                <DetailItem label="Goals" value={item.goals} />
+                <DetailItem
+                  label="Additional Info"
+                  value={item.additional_info}
+                />
+              </>
+            )}
 
           <div className="pt-4 mt-4 border-t">
             <DetailItem
