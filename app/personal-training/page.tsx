@@ -24,8 +24,7 @@ export default function PersonalTrainingPage() {
               Train with Coach Dee
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Personalised Program + Eating Guide. Get 1:1 coaching to achieve
-              your fitness goals faster than ever.
+              Must be based in Polokwane
             </p>
           </div>
 
