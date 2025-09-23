@@ -12,7 +12,7 @@ import { Clock, MapPin, Users, Calendar } from "lucide-react";
 
 export default function WednesdayClassPage() {
   return (
-    <div className="min-h-screen bg-white mt-8">
+    <div className="min-h-screen bg-white mt-10">
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
