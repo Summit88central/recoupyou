@@ -19,7 +19,7 @@ export default function WednesdayClassPage() {
           <div className="text-center mb-12">
             <Badge className="bg-[#fc9dca] text-white mb-4">FREE CLASS</Badge>
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Wednesday Group Fitness Class
+              Must be based in Polokwane
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Join Coach Dee every Wednesday for a HIIT group workout.
