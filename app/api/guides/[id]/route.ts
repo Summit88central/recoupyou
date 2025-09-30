@@ -1,0 +1,145 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
+
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const formData = await request.formData();
+    const title = formData.get('title') as string;
+    const description = formData.get('description') as string;
+    const price = parseFloat(formData.get('price') as string);
+    const image = formData.get('image') as File | null;
+    const pdf = formData.get('pdf') as File | null;
+
+    if (!title || !description || !price) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    let image_url = null;
+    let file_path = null;
+
+    // Handle image upload if provided
+    if (image) {
+      const fileExt = image.name.split('.').pop();
+      const fileName = `guide-${params.id}-image-${Date.now()}.${fileExt}`;
+      
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('images')
+        .upload(fileName, image, {
+          cacheControl: '3600',
+          upsert: true
+        });
+
+      if (uploadError) {
+        console.error('Error uploading image:', uploadError);
+        return NextResponse.json({ error: 'Failed to upload image' }, { status: 500 });
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('images')
+        .getPublicUrl(fileName);
+      
+      image_url = publicUrl;
+    }
+
+    // Handle PDF upload if provided
+    if (pdf) {
+      const fileName = `guide-${params.id}-${Date.now()}.pdf`;
+      
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('guides')
+        .upload(fileName, pdf, {
+          cacheControl: '3600',
+          upsert: true
+        });
+
+      if (uploadError) {
+        console.error('Error uploading PDF:', uploadError);
+        return NextResponse.json({ error: 'Failed to upload PDF' }, { status: 500 });
+      }
+
+      file_path = fileName;
+    }
+
+    // Update guide
+    const updateData: any = {
+      title,
+      description,
+      price
+    };
+
+    if (image_url) {
+      updateData.image_url = image_url;
+    }
+
+    if (file_path) {
+      updateData.file_path = file_path;
+    }
+
+    const { data: guide, error } = await supabase
+      .from('guides')
+      .update(updateData)
+      .eq('id', params.id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating guide:', error);
+      return NextResponse.json({ error: 'Failed to update guide' }, { status: 500 });
+    }
+
+    return NextResponse.json({ guide });
+  } catch (error) {
+    console.error('Error in guide update API:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    // Get guide details first to delete associated files
+    const { data: guide, error: fetchError } = await supabase
+      .from('guides')
+      .select('file_path, image_url')
+      .eq('id', params.id)
+      .single();
+
+    if (fetchError) {
+      console.error('Error fetching guide:', fetchError);
+      return NextResponse.json({ error: 'Guide not found' }, { status: 404 });
+    }
+
+    // Delete the guide from database
+    const { error } = await supabase
+      .from('guides')
+      .delete()
+      .eq('id', params.id);
+
+    if (error) {
+      console.error('Error deleting guide:', error);
+      return NextResponse.json({ error: 'Failed to delete guide' }, { status: 500 });
+    }
+
+    // Delete associated files from storage (optional - you might want to keep them)
+    if (guide.file_path) {
+      await supabase.storage
+        .from('guides')
+        .remove([guide.file_path]);
+    }
+
+    return NextResponse.json({ message: 'Guide deleted successfully' });
+  } catch (error) {
+    console.error('Error in guide delete API:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}

@@ -34,7 +34,7 @@ export function MobileDrawer() {
       </Button>
 
       {/* Overlay */}
-      {isOpen && <div className="fixed inset-0 z-40 bg-black/50" onClick={() => setIsOpen(false)} aria-hidden="true" />}
+      {isOpen && <div className="fixed inset-0 z-40 bg-white/10 backdrop-blur-sm" onClick={() => setIsOpen(false)} aria-hidden="true" />}
 
       {/* Drawer (right side). When closed, push >100% so it never peeks. */}
       <div

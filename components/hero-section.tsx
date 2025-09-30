@@ -12,8 +12,7 @@ export function HeroSection() {
           alt="Hero background"
           fill
           priority
-          quality={100}
-          unoptimized={true}
+          quality={85}
           className="absolute inset-0 object-cover"
         />
 

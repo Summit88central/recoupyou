@@ -2,8 +2,10 @@ import type React from "react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/header";
-import { Footer } from "@/components/footer";
+import ConditionalHeader from "@/components/ConditionalHeader";
+import ConditionalFooter from "@/components/ConditionalFooter";
+import { CartProvider } from "@/contexts/CartContext";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -244,9 +246,12 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans antialiased">
-        <Header />
-        <main>{children}</main>
-        <Footer />
+        <CartProvider>
+          <ConditionalHeader />
+          <main>{children}</main>
+          <ConditionalFooter />
+          <Toaster />
+        </CartProvider>
       </body>
     </html>
   );

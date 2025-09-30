@@ -1,9 +1,12 @@
 "use client";
 import { useState } from "react";
 import { Menu, X, ShoppingCart } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
+import Cart from "./Cart";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { toggleCart, itemCount } = useCart();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
@@ -11,6 +14,7 @@ const Header = () => {
     { name: "Home", href: "/" },
     { name: "Contact", href: "/#contact" },
     { name: "Programs", href: "/#programs" },
+    { name: "Guides", href: "/guides" },
     { name: "Shop", href: "/shop" },
   ];
 
@@ -50,10 +54,16 @@ const Header = () => {
 
           {/* Shopping Cart */}
           <button
-            className="p-2 rounded-md hover:bg-gray-100/50 transition-all duration-200"
+            onClick={toggleCart}
+            className="relative p-2 rounded-md hover:bg-gray-100/50 transition-all duration-200"
             aria-label="Shopping cart"
           >
             <ShoppingCart className="w-6 h-6 text-gray-800" />
+            {itemCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-pink-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                {itemCount}
+              </span>
+            )}
           </button>
         </div>
       </nav>
@@ -104,6 +114,9 @@ const Header = () => {
           </nav>
         </div>
       </div>
+
+      {/* Cart Overlay */}
+      <Cart />
     </>
   );
 };

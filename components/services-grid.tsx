@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import Image from "next/image";
 
 export function ServicesGrid() {
   return (
@@ -30,10 +31,12 @@ export function ServicesGrid() {
               {/* RY Gym Membership */}
               <article className="col-span-12 md:col-span-6 xl:col-span-5 row-span-1">
                 <div className="relative h-full w-full rounded-2xl overflow-hidden text-white shadow-lg ring-1 ring-black/10 p-6 sm:p-8 flex flex-col justify-between">
-                  <img
+                  <Image
                     src="/services.jpg"
                     alt="RY Gym Membership Application"
-                    className="absolute inset-0 h-full w-full object-cover"
+                    fill
+                    quality={85}
+                    className="absolute inset-0 object-cover"
                   />
                   <div className="absolute inset-0 bg-black/40"></div>
                   <div className="relative">
@@ -59,10 +62,12 @@ export function ServicesGrid() {
               {/* Downloadable Guides */}
               <article className="col-span-12 md:col-span-3 xl:col-span-4 row-span-1">
                 <div className="relative h-full w-full rounded-2xl overflow-hidden ring-1 ring-white/20 group bg-black/20 backdrop-blur-md">
-                  <img
+                  <Image
                     src="/guides.jpg"
                     alt="Downloadable fitness guides"
-                    className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.03] group-hover:brightness-110"
+                    fill
+                    quality={85}
+                    className="absolute inset-0 object-cover transition duration-500 group-hover:scale-[1.03] group-hover:brightness-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
                   <div className="relative h-full w-full p-5 sm:p-6 flex flex-col justify-end text-white">
@@ -85,10 +90,12 @@ export function ServicesGrid() {
               {/* In-Person Training */}
               <article className="col-span-12 md:col-span-3 xl:col-span-3 row-span-2">
                 <div className="relative h-full w-full rounded-2xl overflow-hidden ring-1 ring-white/20 group bg-black/20 backdrop-blur-md">
-                  <img
+                  <Image
                     src="/1on1.jpg"
                     alt="Personal training session"
-                    className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.03] group-hover:brightness-110"
+                    fill
+                    quality={85}
+                    className="absolute inset-0 object-cover transition duration-500 group-hover:scale-[1.03] group-hover:brightness-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
                   <div className="relative h-full w-full p-5 sm:p-6 flex flex-col justify-end text-white">
@@ -111,10 +118,12 @@ export function ServicesGrid() {
               {/* Online Coaching (same row height as others) */}
               <article className="col-span-12 md:col-span-9 xl:col-span-9 row-span-1">
                 <div className="relative h-full w-full rounded-2xl overflow-hidden ring-1 ring-white/20 group bg-black/20 backdrop-blur-md">
-                  <img
+                  <Image
                     src="/online.jpg"
                     alt="Online coaching session"
-                    className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.03] group-hover:brightness-110"
+                    fill
+                    quality={85}
+                    className="absolute inset-0 object-cover transition duration-500 group-hover:scale-[1.03] group-hover:brightness-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
                   <div className="relative h-full w-full p-5 sm:p-6 flex flex-col justify-end text-white">

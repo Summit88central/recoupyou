@@ -1,28 +1,294 @@
 "use client";
+import React, { useState, useEffect } from 'react';
+import { ShoppingCart, Star, Download, Users } from 'lucide-react';
+import { useCart } from '@/contexts/CartContext';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
 
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Construction } from "lucide-react";
+interface Guide {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  file_path: string;
+  discount: number;
+}
 
-export default function GuidesPage() {
-  return (
-    <div className="container mx-auto p-4 flex items-center justify-center min-h-[calc(100vh-8rem)]">
-      <Card className="w-full max-w-md text-center">
-        <CardHeader>
-          <div className="flex justify-center mb-4">
-            <Construction className="h-12 w-12 text-primary" />
+interface Bundle {
+  id: string;
+  name: string;
+  price: number;
+  guide1_id: string;
+  guide2_id: string;
+  guides?: Guide[];
+}
+
+const GuidesPage: React.FC = () => {
+  const [guides, setGuides] = useState<Guide[]>([]);
+  const [bundles, setBundles] = useState<Bundle[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'guides' | 'bundles'>('guides');
+  const { addItem } = useCart();
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch guides and bundles in parallel
+      const [guidesResponse, bundlesResponse] = await Promise.all([
+        fetch('/api/guides'),
+        fetch('/api/bundles')
+      ]);
+
+      if (guidesResponse.ok) {
+        const guidesData = await guidesResponse.json();
+        setGuides(guidesData.guides || []);
+      }
+
+      if (bundlesResponse.ok) {
+        const bundlesData = await bundlesResponse.json();
+        setBundles(bundlesData.bundles || []);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      toast.error('Failed to load guides and bundles');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('en-ZA', {
+      style: 'currency',
+      currency: 'ZAR',
+    }).format(price);
+  };
+
+  const calculateDiscountedPrice = (price: number, discount: number) => {
+    return price - (price * discount / 100);
+  };
+
+  const handleAddToCart = (item: Guide | Bundle, type: 'guide' | 'bundle') => {
+    addItem(item, type);
+    toast.success(`${type === 'guide' ? (item as Guide).title : (item as Bundle).name} added to cart!`);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 pt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <Card key={i} className="animate-pulse">
+                <CardHeader>
+                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-20 bg-gray-200 rounded"></div>
+                </CardContent>
+                <CardFooter>
+                  <div className="h-10 bg-gray-200 rounded w-full"></div>
+                </CardFooter>
+              </Card>
+            ))}
           </div>
-          <CardTitle className="text-3xl font-bold">Coming Soon!</CardTitle>
-          <CardDescription className="mt-2">
-            We are working hard to bring you exclusive digital fitness and
-            nutrition guides. Stay tuned for the launch!
-          </CardDescription>
-        </CardHeader>
-      </Card>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 pt-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            Fitness Guides & Bundles
+          </h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Transform your fitness journey with our comprehensive guides. Download instantly and start your transformation today.
+          </p>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex justify-center mb-8">
+          <div className="bg-white rounded-lg p-1 shadow-sm border">
+            <button
+              onClick={() => setActiveTab('guides')}
+              className={`px-6 py-2 rounded-md font-medium transition-colors ${
+                activeTab === 'guides'
+                  ? 'bg-pink-500 text-white'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Individual Guides ({guides.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('bundles')}
+              className={`px-6 py-2 rounded-md font-medium transition-colors ${
+                activeTab === 'bundles'
+                  ? 'bg-pink-500 text-white'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Bundles ({bundles.length})
+            </button>
+          </div>
+        </div>
+
+        {/* Content */}
+        {activeTab === 'guides' ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {guides.length === 0 ? (
+              <div className="col-span-full text-center py-12">
+                <Download className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No guides available</h3>
+                <p className="text-gray-500">Check back soon for new fitness guides!</p>
+              </div>
+            ) : (
+              guides.map((guide) => (
+                <Card key={guide.id} className="hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <CardTitle className="text-lg font-semibold text-gray-900">
+                          {guide.title}
+                        </CardTitle>
+                        {guide.discount > 0 && (
+                          <Badge variant="destructive" className="mt-1">
+                            {guide.discount}% OFF
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="flex items-center text-yellow-400">
+                        <Star className="h-4 w-4 fill-current" />
+                        <span className="text-sm text-gray-600 ml-1">4.8</span>
+                      </div>
+                    </div>
+                    <CardDescription className="text-gray-600">
+                      {guide.description}
+                    </CardDescription>
+                  </CardHeader>
+                  
+                  <CardContent>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        {guide.discount > 0 ? (
+                          <>
+                            <span className="text-2xl font-bold text-pink-600">
+                              {formatPrice(calculateDiscountedPrice(guide.price, guide.discount))}
+                            </span>
+                            <span className="text-sm text-gray-500 line-through">
+                              {formatPrice(guide.price)}
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-2xl font-bold text-pink-600">
+                            {formatPrice(guide.price)}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center text-gray-500 text-sm">
+                        <Download className="h-4 w-4 mr-1" />
+                        PDF
+                      </div>
+                    </div>
+                  </CardContent>
+                  
+                  <CardFooter>
+                    <Button
+                      onClick={() => handleAddToCart(guide, 'guide')}
+                      className="w-full bg-pink-600 hover:bg-pink-700 text-white"
+                    >
+                      <ShoppingCart className="h-4 w-4 mr-2" />
+                      Add to Cart
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ))
+            )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {bundles.length === 0 ? (
+              <div className="col-span-full text-center py-12">
+                <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No bundles available</h3>
+                <p className="text-gray-500">Check back soon for new guide bundles!</p>
+              </div>
+            ) : (
+              bundles.map((bundle) => (
+                <Card key={bundle.id} className="hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <CardTitle className="text-xl font-semibold text-gray-900">
+                        {bundle.name}
+                      </CardTitle>
+                      <Badge variant="secondary" className="bg-green-100 text-green-800">
+                        Bundle
+                      </Badge>
+                    </div>
+                    <CardDescription className="text-gray-600">
+                      Get multiple guides at a discounted price
+                    </CardDescription>
+                  </CardHeader>
+                  
+                  <CardContent>
+                    <div className="space-y-3 mb-4">
+                      <h4 className="font-medium text-gray-900">Includes:</h4>
+                      {bundle.guides?.map((guide, index) => (
+                        <div key={guide.id} className="flex items-center justify-between text-sm">
+                          <span className="text-gray-700">{guide.title}</span>
+                          <span className="text-gray-500">{formatPrice(guide.price)}</span>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <div className="border-t pt-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-500">Individual Price:</span>
+                        <span className="text-sm text-gray-500 line-through">
+                          {formatPrice(bundle.guides?.reduce((sum, guide) => sum + guide.price, 0) || 0)}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between mt-1">
+                        <span className="text-lg font-medium text-gray-900">Bundle Price:</span>
+                        <span className="text-2xl font-bold text-pink-600">
+                          {formatPrice(bundle.price)}
+                        </span>
+                      </div>
+                      <div className="text-center mt-2">
+                        <Badge variant="destructive">
+                          Save {formatPrice((bundle.guides?.reduce((sum, guide) => sum + guide.price, 0) || 0) - bundle.price)}
+                        </Badge>
+                      </div>
+                    </div>
+                  </CardContent>
+                  
+                  <CardFooter>
+                    <Button
+                      onClick={() => handleAddToCart(bundle, 'bundle')}
+                      className="w-full bg-pink-600 hover:bg-pink-700 text-white"
+                    >
+                      <ShoppingCart className="h-4 w-4 mr-2" />
+                      Add Bundle to Cart
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ))
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
-}
+};
+
+export default GuidesPage;

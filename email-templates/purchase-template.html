@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Fitness Guides - RecoupYou Fitness</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+        }
+        .header {
+            background: linear-gradient(135deg, #fc9dca 0%, #fc9dca 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .content {
+            background: white;
+            padding: 30px;
+            border: 1px solid #e0e0e0;
+            border-radius: 0 0 10px 10px;
+        }
+        .purchase-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #fc9dca;
+        }
+        .guide-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+        }
+        .guide-title {
+            font-weight: bold;
+            color: #fc9dca;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        .guide-description {
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .download-button {
+            display: inline-block;
+            background: #fc9dca;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .download-button:hover {
+            background: #e88bb5;
+        }
+        .bundle-section {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+        }
+        .bundle-title {
+            font-weight: bold;
+            color: #ff9800;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .bundle-guides {
+            margin-left: 15px;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        .badge {
+            background: #fc9dca;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        .payment-info {
+            background: #e8f5e8;
+            border: 1px solid #4caf50;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .payment-reference {
+            font-family: monospace;
+            background: #f5f5f5;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌸 RecoupYou Fitness</h1>
+        <p>Thank you for your purchase!</p>
+    </div>
+
+    <div class="content">
+        <div class="badge">Purchase Confirmation</div>
+        
+        <p>Dear {{customer_name}},</p>
+        
+        <p>Thank you for your purchase! Your fitness guides are ready for download. Here's what you've purchased:</p>
+
+        <!-- Individual Guides Section -->
+        {{#if has_guides}}
+        <div class="purchase-section">
+            <h3>📚 Individual Guides</h3>
+            {{#each guides}}
+            <div class="guide-item">
+                <div class="guide-title">{{title}} (Quantity: {{quantity}})</div>
+                <div class="guide-description">{{description}}</div>
+                <a href="{{download_url}}" class="download-button">📥 Download Guide</a>
+            </div>
+            {{/each}}
+        </div>
+        {{/if}}
+
+        <!-- Bundles Section -->
+        {{#if has_bundles}}
+        <div class="purchase-section">
+            <h3>📦 Bundle Packages</h3>
+            {{#each bundles}}
+            <div class="bundle-section">
+                <div class="bundle-title">{{name}} (Quantity: {{quantity}})</div>
+                <p><strong>This bundle includes {{guide_count}} guides:</strong></p>
+                <div class="bundle-guides">
+                    {{#each guides}}
+                    <div class="guide-item">
+                        <div class="guide-title">{{title}}</div>
+                        <a href="{{download_url}}" class="download-button">📥 Download {{title}}</a>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+            {{/each}}
+        </div>
+        {{/if}}
+
+        <!-- Payment Information -->
+        <div class="payment-info">
+            <h4>💳 Payment Details</h4>
+            <p><strong>Payment Reference:</strong> <span class="payment-reference">{{payment_reference}}</span></p>
+            <p><strong>Total Amount:</strong> {{total_amount}}</p>
+        </div>
+
+        <!-- Support Information -->
+        <div class="purchase-section">
+            <h4>📞 Need Help?</h4>
+            <p>If you have any questions or issues downloading your guides, please contact us:</p>
+            <ul>
+                <li>📧 Email: <a href="mailto:recoupyou@gmail.com">recoupyou@gmail.com</a></li>
+                <li>📱 WhatsApp: Available on our website</li>
+            </ul>
+            <p><strong>Download Tips:</strong></p>
+            <ul>
+                <li>Click the download buttons above to get your guides</li>
+                <li>Save the files to your device for offline access</li>
+                <li>These links will remain active for future downloads</li>
+            </ul>
+        </div>
+
+        <p style="margin-top: 30px;">
+            Thank you for choosing RecoupYou Fitness! We're excited to be part of your fitness journey. 💪
+        </p>
+
+        <p>
+            Best regards,<br>
+            <strong>The RecoupYou Team</strong>
+        </p>
+    </div>
+
+    <div class="footer">
+        <p>RecoupYou Ladies Only Fitness Studio</p>
+        <p>This email was automatically generated for your purchase confirmation.</p>
+        <p>Please do not reply to this email. For support, contact us at recoupyou@gmail.com</p>
+    </div>
+</body>
+</html>

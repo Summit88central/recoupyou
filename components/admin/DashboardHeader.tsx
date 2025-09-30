@@ -2,13 +2,14 @@
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { LogOut } from "lucide-react";
+import { LogOut, Loader2 } from "lucide-react";
 
 interface DashboardHeaderProps {
   onLogout: () => void;
+  isLoggingOut?: boolean;
 }
 
-export function DashboardHeader({ onLogout }: DashboardHeaderProps) {
+export function DashboardHeader({ onLogout, isLoggingOut = false }: DashboardHeaderProps) {
   return (
     <header className="border-b bg-card shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -21,9 +22,14 @@ export function DashboardHeader({ onLogout }: DashboardHeaderProps) {
             variant="outline"
             onClick={onLogout}
             className="flex items-center space-x-2 bg-transparent"
+            disabled={isLoggingOut}
           >
-            <LogOut className="h-4 w-4" />
-            <span>Logout</span>
+            {isLoggingOut ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <LogOut className="h-4 w-4" />
+            )}
+            <span>{isLoggingOut ? "Logging out..." : "Logout"}</span>
           </Button>
         </div>
       </div>
