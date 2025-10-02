@@ -120,6 +120,21 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    const force = request.nextUrl.searchParams.get('force') === 'true';
+
+    // If forcing, remove dependent purchases first to satisfy FK constraints
+    if (force) {
+      const { error: purchaseDeleteError } = await supabase
+        .from('purchases')
+        .delete()
+        .eq('bundle_id', params.id);
+
+      if (purchaseDeleteError) {
+        console.error('Error deleting purchases for bundle:', purchaseDeleteError);
+        return NextResponse.json({ error: 'Failed to remove bundle purchases' }, { status: 500 });
+      }
+    }
+
     // Delete bundle guides relationships first
     await supabase
       .from('bundle_guides')

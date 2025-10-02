@@ -110,13 +110,29 @@ export async function DELETE(
     // Get guide details first to delete associated files
     const { data: guide, error: fetchError } = await supabase
       .from('guides')
-      .select('file_path, image_url')
+      .select('file_path')
       .eq('id', params.id)
       .single();
 
     if (fetchError) {
       console.error('Error fetching guide:', fetchError);
       return NextResponse.json({ error: 'Guide not found' }, { status: 404 });
+    }
+
+    // Parse force flag
+    const force = request.nextUrl.searchParams.get('force') === 'true';
+
+    // If forcing, remove dependent purchases first to satisfy FK constraints
+    if (force) {
+      const { error: purchaseDeleteError } = await supabase
+        .from('purchases')
+        .delete()
+        .eq('guide_id', params.id);
+
+      if (purchaseDeleteError) {
+        console.error('Error deleting purchases for guide:', purchaseDeleteError);
+        return NextResponse.json({ error: 'Failed to remove guide purchases' }, { status: 500 });
+      }
     }
 
     // Remove bundle-guide relationships referencing this guide to satisfy FK constraints

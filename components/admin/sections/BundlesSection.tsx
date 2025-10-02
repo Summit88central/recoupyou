@@ -337,7 +337,7 @@ export function BundlesSection({ bundles, guides, onView, onDelete, onRefresh, i
                       <Button
                         variant="destructive"
                         size="sm"
-                        onClick={() => handleDelete(bundle)}
+                        onClick={() => (onDelete ? onDelete(bundle.id, bundle.name, 'bundle') : handleDelete(bundle))}
                         className="flex-1"
                       >
                         <Trash2 className="h-4 w-4 mr-1" />

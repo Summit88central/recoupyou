@@ -77,6 +77,7 @@ interface DeleteConfirmation {
   type: string;
   title: string;
   description: string;
+  force?: boolean;
 }
 
 export default function AdminPage() {
@@ -101,6 +102,7 @@ export default function AdminPage() {
     type: "",
     title: "",
     description: "",
+    force: false,
   });
 
   useEffect(() => {
@@ -227,6 +229,7 @@ export default function AdminPage() {
       type,
       title: `Delete ${type === "rsvp" ? "RSVP" : type === "coaching" ? "Online Coaching Entry" : type === "membership" ? "Membership" : type === "training" ? "Personal Training Entry" : type.charAt(0).toUpperCase() + type.slice(1)}`,
       description: `Are you sure you want to delete "${name}"? ${getDeleteDescription(type)}`,
+      force: false,
     });
   };
 
@@ -239,27 +242,59 @@ export default function AdminPage() {
 
       switch (type) {
         case "guide":
-          const guideResponse = await fetch(`/api/guides/${id}`, {
-            method: "DELETE",
-          });
-          if (!guideResponse.ok) {
-            const errorData = await guideResponse.json();
-            throw new Error(errorData.error || "Failed to delete guide");
+          {
+            const isForce = !!deleteConfirmation.force;
+            const guideResponse = await fetch(`/api/guides/${id}${isForce ? "?force=true" : ""}`, {
+              method: "DELETE",
+            });
+            if (!guideResponse.ok) {
+              const errorData = await guideResponse.json();
+              if (guideResponse.status === 409 && !isForce) {
+                // Prompt for force delete
+                setDeleteConfirmation(prev => ({
+                  ...prev,
+                  isOpen: true,
+                  title: "Force Delete Guide",
+                  description:
+                    "This guide is referenced by purchases or relationships. Force deleting will permanently remove those dependent records (e.g., purchase history) and then delete the guide. This action cannot be undone. Do you want to continue?",
+                  force: true,
+                }));
+                setIsDeleting(false);
+                return;
+              }
+              throw new Error(errorData.error || "Failed to delete guide");
+            }
+            setGuides(guides.filter((guide) => guide.id !== id));
+            toast.success("Guide deleted successfully");
           }
-          setGuides(guides.filter((guide) => guide.id !== id));
-          toast.success("Guide deleted successfully");
           break;
 
         case "bundle":
-          const bundleResponse = await fetch(`/api/bundles/${id}`, {
-            method: "DELETE",
-          });
-          if (!bundleResponse.ok) {
-            const errorData = await bundleResponse.json();
-            throw new Error(errorData.error || "Failed to delete bundle");
+          {
+            const isForce = !!deleteConfirmation.force;
+            const bundleResponse = await fetch(`/api/bundles/${id}${isForce ? "?force=true" : ""}`, {
+              method: "DELETE",
+            });
+            if (!bundleResponse.ok) {
+              const errorData = await bundleResponse.json();
+              if (bundleResponse.status === 409 && !isForce) {
+                // Prompt for force delete
+                setDeleteConfirmation(prev => ({
+                  ...prev,
+                  isOpen: true,
+                  title: "Force Delete Bundle",
+                  description:
+                    "This bundle is referenced by purchases or relationships. Force deleting will permanently remove those dependent records (e.g., purchase history) and then delete the bundle. This action cannot be undone. Do you want to continue?",
+                  force: true,
+                }));
+                setIsDeleting(false);
+                return;
+              }
+              throw new Error(errorData.error || "Failed to delete bundle");
+            }
+            setBundles(bundles.filter((bundle) => bundle.id !== id));
+            toast.success("Bundle deleted successfully");
           }
-          setBundles(bundles.filter((bundle) => bundle.id !== id));
-          toast.success("Bundle deleted successfully");
           break;
 
         case "rsvp":
@@ -312,6 +347,7 @@ export default function AdminPage() {
         type: "",
         title: "",
         description: "",
+        force: false,
       });
     } catch (error) {
       console.error("Delete Error:", error);
@@ -396,11 +432,11 @@ export default function AdminPage() {
       <ConfirmationDialog
         isOpen={deleteConfirmation.isOpen}
         onOpenChange={(open) => 
-          setDeleteConfirmation(prev => ({ ...prev, isOpen: open }))
+          setDeleteConfirmation(prev => ({ ...prev, isOpen: open, force: open ? prev.force : false }))
         }
         title={deleteConfirmation.title}
         description={deleteConfirmation.description}
-        confirmText="Delete"
+        confirmText={deleteConfirmation.force ? 'Force delete' : 'Delete'}
         cancelText="Cancel"
         onConfirm={handleConfirmDelete}
         isLoading={isDeleting}
