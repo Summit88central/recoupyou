@@ -149,14 +149,20 @@ export function BundlesSection({ bundles, guides, onView, onDelete, onRefresh, i
       });
 
       if (!response.ok) {
-        throw new Error('Failed to delete bundle');
+        // Parse server error for more informative messaging
+        let message = 'Failed to delete bundle';
+        try {
+          const errorData = await response.json();
+          if (errorData?.error) message = errorData.error;
+        } catch {}
+        throw new Error(message);
       }
 
       toast.success('Bundle deleted successfully');
       onRefresh();
     } catch (error) {
       console.error('Error deleting bundle:', error);
-      toast.error('Failed to delete bundle');
+      toast.error(error instanceof Error ? error.message : 'Failed to delete bundle');
     }
   };
 

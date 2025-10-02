@@ -134,7 +134,19 @@ export async function DELETE(
 
     if (error) {
       console.error('Error deleting bundle:', error);
-      return NextResponse.json({ error: 'Failed to delete bundle' }, { status: 500 });
+      // Provide more informative error for FK violations
+      const message = 'Failed to delete bundle';
+      if (
+        // Postgres foreign key violation
+        (error as any).code === '23503' ||
+        ((error as any).message && (error as any).message.toLowerCase().includes('foreign key'))
+      ) {
+        return NextResponse.json(
+          { error: 'Cannot delete bundle because it is referenced by other records (e.g., purchases or relationships). Please remove those references first.' },
+          { status: 409 }
+        );
+      }
+      return NextResponse.json({ error: message }, { status: 500 });
     }
 
     return NextResponse.json({ message: 'Bundle deleted successfully' });

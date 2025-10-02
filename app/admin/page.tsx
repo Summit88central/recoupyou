@@ -220,14 +220,13 @@ export default function AdminPage() {
     }
   };
 
-  const handleDeleteClick = (id: string, type: string, item: any) => {
-    const itemName = getItemName(item, type);
+  const handleDeleteClick = (id: string, name: string, type: string) => {
     setDeleteConfirmation({
       isOpen: true,
       id,
       type,
       title: `Delete ${type === "rsvp" ? "RSVP" : type === "coaching" ? "Online Coaching Entry" : type === "membership" ? "Membership" : type === "training" ? "Personal Training Entry" : type.charAt(0).toUpperCase() + type.slice(1)}`,
-      description: `Are you sure you want to delete "${itemName}"? ${getDeleteDescription(type)}`,
+      description: `Are you sure you want to delete "${name}"? ${getDeleteDescription(type)}`,
     });
   };
 

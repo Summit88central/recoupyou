@@ -119,6 +119,17 @@ export async function DELETE(
       return NextResponse.json({ error: 'Guide not found' }, { status: 404 });
     }
 
+    // Remove bundle-guide relationships referencing this guide to satisfy FK constraints
+    const { error: bundleGuideDeleteError } = await supabase
+      .from('bundle_guides')
+      .delete()
+      .eq('guide_id', params.id);
+
+    if (bundleGuideDeleteError) {
+      console.error('Error deleting bundle-guide relationships for guide:', bundleGuideDeleteError);
+      return NextResponse.json({ error: 'Failed to remove guide relationships' }, { status: 500 });
+    }
+
     // Delete the guide from database
     const { error } = await supabase
       .from('guides')
@@ -127,7 +138,18 @@ export async function DELETE(
 
     if (error) {
       console.error('Error deleting guide:', error);
-      return NextResponse.json({ error: 'Failed to delete guide' }, { status: 500 });
+      // Provide more informative error for FK violations
+      const message = 'Failed to delete guide';
+      if (
+        (error as any).code === '23503' ||
+        ((error as any).message && (error as any).message.toLowerCase().includes('foreign key'))
+      ) {
+        return NextResponse.json(
+          { error: 'Cannot delete guide because it is referenced by other records (e.g., purchases). Please remove those references first.' },
+          { status: 409 }
+        );
+      }
+      return NextResponse.json({ error: message }, { status: 500 });
     }
 
     // Delete associated files from storage (optional - you might want to keep them)
