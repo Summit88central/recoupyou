@@ -64,21 +64,26 @@ export function TrainingSection({ training, onView, onDelete, onRefresh, isRefre
                     <h3 className="font-semibold truncate text-gray-900">
                       {app.full_name}
                     </h3>
-                    <p className="truncate text-sm text-gray-600">
-                      {app.email}
-                    </p>
                     <p className="truncate text-sm text-gray-500">
-                      Phone: {app.phone || 'Not provided'}
+                      WhatsApp: {app.whatsapp || 'Not provided'}
                     </p>
-                    <div className="flex items-center gap-4 mt-2">
+                    <div className="flex flex-wrap items-center gap-4 mt-2">
                       <span className="text-xs text-gray-500">
-                        Goal: {app.goal || 'Not specified'}
+                        Age: {app.age || 'Not specified'}
                       </span>
                       <span className="text-xs text-gray-500">
-                        Experience: {app.experience || 'Not specified'}
+                        Package: {app.package || 'Not specified'}
                       </span>
                       <span className="text-xs text-gray-500">
-                        Sessions: {app.sessions || 'Not specified'}
+                        Goals: {app.goals || 'Not specified'}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        Start: {(() => {
+                          const info = app.additional_info || '';
+                          const match = info.match(/Preferred start date:\s*([^\n]+)/i);
+                          const parsed = match ? match[1] : (app.start_date || null);
+                          return parsed || 'Not specified';
+                        })()}
                       </span>
                     </div>
                     <p className="text-xs text-gray-400 mt-1">

@@ -32,7 +32,7 @@ const DetailItem = ({
   return (
     <div className="grid grid-cols-3 gap-2 py-2 border-b">
       <dt className="font-semibold text-muted-foreground">{label}</dt>
-      <dd className="col-span-2">{value}</dd>
+      <dd className="col-span-2 whitespace-pre-line">{value}</dd>
     </div>
   );
 };
@@ -175,8 +175,23 @@ export function DetailsDialog({
                 <DetailItem label="Package" value={item.package} />
                 <DetailItem label="Goals" value={item.goals} />
                 <DetailItem
+                  label="Preferred Start Date"
+                  value={(item as any).start_date
+                    ? formatDate((item as any).start_date)
+                    : (() => {
+                        const text = (item as any).additional_info || "";
+                        const m = text.match(/Preferred start date:\s*([^\n]+)/i);
+                        return m ? m[1] : null;
+                      })()}
+                />
+                <DetailItem
                   label="Additional Info"
-                  value={item.additional_info}
+                  value={(() => {
+                    const text = (item as any).additional_info || "";
+                    // Remove any embedded preferred start date line
+                    const cleaned = text.replace(/\s*Preferred start date:\s*[^\n]+/i, "").trim();
+                    return cleaned || null;
+                  })()}
                 />
               </>
             )}

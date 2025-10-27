@@ -58,6 +58,7 @@ export const sendPersonalTrainingEmail = async (formData: any) => {
       age: String(formData.age || ""),
       goals: String(formData.goals || ""),
       package: String(formData.package || ""),
+      start_date: String(formData.startDate || ""),
       additional_info: String(formData.additionalInfo || ""),
     };
 

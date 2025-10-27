@@ -33,6 +33,7 @@ export default function BookPersonalTrainingPage() {
     goals: "",
     package: "",
     additionalInfo: "",
+    startDate: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,6 +44,7 @@ export default function BookPersonalTrainingPage() {
     setIsSubmitting(true);
 
     try {
+      const combinedAdditionalInfo = `${formData.additionalInfo}${formData.startDate ? `\nPreferred start date: ${formData.startDate}` : ""}`.trim();
       // Insert into Supabase
       const { data: insertData, error: insertError } = await supabase
         .from("personal_training_applications")
@@ -52,7 +54,7 @@ export default function BookPersonalTrainingPage() {
           age: formData.age,
           goals: formData.goals,
           package: formData.package,
-          additional_info: formData.additionalInfo,
+          additional_info: combinedAdditionalInfo,
         });
 
       if (insertError) throw insertError;
@@ -73,6 +75,7 @@ export default function BookPersonalTrainingPage() {
         goals: "",
         package: "",
         additionalInfo: "",
+        startDate: "",
       });
     } catch (error) {
       console.error("Form submission error:", error);
@@ -222,10 +225,21 @@ export default function BookPersonalTrainingPage() {
                       </Label>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="session" id="session" />
+                      <RadioGroupItem value="R250/session" id="session" />
                       <Label htmlFor="session">R250/session</Label>
                     </div>
                   </RadioGroup>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="startDate">When would you like to get started?</Label>
+                  <Input
+                    id="startDate"
+                    type="date"
+                    value={formData.startDate}
+                    onChange={(e) => handleInputChange("startDate", e.target.value)}
+                    required
+                  />
                 </div>
 
                 <div className="space-y-2">

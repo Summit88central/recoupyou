@@ -56,6 +56,8 @@ export interface PersonalTraining {
   created_at: string;
   // ✨ New field
   additional_info: string | null;
+  // Preferred start date: may exist as a column or only in additional_info
+  start_date?: string | null;
 }
 
 // A union type to represent any of the possible items for the details dialog
