@@ -142,7 +142,7 @@ export default function PersonalTrainingPage() {
               <CardHeader className="text-center">
                 <CardTitle>Per Session</CardTitle>
                 <div className="text-3xl font-bold text-gray-600">R250</div>
-                <CardDescription>Per month</CardDescription>
+                <CardDescription>Paid monthly</CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2 text-sm">
