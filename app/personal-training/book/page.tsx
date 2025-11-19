@@ -44,6 +44,13 @@ export default function BookPersonalTrainingPage() {
     setIsSubmitting(true);
 
     try {
+      // Ensure start date is provided (defensive validation in addition to HTML required)
+      if (!formData.startDate) {
+        alert("Please select when you'd like to get started.");
+        setIsSubmitting(false);
+        return;
+      }
+
       const combinedAdditionalInfo = `${formData.additionalInfo}${formData.startDate ? `\nPreferred start date: ${formData.startDate}` : ""}`.trim();
       // Insert into Supabase
       const { data: insertData, error: insertError } = await supabase
@@ -232,7 +239,7 @@ export default function BookPersonalTrainingPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="startDate">When would you like to get started?</Label>
+                  <Label htmlFor="startDate">When would you like to get started? *</Label>
                   <Input
                     id="startDate"
                     type="date"
@@ -269,18 +276,6 @@ export default function BookPersonalTrainingPage() {
                     "Submit Application"
                   )}
                 </Button>
-
-                <div className="text-center text-sm text-gray-600">
-                  <p className="font-semibold">THANK YOU!</p>
-                  <p>
-                    I will get in touch in the next 48h on how to get started.
-                    🌸
-                  </p>
-                  <p className="mt-2">
-                    Feel free to reach out via Instagram DM or drop any
-                    questions about personal training below!
-                  </p>
-                </div>
               </form>
             </CardContent>
           </Card>
