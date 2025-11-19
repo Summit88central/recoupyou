@@ -137,7 +137,7 @@ export default function BookPersonalTrainingPage() {
   }
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-white overflow-x-hidden">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
           {/* Back Button */}
@@ -206,6 +206,7 @@ export default function BookPersonalTrainingPage() {
                     placeholder="e.g. get stronger, weight loss, muscle building, fat loss, improve general fitness & physique goals etc"
                     value={formData.goals}
                     onChange={(e) => handleInputChange("goals", e.target.value)}
+                    className="min-h-32"
                     required
                   />
                 </div>
@@ -240,17 +241,17 @@ export default function BookPersonalTrainingPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="startDate">When would you like to get started? *</Label>
-                  <div className="relative">
+                  <div className="relative w-full max-w-full overflow-hidden">
                     <Input
                       id="startDate"
                       type="date"
                       value={formData.startDate}
                       onChange={(e) => handleInputChange("startDate", e.target.value)}
                       placeholder="yyyy-mm-dd"
-                      className="pr-10 cursor-pointer"
+                      className="pr-10 cursor-pointer w-full box-border"
                       required
                     />
-                    <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                    <CalendarIcon className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                   </div>
                   <p className="text-xs text-gray-500">Tap the field to open the date picker.</p>
                 </div>
