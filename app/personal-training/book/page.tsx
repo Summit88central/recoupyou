@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, Calendar as CalendarIcon } from "lucide-react";
 import Link from "next/link";
 import { sendPersonalTrainingEmail } from "@/lib/emailjs";
 import { createClient } from "@supabase/supabase-js";
@@ -240,13 +240,19 @@ export default function BookPersonalTrainingPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="startDate">When would you like to get started? *</Label>
-                  <Input
-                    id="startDate"
-                    type="date"
-                    value={formData.startDate}
-                    onChange={(e) => handleInputChange("startDate", e.target.value)}
-                    required
-                  />
+                  <div className="relative">
+                    <Input
+                      id="startDate"
+                      type="date"
+                      value={formData.startDate}
+                      onChange={(e) => handleInputChange("startDate", e.target.value)}
+                      placeholder="yyyy-mm-dd"
+                      className="pr-10 cursor-pointer"
+                      required
+                    />
+                    <CalendarIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                  </div>
+                  <p className="text-xs text-gray-500">Tap the field to open the date picker.</p>
                 </div>
 
                 <div className="space-y-2">
