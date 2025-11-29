@@ -13,7 +13,7 @@ const supabase = createClient(
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, firstName, lastName, items, paymentReference } = body;
+    const { email, firstName, lastName, items, paymentReference, totalAmount: providedTotalAmount, promoCode } = body;
 
     // Validate required fields
     if (!email || !firstName || !lastName || !items || !paymentReference) {
@@ -87,8 +87,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Calculate total amount
-    const totalAmount = items.reduce((sum: number, item: any) => sum + (item.item.price * item.quantity), 0);
+    // Calculate total amount (prefer client-provided discounted total)
+    const calculatedTotal = items.reduce((sum: number, item: any) => sum + (item.item.price * item.quantity), 0);
+    const totalAmount = typeof providedTotalAmount === 'number' ? providedTotalAmount : calculatedTotal;
     
     // Format price in ZAR
     const formatPrice = (price: number) => {
@@ -133,6 +134,7 @@ export async function POST(request: NextRequest) {
     console.log('Service ID:', process.env.NEXT_PUBLIC_EMAILJS_PURCHASE_SERVICE);
     console.log('Template ID:', templateId);
     console.log('Purchase Type:', isBundle ? 'Bundle' : 'Single Guide');
+    console.log('Promo Code:', promoCode || 'None');
     console.log('Public Key:', process.env.NEXT_PUBLIC_EMAILJS_PURCHASE_PUBLIC_KEY ? 'Present' : 'Missing');
     console.log('Private Key:', process.env.EMAILJS_PURCHASE_PRIVATE_KEY ? 'Present' : 'Missing');
 

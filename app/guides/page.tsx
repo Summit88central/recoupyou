@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, Star, Download, Users } from 'lucide-react';
+import { ShoppingCart, Star, Download, Users, CheckCircle } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,6 +14,7 @@ interface Guide {
   price: number;
   file_path: string;
   discount: number;
+  promo_code?: string;
 }
 
 interface Bundle {
@@ -31,6 +32,7 @@ const GuidesPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'guides' | 'bundles'>('guides');
   const { addItem } = useCart();
+  const [expandedGuides, setExpandedGuides] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     fetchData();
@@ -70,13 +72,24 @@ const GuidesPage: React.FC = () => {
     }).format(price);
   };
 
-  const calculateDiscountedPrice = (price: number, discount: number) => {
-    return price - (price * discount / 100);
-  };
+  
 
   const handleAddToCart = (item: Guide | Bundle, type: 'guide' | 'bundle') => {
     addItem(item, type);
     toast.success(`${type === 'guide' ? (item as Guide).title : (item as Bundle).name} added to cart!`);
+  };
+
+  const parseDescription = (desc: string): string[] => {
+    if (!desc) return [];
+    const parts = desc
+      .split(/(?:\s*✓\s*|\n|\r|•\s*)/)
+      .map((p) => p.trim())
+      .filter((p) => p.length > 0);
+    return parts;
+  };
+
+  const toggleExpanded = (id: string) => {
+    setExpandedGuides((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   if (loading) {
@@ -161,39 +174,50 @@ const GuidesPage: React.FC = () => {
                         <CardTitle className="text-lg font-semibold text-gray-900">
                           {guide.title}
                         </CardTitle>
-                        {guide.discount > 0 && (
-                          <Badge variant="destructive" className="mt-1">
-                            {guide.discount}% OFF
-                          </Badge>
-                        )}
+                      
                       </div>
                       <div className="flex items-center text-yellow-400">
                         <Star className="h-4 w-4 fill-current" />
                         <span className="text-sm text-gray-600 ml-1">4.8</span>
                       </div>
                     </div>
-                    <CardDescription className="text-gray-600">
-                      {guide.description}
-                    </CardDescription>
+                    {(() => {
+                      const points = parseDescription(guide.description);
+                      const isExpanded = !!expandedGuides[guide.id];
+                      const visible = isExpanded ? points : points.slice(0, 4);
+                      return (
+                        <div className="mt-2">
+                          {visible.length > 0 ? (
+                            <ul className="text-gray-600 text-sm space-y-1">
+                              {visible.map((pt, idx) => (
+                                <li key={`${guide.id}-pt-${idx}`} className="flex gap-2 items-start">
+                                  <CheckCircle className="h-4 w-4 text-pink-500 mt-0.5 flex-shrink-0" />
+                                  <span>{pt}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          ) : (
+                            <p className="text-gray-600 text-sm">{guide.description}</p>
+                          )}
+                          {points.length > 4 && (
+                            <button
+                              className="text-xs text-pink-600 hover:text-pink-700 mt-2"
+                              onClick={() => toggleExpanded(guide.id)}
+                            >
+                              {isExpanded ? 'Show less' : 'Show more'}
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </CardHeader>
                   
                   <CardContent>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
-                        {guide.discount > 0 ? (
-                          <>
-                            <span className="text-2xl font-bold text-pink-600">
-                              {formatPrice(calculateDiscountedPrice(guide.price, guide.discount))}
-                            </span>
-                            <span className="text-sm text-gray-500 line-through">
-                              {formatPrice(guide.price)}
-                            </span>
-                          </>
-                        ) : (
-                          <span className="text-2xl font-bold text-pink-600">
-                            {formatPrice(guide.price)}
-                          </span>
-                        )}
+                        <span className="text-2xl font-bold text-pink-600">
+                          {formatPrice(guide.price)}
+                        </span>
                       </div>
                       <div className="flex items-center text-gray-500 text-sm">
                         <Download className="h-4 w-4 mr-1" />

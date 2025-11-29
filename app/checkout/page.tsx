@@ -28,6 +28,7 @@ const CheckoutPage: React.FC = () => {
   });
   const [isProcessing, setIsProcessing] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [promoCode, setPromoCode] = useState('');
 
   useEffect(() => {
     setIsClient(true);
@@ -39,6 +40,39 @@ const CheckoutPage: React.FC = () => {
       currency: 'ZAR',
     }).format(price);
   };
+
+  const getDiscountedItemTotal = (item: any, quantity: number, code: string) => {
+    const base = item.price * quantity;
+    if (!code) return base;
+    const itemPromo = (item as any).promo_code || '';
+    const discount = (item as any).discount ?? 0;
+    if (discount > 0 && itemPromo && itemPromo.trim().toLowerCase() === code.trim().toLowerCase()) {
+      const discountedUnit = item.price * (1 - discount / 100);
+      return Math.max(0, discountedUnit * quantity);
+    }
+    return base;
+  };
+
+  const discountedTotal = state.items.reduce((sum, cartItem) => {
+    return sum + getDiscountedItemTotal(cartItem.item as any, cartItem.quantity, promoCode);
+  }, 0);
+
+  const matchedItemsCount = state.items.filter((cartItem) => {
+    const itemPromo = (cartItem.item as any).promo_code || '';
+    const discount = (cartItem.item as any).discount ?? 0;
+    return (
+      promoCode &&
+      discount > 0 &&
+      itemPromo.trim().toLowerCase() === promoCode.trim().toLowerCase() &&
+      cartItem.type === 'guide'
+    );
+  }).length;
+
+  const totalSavings = Math.max(0, state.items.reduce((sum, cartItem) => {
+    const original = (cartItem.item as any).price * cartItem.quantity;
+    const discounted = getDiscountedItemTotal(cartItem.item as any, cartItem.quantity, promoCode);
+    return sum + (original - discounted);
+  }, 0));
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -87,7 +121,7 @@ const CheckoutPage: React.FC = () => {
         const purchaseData = {
           email: customerInfo.email,
           payment_reference: reference.reference,
-          amount: item.item.price * item.quantity,
+          amount: getDiscountedItemTotal(item.item as any, item.quantity, promoCode),
           item_type: item.type,
           ...(item.type === 'guide' ? { guide_id: item.id } : { bundle_id: item.id })
         };
@@ -121,6 +155,8 @@ const CheckoutPage: React.FC = () => {
           lastName: customerInfo.lastName,
           items: state.items,
           paymentReference: reference.reference,
+          totalAmount: discountedTotal,
+          promoCode: promoCode || null,
         }),
       });
 
@@ -142,7 +178,7 @@ const CheckoutPage: React.FC = () => {
   const paystackConfig = {
     reference: `guide_${Date.now()}`,
     email: customerInfo.email,
-    amount: Math.round(state.total * 100), // Paystack expects amount in kobo
+    amount: Math.round(discountedTotal * 100), // Paystack expects amount in kobo
     currency: 'ZAR', // South African Rand
     publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
     text: 'Pay Now',
@@ -256,17 +292,41 @@ const CheckoutPage: React.FC = () => {
                           {item.type === 'bundle' ? 'Bundle' : 'Guide'} × {item.quantity}
                         </p>
                       </div>
-                      <span className="font-medium text-gray-900">
-                        {formatPrice(item.item.price * item.quantity)}
-                      </span>
+                      <div className="text-right">
+                        <span className="font-medium text-gray-900 block">
+                          {formatPrice(item.item.price * item.quantity)}
+                        </span>
+                        {promoCode && getDiscountedItemTotal(item.item as any, item.quantity, promoCode) < (item.item.price * item.quantity) && (
+                          <span className="text-sm text-green-600 block">
+                            Promo applied: -{formatPrice((item.item.price * item.quantity) - getDiscountedItemTotal(item.item as any, item.quantity, promoCode))}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   ))}
                   
                   <Separator />
                   
+                  <div className="space-y-2">
+                    <Label htmlFor="promo">Promo Code</Label>
+                    <Input
+                      id="promo"
+                      value={promoCode}
+                      onChange={(e) => setPromoCode(e.target.value)}
+                      placeholder="Enter promo code"
+                    />
+                    {promoCode && (
+                      <p className={`text-sm ${matchedItemsCount > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {matchedItemsCount > 0
+                          ? `Promo applied to ${matchedItemsCount} item${matchedItemsCount > 1 ? 's' : ''}. Savings: ${formatPrice(totalSavings)}`
+                          : 'Invalid promo code'}
+                      </p>
+                    )}
+                  </div>
+
                   <div className="flex items-center justify-between text-lg font-semibold">
                     <span>Total</span>
-                    <span className="text-pink-600">{formatPrice(state.total)}</span>
+                    <span className="text-pink-600">{formatPrice(discountedTotal)}</span>
                   </div>
                 </div>
 

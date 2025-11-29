@@ -8,6 +8,7 @@ export interface Guide {
   price: number;
   file_path: string;
   discount: number;
+  promo_code?: string;
 }
 
 export interface Bundle {

@@ -17,6 +17,9 @@ export async function PUT(
     const price = parseFloat(formData.get('price') as string);
     const image = formData.get('image') as File | null;
     const pdf = formData.get('pdf') as File | null;
+    const promo_code = formData.get('promo_code') as string | null;
+    const discountStr = formData.get('discount') as string | null;
+    const discount = discountStr ? parseFloat(discountStr) : null;
 
     if (!title || !description || !price) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -74,6 +77,15 @@ export async function PUT(
       description,
       price
     };
+
+    if (promo_code !== null) {
+      updateData.promo_code = promo_code || null;
+    }
+
+    if (discount !== null) {
+      const clamped = Math.max(0, Math.min(100, discount));
+      updateData.discount = clamped;
+    }
 
     if (image_url) {
       updateData.image_url = image_url;

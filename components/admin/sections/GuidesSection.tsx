@@ -27,7 +27,9 @@ export function GuidesSection({ guides, onView, onDelete, onRefresh, isRefreshin
     title: '',
     description: '',
     price: '',
-    pdf: null as File | null
+    pdf: null as File | null,
+    promo_code: '',
+    discount: ''
   });
 
   const resetForm = () => {
@@ -35,7 +37,9 @@ export function GuidesSection({ guides, onView, onDelete, onRefresh, isRefreshin
       title: '',
       description: '',
       price: '',
-      pdf: null
+      pdf: null,
+      promo_code: '',
+      discount: ''
     });
   };
 
@@ -48,6 +52,8 @@ export function GuidesSection({ guides, onView, onDelete, onRefresh, isRefreshin
     const file = e.target.files?.[0] || null;
     setFormData(prev => ({ ...prev, pdf: file }));
   };
+
+  
 
   const handleCreateGuide = async () => {
     if (!formData.title || !formData.description || !formData.price || !formData.pdf) {
@@ -69,7 +75,13 @@ export function GuidesSection({ guides, onView, onDelete, onRefresh, isRefreshin
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create guide');
+        let message = 'Failed to create guide';
+        try {
+          const data = await response.json();
+          if (data?.error) message = data.error;
+        } catch {}
+        toast.error(message);
+        return;
       }
 
       toast.success('Guide created successfully!');
@@ -90,7 +102,9 @@ export function GuidesSection({ guides, onView, onDelete, onRefresh, isRefreshin
       title: guide.title,
       description: guide.description,
       price: guide.price.toString(),
-      pdf: null
+      pdf: null,
+      promo_code: guide.promo_code || '',
+      discount: (guide.discount ?? 0).toString()
     });
     setIsEditDialogOpen(true);
   };
@@ -110,6 +124,13 @@ export function GuidesSection({ guides, onView, onDelete, onRefresh, isRefreshin
       if (formData.pdf) {
         formDataToSend.append('pdf', formData.pdf);
       }
+      if (formData.promo_code) {
+        formDataToSend.append('promo_code', formData.promo_code);
+      }
+      if (formData.discount) {
+        formDataToSend.append('discount', formData.discount);
+      }
+      
 
       const response = await fetch(`/api/guides/${editingGuide.id}`, {
         method: 'PUT',
@@ -117,7 +138,13 @@ export function GuidesSection({ guides, onView, onDelete, onRefresh, isRefreshin
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update guide');
+        let message = 'Failed to update guide';
+        try {
+          const data = await response.json();
+          if (data?.error) message = data.error;
+        } catch {}
+        toast.error(message);
+        return;
       }
 
       toast.success('Guide updated successfully!');
@@ -196,26 +223,49 @@ export function GuidesSection({ guides, onView, onDelete, onRefresh, isRefreshin
                     rows={3}
                   />
                 </div>
-                <div>
-                  <Label htmlFor="price">Price (ZAR) *</Label>
-                  <Input
-                    id="price"
-                    name="price"
-                    type="number"
-                    value={formData.price}
-                    onChange={handleInputChange}
-                    placeholder="Enter price"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="pdf">PDF File *</Label>
-                  <Input
-                    id="pdf"
-                    type="file"
-                    accept=".pdf"
-                    onChange={handleFileChange}
-                  />
-                </div>
+              <div>
+                <Label htmlFor="price">Price (ZAR) *</Label>
+                <Input
+                  id="price"
+                  name="price"
+                  type="number"
+                  value={formData.price}
+                  onChange={handleInputChange}
+                  placeholder="Enter price"
+                />
+              </div>
+              <div>
+                <Label htmlFor="promo_code">Promo Code (optional)</Label>
+                <Input
+                  id="promo_code"
+                  name="promo_code"
+                  value={formData.promo_code}
+                  onChange={handleInputChange}
+                  placeholder="e.g. SUMMER20"
+                />
+              </div>
+              <div>
+                <Label htmlFor="discount">Discount % (optional)</Label>
+                <Input
+                  id="discount"
+                  name="discount"
+                  type="number"
+                  min={0}
+                  max={100}
+                  value={formData.discount}
+                  onChange={handleInputChange}
+                  placeholder="Enter percentage (0-100)"
+                />
+              </div>
+              <div>
+                <Label htmlFor="pdf">PDF File *</Label>
+                <Input
+                  id="pdf"
+                  type="file"
+                  accept=".pdf"
+                  onChange={handleFileChange}
+                />
+              </div>
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
@@ -255,13 +305,7 @@ export function GuidesSection({ guides, onView, onDelete, onRefresh, isRefreshin
               {guides.map((guide) => (
                 <Card key={guide.id} className="hover:shadow-md transition-shadow">
                   <CardContent className="p-4">
-                    {guide.image_url && (
-                      <img
-                        src={guide.image_url}
-                        alt={guide.title}
-                        className="w-full h-32 object-cover rounded-md mb-3"
-                      />
-                    )}
+                    
                     <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
                       {guide.title}
                     </h3>
@@ -355,6 +399,30 @@ export function GuidesSection({ guides, onView, onDelete, onRefresh, isRefreshin
                 onChange={handleFileChange}
               />
             </div>
+            <div>
+              <Label htmlFor="edit-promo-code">Promo Code (optional)</Label>
+              <Input
+                id="edit-promo-code"
+                name="promo_code"
+                value={formData.promo_code}
+                onChange={handleInputChange}
+                placeholder="e.g. SUMMER20"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-discount">Discount % (optional)</Label>
+              <Input
+                id="edit-discount"
+                name="discount"
+                type="number"
+                min={0}
+                max={100}
+                value={formData.discount}
+                onChange={handleInputChange}
+                placeholder="Enter percentage (0-100)"
+              />
+            </div>
+            
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
