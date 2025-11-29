@@ -46,10 +46,12 @@ export default function GuideDetailsPage() {
   const formatPrice = (price: number) => new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(price);
 
   const parseDescription = (desc: string): string[] => {
+    if (!desc) return [];
     return desc
-      .split(/(?:\r?\n|\s*[✓✔✅☑•●-]+\s*)/)
-      .map((p) => p.replace(/[✓✔✅☑•●]/g, '').trim())
-      .filter((p) => p.length > 0);
+      .replace(/\r\n/g, "\n")
+      .split(/\n+/)
+      .map((line) => line.replace(/^\s*[✓✔✅☑•●-]+\s*/, "").trim())
+      .filter((line) => line.length > 0);
   };
 
   if (loading) {
