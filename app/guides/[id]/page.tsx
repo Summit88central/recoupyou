@@ -47,8 +47,8 @@ export default function GuideDetailsPage() {
 
   const parseDescription = (desc: string): string[] => {
     return desc
-      .split(/(?:\s*✓\s*|\n|\r|•\s*)/)
-      .map((p) => p.trim())
+      .split(/(?:\r?\n|\s*[✓✔✅☑•●-]+\s*)/)
+      .map((p) => p.replace(/[✓✔✅☑•●]/g, '').trim())
       .filter((p) => p.length > 0);
   };
 
@@ -102,9 +102,9 @@ export default function GuideDetailsPage() {
             {points.length > 0 ? (
               <ul className="text-gray-700 space-y-2">
                 {points.map((pt, idx) => (
-                  <li key={idx} className="flex gap-2">
-                    <CheckCircle className="h-4 w-4 text-pink-500 mt-0.5" />
-                    <span>{pt}</span>
+                  <li key={idx} className="flex items-start gap-2">
+                    <CheckCircle className="h-4 w-4 text-pink-500 flex-shrink-0" aria-hidden="true" />
+                    <span className="text-sm leading-5">{pt}</span>
                   </li>
                 ))}
               </ul>
