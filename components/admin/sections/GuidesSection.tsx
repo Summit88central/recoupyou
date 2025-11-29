@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { BookOpen, Trash2, Edit, RefreshCw, Plus, Upload, DollarSign } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/lib/supabase';
 
 interface GuidesSectionProps {
   guides: any[];
@@ -63,11 +64,27 @@ export function GuidesSection({ guides, onView, onDelete, onRefresh, isRefreshin
 
     setIsLoading(true);
     try {
+      const timestamp = Date.now();
+      const fileName = `guide-${timestamp}.pdf`;
+      const { error: uploadError } = await supabase.storage
+        .from('guides')
+        .upload(fileName, formData.pdf, {
+          cacheControl: '3600',
+          upsert: true,
+          contentType: 'application/pdf'
+        });
+
+      if (uploadError) {
+        toast.error(`Failed to upload PDF: ${uploadError.message}`);
+        setIsLoading(false);
+        return;
+      }
+
       const formDataToSend = new FormData();
       formDataToSend.append('title', formData.title);
       formDataToSend.append('description', formData.description);
       formDataToSend.append('price', formData.price);
-      formDataToSend.append('pdf', formData.pdf);
+      formDataToSend.append('file_path', fileName);
 
       const response = await fetch('/api/guides', {
         method: 'POST',
@@ -122,7 +139,21 @@ export function GuidesSection({ guides, onView, onDelete, onRefresh, isRefreshin
       formDataToSend.append('description', formData.description);
       formDataToSend.append('price', formData.price);
       if (formData.pdf) {
-        formDataToSend.append('pdf', formData.pdf);
+        const timestamp = Date.now();
+        const fileName = `guide-${editingGuide.id}-${timestamp}.pdf`;
+        const { error: uploadError } = await supabase.storage
+          .from('guides')
+          .upload(fileName, formData.pdf, {
+            cacheControl: '3600',
+            upsert: true,
+            contentType: 'application/pdf'
+          });
+        if (uploadError) {
+          toast.error(`Failed to upload PDF: ${uploadError.message}`);
+          setIsLoading(false);
+          return;
+        }
+        formDataToSend.append('file_path', fileName);
       }
       if (formData.promo_code) {
         formDataToSend.append('promo_code', formData.promo_code);

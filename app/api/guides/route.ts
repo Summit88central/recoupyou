@@ -32,6 +32,7 @@ export async function POST(request: NextRequest) {
     const description = formData.get('description') as string;
     const price = parseFloat(formData.get('price') as string);
     const pdf = formData.get('pdf') as File | null;
+    const providedFilePath = formData.get('file_path') as string | null;
 
     if (!title || !description || !price || !pdf) {
       return NextResponse.json({ error: 'Missing required fields (title, description, price, pdf)' }, { status: 400 });
@@ -44,20 +45,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid file type. Please upload a .pdf file.' }, { status: 400 });
     }
 
-    // Handle PDF upload (required)
-    const pdfFileName = `guide-${Date.now()}.pdf`;
-    
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('guides')
-      .upload(pdfFileName, pdf, {
-        cacheControl: '3600',
-        upsert: true,
-        contentType: 'application/pdf'
-      });
+    // Determine file_path: either client-provided or upload here
+    let file_path: string | null = null;
+    if (providedFilePath) {
+      file_path = providedFilePath;
+    } else if (pdf) {
+      const isPdfMime = pdf.type ? pdf.type === 'application/pdf' : false;
+      const hasPdfExt = typeof (pdf as any).name === 'string' && (pdf as any).name.toLowerCase().endsWith('.pdf');
+      if (!isPdfMime && !hasPdfExt) {
+        return NextResponse.json({ error: 'Invalid file type. Please upload a .pdf file.' }, { status: 400 });
+      }
 
-    if (uploadError) {
-      console.error('Error uploading PDF:', uploadError);
-      return NextResponse.json({ error: `Failed to upload PDF: ${(uploadError as any).message || 'unknown error'}` }, { status: 500 });
+      const pdfFileName = `guide-${Date.now()}.pdf`;
+      const { error: uploadError } = await supabase.storage
+        .from('guides')
+        .upload(pdfFileName, pdf, {
+          cacheControl: '3600',
+          upsert: true,
+          contentType: 'application/pdf'
+        });
+      if (uploadError) {
+        console.error('Error uploading PDF:', uploadError);
+        return NextResponse.json({ error: `Failed to upload PDF: ${(uploadError as any).message || 'unknown error'}` }, { status: 500 });
+      }
+      file_path = pdfFileName;
+    } else {
+      return NextResponse.json({ error: 'No PDF uploaded or file_path provided' }, { status: 400 });
     }
 
     // Create guide record
@@ -65,7 +78,7 @@ export async function POST(request: NextRequest) {
       title,
       description,
       price,
-      file_path: pdfFileName,
+      file_path,
       discount: 0
     };
 
