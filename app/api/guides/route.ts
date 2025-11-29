@@ -34,8 +34,8 @@ export async function POST(request: NextRequest) {
     const pdf = formData.get('pdf') as File | null;
     const providedFilePath = formData.get('file_path') as string | null;
 
-    if (!title || !description || !price || !pdf) {
-      return NextResponse.json({ error: 'Missing required fields (title, description, price, pdf)' }, { status: 400 });
+    if (!title || !description || isNaN(price) || (!pdf && !providedFilePath)) {
+      return NextResponse.json({ error: 'Missing required fields (title, description, valid price, and either pdf or file_path)' }, { status: 400 });
     }
 
     // Validate PDF type before upload (allow .pdf even if MIME is missing)
