@@ -52,21 +52,29 @@ export async function PUT(
       image_url = publicUrl;
     }
 
-    // Handle PDF upload if provided
-    if (pdf) {
-      const fileName = `guide-${params.id}-${Date.now()}.pdf`;
-      
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('guides')
-        .upload(fileName, pdf, {
-          cacheControl: '3600',
-          upsert: true
-        });
+  // Handle PDF upload if provided
+  if (pdf) {
+    // Validate PDF type before upload (allow .pdf even if MIME is missing)
+    const isPdfMime = pdf.type ? pdf.type === 'application/pdf' : false;
+    const hasPdfExt = typeof (pdf as any).name === 'string' && (pdf as any).name.toLowerCase().endsWith('.pdf');
+    if (!isPdfMime && !hasPdfExt) {
+      return NextResponse.json({ error: 'Invalid file type. Please upload a .pdf file.' }, { status: 400 });
+    }
 
-      if (uploadError) {
-        console.error('Error uploading PDF:', uploadError);
-        return NextResponse.json({ error: 'Failed to upload PDF' }, { status: 500 });
-      }
+    const fileName = `guide-${params.id}-${Date.now()}.pdf`;
+    
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('guides')
+      .upload(fileName, pdf, {
+        cacheControl: '3600',
+        upsert: true,
+        contentType: 'application/pdf'
+      });
+
+    if (uploadError) {
+      console.error('Error uploading PDF:', uploadError);
+      return NextResponse.json({ error: `Failed to upload PDF: ${(uploadError as any).message || 'unknown error'}` }, { status: 500 });
+    }
 
       file_path = fileName;
     }

@@ -37,6 +37,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields (title, description, price, pdf)' }, { status: 400 });
     }
 
+    // Validate PDF type before upload (allow .pdf even if MIME is missing)
+    const isPdfMime = pdf.type ? pdf.type === 'application/pdf' : false;
+    const hasPdfExt = typeof (pdf as any).name === 'string' && (pdf as any).name.toLowerCase().endsWith('.pdf');
+    if (!isPdfMime && !hasPdfExt) {
+      return NextResponse.json({ error: 'Invalid file type. Please upload a .pdf file.' }, { status: 400 });
+    }
+
     // Handle PDF upload (required)
     const pdfFileName = `guide-${Date.now()}.pdf`;
     
@@ -44,12 +51,13 @@ export async function POST(request: NextRequest) {
       .from('guides')
       .upload(pdfFileName, pdf, {
         cacheControl: '3600',
-        upsert: true
+        upsert: true,
+        contentType: 'application/pdf'
       });
 
     if (uploadError) {
       console.error('Error uploading PDF:', uploadError);
-      return NextResponse.json({ error: 'Failed to upload PDF' }, { status: 500 });
+      return NextResponse.json({ error: `Failed to upload PDF: ${(uploadError as any).message || 'unknown error'}` }, { status: 500 });
     }
 
     // Create guide record
