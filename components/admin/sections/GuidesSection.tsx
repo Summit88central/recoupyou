@@ -29,8 +29,10 @@ export function GuidesSection({ guides, onView, onDelete, onRefresh, isRefreshin
     description: '',
     price: '',
     pdf: null as File | null,
+    image: null as File | null,
     promo_code: '',
-    discount: ''
+    discount: '',
+    in_stock: true
   });
 
   const resetForm = () => {
@@ -39,8 +41,10 @@ export function GuidesSection({ guides, onView, onDelete, onRefresh, isRefreshin
       description: '',
       price: '',
       pdf: null,
+      image: null,
       promo_code: '',
-      discount: ''
+      discount: '',
+      in_stock: true
     });
   };
 
@@ -49,9 +53,19 @@ export function GuidesSection({ guides, onView, onDelete, onRefresh, isRefreshin
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target;
+    setFormData(prev => ({ ...prev, [name]: checked }));
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     setFormData(prev => ({ ...prev, pdf: file }));
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setFormData(prev => ({ ...prev, image: file }));
   };
 
   
@@ -80,11 +94,34 @@ export function GuidesSection({ guides, onView, onDelete, onRefresh, isRefreshin
         return;
       }
 
+      let imageUrl: string | null = null;
+      if (formData.image) {
+        const imageExt = formData.image.name.split('.').pop();
+        const imageName = `guide-cover-${timestamp}.${imageExt}`;
+        const { error: imgErr } = await supabase.storage
+          .from('images')
+          .upload(imageName, formData.image, {
+            cacheControl: '3600',
+            upsert: true
+          });
+        if (imgErr) {
+          toast.error(`Failed to upload cover: ${imgErr.message}`);
+          setIsLoading(false);
+          return;
+        }
+        const { data: { publicUrl } } = supabase.storage
+          .from('images')
+          .getPublicUrl(imageName);
+        imageUrl = publicUrl;
+      }
+
       const formDataToSend = new FormData();
       formDataToSend.append('title', formData.title);
       formDataToSend.append('description', formData.description);
       formDataToSend.append('price', formData.price);
       formDataToSend.append('file_path', fileName);
+      if (imageUrl) formDataToSend.append('image_url', imageUrl);
+      formDataToSend.append('in_stock', String(formData.in_stock));
 
       const response = await fetch('/api/guides', {
         method: 'POST',
@@ -120,8 +157,10 @@ export function GuidesSection({ guides, onView, onDelete, onRefresh, isRefreshin
       description: guide.description,
       price: guide.price.toString(),
       pdf: null,
+      image: null,
       promo_code: guide.promo_code || '',
-      discount: (guide.discount ?? 0).toString()
+      discount: (guide.discount ?? 0).toString(),
+      in_stock: guide.in_stock ?? true
     });
     setIsEditDialogOpen(true);
   };
@@ -155,12 +194,33 @@ export function GuidesSection({ guides, onView, onDelete, onRefresh, isRefreshin
         }
         formDataToSend.append('file_path', fileName);
       }
+      if (formData.image) {
+        const timestamp = Date.now();
+        const imageExt = formData.image.name.split('.').pop();
+        const imageName = `guide-cover-${editingGuide.id}-${timestamp}.${imageExt}`;
+        const { error: imgErr } = await supabase.storage
+          .from('images')
+          .upload(imageName, formData.image, {
+            cacheControl: '3600',
+            upsert: true
+          });
+        if (imgErr) {
+          toast.error(`Failed to upload cover: ${imgErr.message}`);
+          setIsLoading(false);
+          return;
+        }
+        const { data: { publicUrl } } = supabase.storage
+          .from('images')
+          .getPublicUrl(imageName);
+        formDataToSend.append('image_url', publicUrl);
+      }
       if (formData.promo_code) {
         formDataToSend.append('promo_code', formData.promo_code);
       }
       if (formData.discount) {
         formDataToSend.append('discount', formData.discount);
       }
+      formDataToSend.append('in_stock', String(formData.in_stock));
       
 
       const response = await fetch(`/api/guides/${editingGuide.id}`, {
@@ -296,6 +356,25 @@ export function GuidesSection({ guides, onView, onDelete, onRefresh, isRefreshin
                   accept=".pdf"
                   onChange={handleFileChange}
                 />
+              </div>
+              <div>
+                <Label htmlFor="cover">Cover Image (optional)</Label>
+                <Input
+                  id="cover"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  id="in_stock"
+                  name="in_stock"
+                  type="checkbox"
+                  checked={formData.in_stock}
+                  onChange={handleCheckboxChange}
+                />
+                <Label htmlFor="in_stock">In Stock</Label>
               </div>
               </div>
               <DialogFooter>

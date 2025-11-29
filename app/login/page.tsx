@@ -20,8 +20,8 @@ export default function LoginPage() {
   // No changes needed in useEffects
   useEffect(() => {
     async function checkSession() {
-      const sessionCookie = document.cookie.includes("admin-session");
-      if (sessionCookie) {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
         router.push("/admin");
       }
     }
@@ -29,8 +29,7 @@ export default function LoginPage() {
   }, [router]);
 
   // ✨ This is the main change
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleLogin = async () => {
     setError(null);
     setLoading(true);
 
@@ -58,12 +57,17 @@ export default function LoginPage() {
         });
 
         if (!res.ok) {
-          throw new Error("Failed to set session on server");
+          let message = "Failed to set session on server";
+          try {
+            const j = await res.json();
+            if (j?.error) message = j.error;
+          } catch {}
+          throw new Error(message);
         }
 
         // 3. Now that the cookie is set, we can redirect
         router.push("/admin");
-        router.refresh(); // Recommended to refresh server components
+        // router.refresh(); // avoid form reset / flicker
       } catch (apiError: any) {
         setError(apiError.message);
       } finally {
@@ -84,7 +88,7 @@ export default function LoginPage() {
           {/* ... */}
         </div>
         <div className="mt-8 bg-white py-8 px-4 sm:px-6 lg:px-8 rounded-xl border border-slate-200 shadow-sm">
-          <form onSubmit={handleLogin} className="space-y-6">
+          <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
             {/* ... email input ... */}
             <div>
               <label
@@ -147,7 +151,8 @@ export default function LoginPage() {
               </div>
             )}
             <button
-              type="submit"
+              type="button"
+              onClick={handleLogin}
               disabled={loading}
               className="w-full flex justify-center items-center gap-2 rounded-md bg-[#fc9dca] px-3.5 py-2.5 text-sm font-medium text-white shadow-sm ring-1 ring-inset ring-[#fc9dca]/40 transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fc9dca] disabled:opacity-50 disabled:cursor-not-allowed"
             >

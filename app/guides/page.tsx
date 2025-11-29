@@ -15,6 +15,8 @@ interface Guide {
   file_path: string;
   discount: number;
   promo_code?: string;
+  image_url?: string;
+  in_stock?: boolean;
 }
 
 interface Bundle {
@@ -96,7 +98,7 @@ const GuidesPage: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-50 pt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
               <Card key={i} className="animate-pulse">
                 <CardHeader>
@@ -158,7 +160,7 @@ const GuidesPage: React.FC = () => {
 
         {/* Content */}
         {activeTab === 'guides' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {guides.length === 0 ? (
               <div className="col-span-full text-center py-12">
                 <Download className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -167,75 +169,39 @@ const GuidesPage: React.FC = () => {
               </div>
             ) : (
               guides.map((guide) => (
-                <Card key={guide.id} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <CardTitle className="text-lg font-semibold text-gray-900">
-                          {guide.title}
-                        </CardTitle>
-                      
-                      </div>
-                      <div className="flex items-center text-yellow-400">
-                        <Star className="h-4 w-4 fill-current" />
-                        <span className="text-sm text-gray-600 ml-1">4.8</span>
-                      </div>
-                    </div>
-                    {(() => {
-                      const points = parseDescription(guide.description);
-                      const isExpanded = !!expandedGuides[guide.id];
-                      const visible = isExpanded ? points : points.slice(0, 4);
-                      return (
-                        <div className="mt-2">
-                          {visible.length > 0 ? (
-                            <ul className="text-gray-600 text-sm space-y-1">
-                              {visible.map((pt, idx) => (
-                                <li key={`${guide.id}-pt-${idx}`} className="flex gap-2 items-start">
-                                  <CheckCircle className="h-4 w-4 text-pink-500 mt-0.5 flex-shrink-0" />
-                                  <span>{pt}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          ) : (
-                            <p className="text-gray-600 text-sm">{guide.description}</p>
-                          )}
-                          {points.length > 4 && (
-                            <button
-                              className="text-xs text-pink-600 hover:text-pink-700 mt-2"
-                              onClick={() => toggleExpanded(guide.id)}
-                            >
-                              {isExpanded ? 'Show less' : 'Show more'}
-                            </button>
-                          )}
-                        </div>
-                      );
-                    })()}
-                  </CardHeader>
-                  
-                  <CardContent>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-2xl font-bold text-pink-600">
-                          {formatPrice(guide.price)}
-                        </span>
-                      </div>
-                      <div className="flex items-center text-gray-500 text-sm">
-                        <Download className="h-4 w-4 mr-1" />
-                        PDF
-                      </div>
-                    </div>
-                  </CardContent>
-                  
-                  <CardFooter>
-                    <Button
-                      onClick={() => handleAddToCart(guide, 'guide')}
-                      className="w-full bg-pink-600 hover:bg-pink-700 text-white"
+                <div key={guide.id} className="space-y-2">
+                  {guide.image_url && (
+                    <div
+                      className="relative overflow-hidden rounded aspect-square cursor-pointer"
+                      onClick={() => window.location.assign(`/guides/${guide.id}`)}
                     >
-                      <ShoppingCart className="h-4 w-4 mr-2" />
-                      Add to Cart
-                    </Button>
-                  </CardFooter>
-                </Card>
+                      <img src={guide.image_url} alt={guide.title} className="w-full h-full object-cover" />
+                      {guide.in_stock === false && (
+                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                          <span className="bg-pink-200 text-pink-700 px-3 py-1 rounded font-semibold">OUT OF STOCK</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  <h3 className="text-sm font-semibold text-gray-900">{guide.title}</h3>
+                  <div className="text-pink-600 font-bold">{formatPrice(guide.price)}</div>
+                  <div className="flex items-center gap-1 text-yellow-400">
+                    <Star className="h-4 w-4 fill-current" />
+                    <Star className="h-4 w-4 fill-current" />
+                    <Star className="h-4 w-4 fill-current" />
+                    <Star className="h-4 w-4 fill-current" />
+                    <Star className="h-4 w-4" />
+                    <span className="ml-1 text-xs text-gray-600">4.0</span>
+                  </div>
+                  <Button
+                    onClick={() => handleAddToCart(guide, 'guide')}
+                    className="bg-pink-600 hover:bg-pink-700 text-white w-full"
+                    disabled={guide.in_stock === false}
+                  >
+                    <ShoppingCart className="h-4 w-4 mr-2" />
+                    Add to Cart
+                  </Button>
+                </div>
               ))
             )}
           </div>

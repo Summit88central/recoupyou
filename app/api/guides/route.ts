@@ -33,17 +33,15 @@ export async function POST(request: NextRequest) {
     const price = parseFloat(formData.get('price') as string);
     const pdf = formData.get('pdf') as File | null;
     const providedFilePath = formData.get('file_path') as string | null;
+    const image_url = formData.get('image_url') as string | null;
+    const inStockStr = formData.get('in_stock') as string | null;
+    const in_stock = inStockStr ? inStockStr === 'true' : true;
 
     if (!title || !description || isNaN(price) || (!pdf && !providedFilePath)) {
       return NextResponse.json({ error: 'Missing required fields (title, description, valid price, and either pdf or file_path)' }, { status: 400 });
     }
 
-    // Validate PDF type before upload (allow .pdf even if MIME is missing)
-    const isPdfMime = pdf.type ? pdf.type === 'application/pdf' : false;
-    const hasPdfExt = typeof (pdf as any).name === 'string' && (pdf as any).name.toLowerCase().endsWith('.pdf');
-    if (!isPdfMime && !hasPdfExt) {
-      return NextResponse.json({ error: 'Invalid file type. Please upload a .pdf file.' }, { status: 400 });
-    }
+    // If uploading through API, validate type in the branch below when pdf is present
 
     // Determine file_path: either client-provided or upload here
     let file_path: string | null = null;
@@ -74,23 +72,47 @@ export async function POST(request: NextRequest) {
     }
 
     // Create guide record
-    const guideData = {
+    const guideData: any = {
       title,
       description,
       price,
       file_path,
-      discount: 0
+      discount: 0,
+      in_stock
     };
+    if (image_url) guideData.image_url = image_url;
 
-    const { data: guide, error } = await supabase
+    let { data: guide, error } = await supabase
       .from('guides')
       .insert([guideData])
       .select()
       .single();
 
     if (error) {
+      const msg = (error as any)?.message || String(error);
       console.error('Error creating guide:', error);
-      return NextResponse.json({ error: 'Failed to create guide' }, { status: 500 });
+      // Fallback: retry without optional fields if schema not yet migrated
+      if (msg.includes('in_stock') || msg.includes('column') && msg.includes('in_stock')) {
+        const fallback = { ...guideData };
+        delete (fallback as any).in_stock;
+        const retry = await supabase.from('guides').insert([fallback]).select().single();
+        if (!retry.error) {
+          guide = retry.data;
+        } else {
+          return NextResponse.json({ error: retry.error.message || 'Failed to create guide' }, { status: 500 });
+        }
+      } else if (msg.includes('image_url') || msg.includes('column') && msg.includes('image_url')) {
+        const fallback = { ...guideData };
+        delete (fallback as any).image_url;
+        const retry = await supabase.from('guides').insert([fallback]).select().single();
+        if (!retry.error) {
+          guide = retry.data;
+        } else {
+          return NextResponse.json({ error: retry.error.message || 'Failed to create guide' }, { status: 500 });
+        }
+      } else {
+        return NextResponse.json({ error: msg || 'Failed to create guide' }, { status: 500 });
+      }
     }
 
     return NextResponse.json({ guide }, { status: 201 });

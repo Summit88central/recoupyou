@@ -17,15 +17,18 @@ export async function PUT(
     const price = parseFloat(formData.get('price') as string);
     const image = formData.get('image') as File | null;
     const pdf = formData.get('pdf') as File | null;
+    const providedImageUrl = formData.get('image_url') as string | null;
     const promo_code = formData.get('promo_code') as string | null;
     const discountStr = formData.get('discount') as string | null;
     const discount = discountStr ? parseFloat(discountStr) : null;
+    const inStockStr = formData.get('in_stock') as string | null;
+    const in_stock = inStockStr ? inStockStr === 'true' : null;
 
     if (!title || !description || !price) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    let image_url = null;
+    let image_url = providedImageUrl || null;
     let file_path = null;
 
     // Handle image upload if provided
@@ -94,6 +97,10 @@ export async function PUT(
       updateData.discount = clamped;
     }
 
+    if (in_stock !== null) {
+      updateData.in_stock = in_stock;
+    }
+
     if (image_url) {
       updateData.image_url = image_url;
     }
@@ -117,6 +124,27 @@ export async function PUT(
     return NextResponse.json({ guide });
   } catch (error) {
     console.error('Error in guide update API:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const { data: guide, error } = await supabase
+      .from('guides')
+      .select('*')
+      .eq('id', params.id)
+      .single();
+
+    if (error || !guide) {
+      return NextResponse.json({ error: 'Guide not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ guide });
+  } catch (error) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

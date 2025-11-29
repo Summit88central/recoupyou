@@ -9,6 +9,8 @@ export interface Guide {
   file_path: string;
   discount: number;
   promo_code?: string;
+  image_url?: string;
+  in_stock?: boolean;
 }
 
 export interface Bundle {
