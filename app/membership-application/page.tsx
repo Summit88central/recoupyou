@@ -386,11 +386,11 @@ export default function MembershipApplicationPage() {
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem
-                          value="3 months contract – R400/month + R100 joining fee"
+                          value="6 months contract – R400/month + R100 joining fee"
                           id="contract-membership"
                         />
                         <Label htmlFor="contract-membership">
-                          3 months contract – R400/month + R100 joining fee
+                          6 months contract – R400/month + R100 joining fee
                         </Label>
                       </div>
                     </RadioGroup>
