@@ -155,8 +155,8 @@ export default function BookPersonalTrainingPage() {
                 Train with Coach Dee
               </CardTitle>
               <CardDescription>
-                Fill in the form below to get started. You must be comfortable
-                with a minimum 3-month contract.
+                Fill in the form below to get started. The Monthly Package
+                requires a minimum 3-month contract.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -222,6 +222,15 @@ export default function BookPersonalTrainingPage() {
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="R2,400/monthly" id="monthly" />
                       <Label htmlFor="monthly">R2,400/monthly</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem
+                        value="R2,500/monthly (month to month - no contract)"
+                        id="month-to-month"
+                      />
+                      <Label htmlFor="month-to-month">
+                        R2,500/monthly (month to month - no contract)
+                      </Label>
                     </div>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem

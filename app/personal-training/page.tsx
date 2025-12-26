@@ -86,7 +86,7 @@ export default function PersonalTrainingPage() {
           </Card>
 
           {/* Pricing */}
-          <div className="grid md:grid-cols-3 gap-6 mb-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <Card className="border-2 border-[#fc9dca]/30">
               <CardHeader className="text-center">
                 <CardTitle>Monthly Package</CardTitle>
@@ -106,6 +106,38 @@ export default function PersonalTrainingPage() {
                   <li className="flex items-center gap-2">
                     <CheckCircle className="w-4 h-4 text-green-600" />
                     Eating guide included
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    Minimum 3 months contract
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            <Card className="border-2 border-[#fc9dca]/30">
+              <CardHeader className="text-center">
+                <CardTitle>Month-to-Month</CardTitle>
+                <div className="text-3xl font-bold text-[#fc9dca]">R2,500</div>
+                <CardDescription>Per month</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    4x individual sessions/week
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    1x group session/week
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    Eating guide included
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    Month to month: no contract
                   </li>
                 </ul>
               </CardContent>
@@ -166,7 +198,7 @@ export default function PersonalTrainingPage() {
           {/* CTA */}
           <div className="text-center">
             <p className="text-sm text-gray-600 mb-4">
-              Minimum 3-months commitment required for package deals
+              Minimum 3-month contract applies to the Monthly Package
             </p>
             <Link href="/personal-training/book">
               <Button
