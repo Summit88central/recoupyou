@@ -24,7 +24,7 @@ export function ServicesGrid() {
           </a>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-between mb-8 px-6 py-4 rounded-2xl bg-[#111111] text-white">
+        <div className="flex flex-col sm:flex-row items-center justify-between mb-8 px-6 py-4 rounded-2xl bg-[#2a2a2a] text-white">
           <div>
             <h3 className="text-xl sm:text-2xl font-semibold tracking-tight">
               6 Weeks Glutes and Core Challenge
