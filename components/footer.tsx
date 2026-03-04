@@ -14,7 +14,7 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-6">
         {/* Copyright */}
         <p className="text-xs text-zinc-500">
-          © {currentYear} RecoupYou. All rights reserved.
+          © {currentYear} RecoupYou. All rights reserved. Powered by Summit88.
         </p>
 
         {/* Links */}
