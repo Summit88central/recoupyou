@@ -60,9 +60,41 @@ export interface PersonalTraining {
   start_date?: string | null;
 }
 
+export interface ChallengeRegistration {
+  id: string;
+  full_name: string;
+  whatsapp_number: string;
+  email: string;
+  age: number;
+  payment_option: "member" | "non_member";
+  base_price: number;
+  amount_paid: number;
+  discount_code: string | null;
+  discount_applied: boolean;
+  discount_amount: number;
+  payment_reference: string;
+  emergency_contact_name: string;
+  emergency_contact_number: string;
+  challenge_goal: string;
+  dietary_preferences: string[];
+  foods_disliked: string | null;
+  medical_conditions: string | null;
+  activity_level: string;
+  alcohol_frequency: string;
+  instagram_handle: string | null;
+  guardian_name: string | null;
+  terms_accepted: boolean;
+  liability_accepted: boolean;
+  agreement_signature: string;
+  agreement_date: string;
+  payment_status: string;
+  created_at: string;
+}
+
 // A union type to represent any of the possible items for the details dialog
 export type DashboardItem =
   | RSVP
   | OnlineCoaching
   | Membership
-  | PersonalTraining;
+  | PersonalTraining
+  | ChallengeRegistration;

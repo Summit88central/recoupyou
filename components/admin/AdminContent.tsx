@@ -6,6 +6,7 @@ import { RSVPSection } from './sections/RSVPSection';
 import { CoachingSection } from './sections/CoachingSection';
 import { MembershipsSection } from './sections/MembershipsSection';
 import { TrainingSection } from './sections/TrainingSection';
+import { ChallengesSection } from './sections/ChallengesSection';
 import { GuidesSection } from './sections/GuidesSection';
 import { BundlesSection } from './sections/BundlesSection';
 
@@ -16,6 +17,7 @@ interface AdminContentProps {
     onlineCoaching: any[];
     memberships: any[];
     personalTraining: any[];
+    challenges: any[];
     guides: any[];
     bundles: any[];
   };
@@ -25,6 +27,7 @@ interface AdminContentProps {
     coaching: number;
     memberships: number;
     personalTraining: number;
+    challenges: number;
     guides: number;
     bundles: number;
   };
@@ -145,6 +148,17 @@ export function AdminContent({
         return (
           <TrainingSection
             training={data?.personalTraining || []}
+            onView={onView}
+            onDelete={onDelete}
+            onRefresh={onRefresh}
+            isRefreshing={isRefreshing}
+          />
+        );
+
+      case 'challenges':
+        return (
+          <ChallengesSection
+            challenges={data?.challenges || []}
             onView={onView}
             onDelete={onDelete}
             onRefresh={onRefresh}

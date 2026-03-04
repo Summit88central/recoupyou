@@ -71,6 +71,17 @@ interface Bundle {
   created_at: string;
 }
 
+interface ChallengeRegistration {
+  id: string;
+  full_name: string;
+  email: string;
+  whatsapp_number: string;
+  amount_paid: number;
+  payment_reference: string;
+  payment_status: string;
+  created_at: string;
+}
+
 interface DeleteConfirmation {
   isOpen: boolean;
   id: string;
@@ -92,6 +103,7 @@ export default function AdminPage() {
   const [onlineCoaching, setOnlineCoaching] = useState<OnlineCoaching[]>([]);
   const [memberships, setMemberships] = useState<Membership[]>([]);
   const [personalTraining, setPersonalTraining] = useState<PersonalTraining[]>([]);
+  const [challenges, setChallenges] = useState<ChallengeRegistration[]>([]);
   const [guides, setGuides] = useState<Guide[]>([]);
   const [bundles, setBundles] = useState<Bundle[]>([]);
   const [selectedItem, setSelectedItem] = useState<any>(null);
@@ -125,6 +137,7 @@ export default function AdminPage() {
         coachingData,
         membershipData,
         trainingData,
+        challengeData,
         guidesResponse,
         bundlesResponse,
       ] = await Promise.all([
@@ -132,6 +145,7 @@ export default function AdminPage() {
         supabase.from("online_coaching_applications").select("*").order("created_at", { ascending: false }),
         supabase.from("membership_applications").select("*").order("created_at", { ascending: false }),
         supabase.from("personal_training_applications").select("*").order("created_at", { ascending: false }),
+        supabase.from("challenge_registrations").select("*").order("created_at", { ascending: false }),
         fetch("/api/guides"),
         fetch("/api/bundles"),
       ]);
@@ -141,6 +155,7 @@ export default function AdminPage() {
       if (coachingData.data) setOnlineCoaching(coachingData.data);
       if (membershipData.data) setMemberships(membershipData.data);
       if (trainingData.data) setPersonalTraining(trainingData.data);
+      if (challengeData.data) setChallenges(challengeData.data);
 
       // Set API data
       if (guidesResponse.ok) {
@@ -197,7 +212,8 @@ export default function AdminPage() {
       case "coaching":
       case "membership":
       case "training":
-        return item.name;
+      case "challenge":
+        return item.full_name || item.name;
       default:
         return "this item";
     }
@@ -217,6 +233,8 @@ export default function AdminPage() {
         return "This will permanently delete the membership entry. This action cannot be undone.";
       case "training":
         return "This will permanently delete the personal training entry. This action cannot be undone.";
+      case "challenge":
+        return "This will permanently delete the challenge signup entry. This action cannot be undone.";
       default:
         return "This will permanently delete the item. This action cannot be undone.";
     }
@@ -227,7 +245,7 @@ export default function AdminPage() {
       isOpen: true,
       id,
       type,
-      title: `Delete ${type === "rsvp" ? "RSVP" : type === "coaching" ? "Online Coaching Entry" : type === "membership" ? "Membership" : type === "training" ? "Personal Training Entry" : type.charAt(0).toUpperCase() + type.slice(1)}`,
+      title: `Delete ${type === "rsvp" ? "RSVP" : type === "coaching" ? "Online Coaching Entry" : type === "membership" ? "Membership" : type === "training" ? "Personal Training Entry" : type === "challenge" ? "Challenge Entry" : type.charAt(0).toUpperCase() + type.slice(1)}`,
       description: `Are you sure you want to delete "${name}"? ${getDeleteDescription(type)}`,
       force: false,
     });
@@ -337,6 +355,16 @@ export default function AdminPage() {
           toast.success("Personal training entry deleted successfully");
           break;
 
+        case "challenge":
+          const { error: challengeError } = await supabase
+            .from("challenge_registrations")
+            .delete()
+            .eq("id", id);
+          if (challengeError) throw challengeError;
+          setChallenges(challenges.filter((challenge) => challenge.id !== id));
+          toast.success("Challenge entry deleted successfully");
+          break;
+
         default:
           throw new Error("Unknown item type");
       }
@@ -362,11 +390,12 @@ export default function AdminPage() {
   }
 
   const stats = {
-    total: rsvps.length + onlineCoaching.length + memberships.length + personalTraining.length,
+    total: rsvps.length + onlineCoaching.length + memberships.length + personalTraining.length + challenges.length,
     rsvps: rsvps.length,
     coaching: onlineCoaching.length,
     memberships: memberships.length,
     personalTraining: personalTraining.length,
+    challenges: challenges.length,
     guides: guides.length,
     bundles: bundles.length,
   };
@@ -410,6 +439,7 @@ export default function AdminPage() {
               onlineCoaching,
               memberships,
               personalTraining,
+              challenges,
               guides,
               bundles
             }}

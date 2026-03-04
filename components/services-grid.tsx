@@ -24,6 +24,24 @@ export function ServicesGrid() {
           </a>
         </div>
 
+        <div className="flex flex-col sm:flex-row items-center justify-between mb-8 px-6 py-4 rounded-2xl bg-gray-900 text-white">
+          <div>
+            <h3 className="text-xl sm:text-2xl font-semibold tracking-tight">
+              6 Weeks Glutes and Core Challenge
+            </h3>
+            <p className="text-sm text-gray-200">
+              Limited to 10 people. Apply and pay online to secure your spot.
+            </p>
+          </div>
+          <a
+            href="/6-week-challenge"
+            className="mt-3 sm:mt-0 inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#fc9dca] font-medium text-sm text-white shadow-sm hover:bg-rose-400 transition"
+          >
+            Apply Now
+            <ArrowRight className="w-4 h-4" />
+          </a>
+        </div>
+
         {/* Glass Container */}
         <div className="bg-white backdrop-blur-md border border-white/20 rounded-3xl overflow-hidden shadow-2xl">
           <div className="p-3 sm:p-4">

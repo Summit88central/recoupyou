@@ -54,6 +54,13 @@ export function DetailsDialog({
     dateString ? new Date(dateString).toLocaleDateString("en-ZA") : "N/A";
   const formatDateTime = (dateString: string) =>
     new Date(dateString).toLocaleString("en-ZA");
+  const formatCurrency = (amount: number | null | undefined) =>
+    typeof amount === "number"
+      ? new Intl.NumberFormat("en-ZA", {
+          style: "currency",
+          currency: "ZAR",
+        }).format(amount)
+      : "N/A";
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -158,6 +165,75 @@ export function DetailsDialog({
                 value={item.medical_conditions}
               />
               <DetailItem label="Heard About Us Via" value={item.hear_about} />
+            </>
+          )}
+
+          {/* --- CHALLENGE DETAILS --- */}
+          {type === "challenge" && "payment_reference" in item && (
+            <>
+              <DetailGroup title="Participant Information" />
+              <DetailItem label="Name" value={item.full_name} />
+              <DetailItem label="Email" value={item.email} />
+              <DetailItem label="WhatsApp" value={item.whatsapp_number} />
+              <DetailItem label="Age" value={String(item.age)} />
+              <DetailItem
+                label="Instagram"
+                value={item.instagram_handle || "N/A"}
+              />
+              <DetailItem label="Guardian Name" value={item.guardian_name} />
+
+              <DetailGroup title="Payment" />
+              <DetailItem
+                label="Payment Option"
+                value={item.payment_option === "member" ? "Member" : "Non-member"}
+              />
+              <DetailItem label="Base Price" value={formatCurrency(item.base_price)} />
+              <DetailItem label="Amount Paid" value={formatCurrency(item.amount_paid)} />
+              <DetailItem
+                label="Discount Applied"
+                value={item.discount_applied ? "Yes" : "No"}
+              />
+              <DetailItem label="Discount Code" value={item.discount_code} />
+              <DetailItem
+                label="Discount Amount"
+                value={formatCurrency(item.discount_amount)}
+              />
+              <DetailItem label="Payment Status" value={item.payment_status} />
+              <DetailItem label="Payment Reference" value={item.payment_reference} />
+
+              <DetailGroup title="Challenge Profile" />
+              <DetailItem label="Goal" value={item.challenge_goal} />
+              <DetailItem label="Activity Level" value={item.activity_level} />
+              <DetailItem
+                label="Dietary Preferences"
+                value={item.dietary_preferences?.length ? item.dietary_preferences.join(", ") : "None"}
+              />
+              <DetailItem label="Foods Disliked" value={item.foods_disliked} />
+              <DetailItem label="Medical Conditions" value={item.medical_conditions} />
+              <DetailItem label="Alcohol Frequency" value={item.alcohol_frequency} />
+
+              <DetailGroup title="Emergency and Agreement" />
+              <DetailItem
+                label="Emergency Contact Name"
+                value={item.emergency_contact_name}
+              />
+              <DetailItem
+                label="Emergency Contact Number"
+                value={item.emergency_contact_number}
+              />
+              <DetailItem
+                label="Terms Accepted"
+                value={item.terms_accepted ? "Yes" : "No"}
+              />
+              <DetailItem
+                label="Liability Accepted"
+                value={item.liability_accepted ? "Yes" : "No"}
+              />
+              <DetailItem label="Signature" value={item.agreement_signature} />
+              <DetailItem
+                label="Agreement Date"
+                value={formatDate(item.agreement_date)}
+              />
             </>
           )}
 

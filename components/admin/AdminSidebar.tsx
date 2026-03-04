@@ -11,6 +11,7 @@ import {
   Dumbbell,
   BookOpen,
   Package,
+  Trophy,
   BarChart3,
   LogOut,
   Menu,
@@ -27,6 +28,7 @@ interface AdminSidebarProps {
     coaching: number;
     memberships: number;
     personalTraining: number;
+    challenges: number;
     guides: number;
     bundles: number;
   };
@@ -69,6 +71,13 @@ const sidebarItems = [
     icon: Dumbbell,
     description: 'Training applications',
     statKey: 'personalTraining' as const
+  },
+  {
+    id: 'challenges',
+    label: 'Challenges',
+    icon: Trophy,
+    description: 'Paid challenge signups',
+    statKey: 'challenges' as const
   },
   {
     id: 'guides',

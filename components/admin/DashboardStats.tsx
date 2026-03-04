@@ -1,13 +1,14 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Calendar, UserCheck, CreditCard } from "lucide-react";
+import { Users, Calendar, UserCheck, CreditCard, Trophy } from "lucide-react";
 
 interface Stats {
   total: number;
   rsvps: number;
   coaching: number;
   memberships: number;
+  challenges: number;
 }
 
 interface DashboardStatsProps {
@@ -16,7 +17,7 @@ interface DashboardStatsProps {
 
 export function DashboardStats({ stats }: DashboardStatsProps) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Total Signups</CardTitle>
@@ -62,6 +63,19 @@ export function DashboardStats({ stats }: DashboardStatsProps) {
             {stats.memberships}
           </div>
           <p className="text-xs text-muted-foreground">Applications</p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Challenges</CardTitle>
+          <Trophy className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-primary">
+            {stats.challenges}
+          </div>
+          <p className="text-xs text-muted-foreground">Paid signups</p>
         </CardContent>
       </Card>
     </div>
