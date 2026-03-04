@@ -220,13 +220,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (body.age < 18 && !isNonEmptyString(body.guardianName)) {
-      return NextResponse.json(
-        { error: "Guardian name is required for applicants under 18." },
-        { status: 400 }
-      );
-    }
-
     if (!Number.isFinite(body.amountPaid) || body.amountPaid <= 0) {
       return NextResponse.json(
         { error: "Invalid amount paid." },

@@ -71,7 +71,6 @@ type ChallengeFormState = {
   activityLevel: ChallengeActivityLevel;
   alcoholFrequency: string;
   instagramHandle: string;
-  guardianName: string;
   promoCode: string;
   termsAccepted: boolean;
   liabilityAccepted: boolean;
@@ -102,7 +101,6 @@ const initialFormState: ChallengeFormState = {
   activityLevel: "sedentary",
   alcoholFrequency: "",
   instagramHandle: "",
-  guardianName: "",
   promoCode: "",
   termsAccepted: false,
   liabilityAccepted: false,
@@ -175,7 +173,6 @@ export default function SixWeekChallengePage() {
   };
 
   const ageNumber = Number(formData.age);
-  const requiresGuardian = Number.isFinite(ageNumber) && ageNumber < 18;
   const baseAmount = getBaseChallengeAmount(formData.paymentOption);
   const normalizedPromoCode = normalizePromoCode(formData.promoCode);
   const promoMatches = normalizedPromoCode === CHALLENGE_CONFIG.discount.code;
@@ -210,10 +207,6 @@ export default function SixWeekChallengePage() {
       !formData.termsAccepted ||
       !formData.liabilityAccepted
     ) {
-      return false;
-    }
-
-    if (requiresGuardian && !formData.guardianName.trim()) {
       return false;
     }
 
@@ -378,34 +371,17 @@ export default function SixWeekChallengePage() {
                     />
                   </div>
                 </div>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="age">Age *</Label>
-                    <Input
-                      id="age"
-                      type="number"
-                      min={16}
-                      max={100}
-                      value={formData.age}
-                      onChange={(e) => updateField("age", e.target.value)}
-                      required
-                    />
-                  </div>
-                  {requiresGuardian && (
-                    <div className="space-y-2">
-                      <Label htmlFor="guardianName">
-                        Parent/guardian full name *
-                      </Label>
-                      <Input
-                        id="guardianName"
-                        value={formData.guardianName}
-                        onChange={(e) =>
-                          updateField("guardianName", e.target.value)
-                        }
-                        required={requiresGuardian}
-                      />
-                    </div>
-                  )}
+                <div className="space-y-2">
+                  <Label htmlFor="age">Age *</Label>
+                  <Input
+                    id="age"
+                    type="number"
+                    min={16}
+                    max={100}
+                    value={formData.age}
+                    onChange={(e) => updateField("age", e.target.value)}
+                    required
+                  />
                 </div>
               </section>
 
@@ -488,8 +464,12 @@ export default function SixWeekChallengePage() {
               <section className="space-y-4">
                 <h2 className="text-lg font-semibold text-[#fc9dca]">Nutrition</h2>
                 <div className="rounded-md border border-[#fc9dca]/30 bg-[#fc9dca]/5 p-3 text-sm text-gray-700">
-                  It is extremely hard to build muscle and lose body fat at the
-                  same time over 6 weeks. Choose one main goal for this challenge.
+                  Challenge Goal - NOTE: It is extremely hard to build muscle and
+                  lose body fat at the same time, especially over a 6 week period.
+                  If you select build muscle, the overall focus is to gain muscle
+                  and not lose fat, and if you select lose fat, the goal is to
+                  drop body fat and maintain your muscle. Please only select one
+                  goal for the challenge.
                 </div>
                 <div className="space-y-2">
                   <Label>Challenge goal *</Label>
@@ -700,12 +680,7 @@ export default function SixWeekChallengePage() {
                       </span>
                     </p>
                     <p className="text-sm text-gray-700">
-                      First-5 code:{" "}
-                      <span className="font-semibold text-gray-900">
-                        {CHALLENGE_CONFIG.discount.code}
-                      </span>{" "}
-                      ({status?.discountRemaining ?? CHALLENGE_CONFIG.discount.maxUses}{" "}
-                      left)
+                      Discount: 20% (limited to first 5)
                     </p>
                     {isSoldOut && (
                       <p className="text-sm font-medium text-red-600">
@@ -718,10 +693,7 @@ export default function SixWeekChallengePage() {
                 <Separator />
 
                 <div className="space-y-2">
-                  <Label htmlFor="promoCode">
-                    Discount code (optional, first 5 get{" "}
-                    {CHALLENGE_CONFIG.discount.percent}% off)
-                  </Label>
+                  <Label htmlFor="promoCode">20% (limited to first 5)</Label>
                   <Input
                     id="promoCode"
                     value={formData.promoCode}
@@ -763,9 +735,9 @@ export default function SixWeekChallengePage() {
                 </div>
 
                 <div className="rounded-md border border-[#fc9dca]/20 bg-[#fc9dca]/5 p-3 text-xs text-gray-700">
-                  Current members pay challenge fees only and continue normal
-                  membership billing. Non-members are challenge-only and get
-                  access only on training days/times.
+                  Members pay the challenge fee only and keep normal membership
+                  billing. Non-members pay for challenge access only on scheduled
+                  challenge training days and times.
                 </div>
 
                 {!paystackKey && (
