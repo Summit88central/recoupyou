@@ -1,5 +1,5 @@
 export const CHALLENGE_CONFIG = {
-  title: "6 Weeks Glutes and Core Challenge",
+  title: "SCULPT SERIES: Glutes & Core Edition",
   maxParticipants: 10,
   discount: {
     code: "FIRST5",
@@ -62,7 +62,7 @@ Date:
 This Challenge agreement is between RECOUPYOU Pty Ltd (RECOUPYOU GYM) and You.
 
 This Agreement is intended:
-a) to set out the terms of RECOUPYOU GYM's 6-Week Glutes and Core Challenge (the Challenge); and
+a) to set out the terms of RECOUPYOU GYM's SCULPT SERIES: Glutes & Core Edition (the Challenge); and
 b) to protect the intellectual property of RECOUPYOU made available to you during the Challenge.
 
 In this agreement unless the contrary intention appears:
