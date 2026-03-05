@@ -7,7 +7,7 @@ export const CHALLENGE_CONFIG = {
     maxUses: 5,
   },
   pricing: {
-    member: 1200,
+    member: 1300,
     nonMember: 1500,
   },
 } as const;
@@ -136,7 +136,7 @@ Payment:
 30. You agree to pay the amount stated for your selected method.
 31. Payments are non-refundable, non-transferable and non-exchangeable.
 
-Method A - Member (R1200): because I am a current member.
+Method A - Member (R1300): because I am a current member.
 Method B - Non-Member (R1500): because I am not currently a member.
 I understand that none of these payment methods are refundable.
 
