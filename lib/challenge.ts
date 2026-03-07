@@ -71,7 +71,7 @@ In this agreement unless the contrary intention appears:
 
 It is agreed as follows:
 RECOUPYOU GYM will provide to you:
-1. Full access to the GYM between 3:50pm-5:10pm Monday, Tuesday and Thursday for 6 weeks starting on the commencement date of the challenge (NON-MEMBERS). Full access to the GYM between 5:00am-7:00pm Monday to Friday and 6:00am-12:00pm on Saturdays (MEMBERS).
+1. Full access to the GYM between 04:20PM - 05:40PM Monday, Tuesday and Thursday for 6 weeks starting on the commencement date of the challenge (NON-MEMBERS). Full access to the GYM between 5:00am-7:00pm Monday to Friday and 6:00am-12:00pm on Saturdays (MEMBERS).
 2. Custom eating plan tailored to your goals.
 3. Pre-wellness evaluation meeting to cover the basics of nutrition for your specific goal of the Challenge.
 4. Midway mindset and progress check-in to help encourage and motivate you at the halfway mark of the Challenge. The meeting will be held in the gym or via video call.
