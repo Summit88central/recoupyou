@@ -122,7 +122,7 @@ export default function SixWeekChallengePage() {
     setIsClient(true);
   }, []);
 
-  const parseJsonResponse = async <T>(response: Response): Promise<T> => {
+  async function parseJsonResponse<T>(response: Response): Promise<T> {
     const contentType = response.headers.get("content-type") || "";
     const body = await response.text();
 
@@ -145,7 +145,7 @@ export default function SixWeekChallengePage() {
         )}`
       );
     }
-  };
+  }
 
   const loadStatus = async () => {
     setIsLoadingStatus(true);
