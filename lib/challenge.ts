@@ -1,6 +1,11 @@
 export const CHALLENGE_CONFIG = {
   title: "SCULPT SERIES: Glutes & Core Edition",
   maxParticipants: 10,
+  kickoff: {
+    startDate: "30 March 2026",
+    time: "16:30 - 17:30",
+    location: "72 Kleinenberg Street, Old Bendor, Polokwane",
+  },
   discount: {
     code: "FIRST5",
     percent: 20,

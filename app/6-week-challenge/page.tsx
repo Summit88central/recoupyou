@@ -3,7 +3,16 @@
 import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { AlertCircle, CheckCircle2, Loader2, ShieldCheck, Users } from "lucide-react";
+import {
+  AlertCircle,
+  CalendarDays,
+  CheckCircle2,
+  Clock3,
+  Loader2,
+  MapPin,
+  ShieldCheck,
+  Users,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -107,6 +116,24 @@ const initialFormState: ChallengeFormState = {
   agreementSignature: "",
   agreementDate: today,
 };
+
+const challengeHighlightItems = [
+  {
+    icon: CalendarDays,
+    label: "Starting date",
+    value: CHALLENGE_CONFIG.kickoff.startDate,
+  },
+  {
+    icon: Clock3,
+    label: "Time",
+    value: CHALLENGE_CONFIG.kickoff.time,
+  },
+  {
+    icon: MapPin,
+    label: "Location",
+    value: CHALLENGE_CONFIG.kickoff.location,
+  },
+] as const;
 
 export default function SixWeekChallengePage() {
   const [formData, setFormData] = useState<ChallengeFormState>(initialFormState);
@@ -352,6 +379,33 @@ export default function SixWeekChallengePage() {
             Complete your form, review and sign the terms, then pay securely to
             lock your place.
           </p>
+        </div>
+
+        <div className="sticky top-20 z-30 mb-8 md:top-24">
+          <div className="mx-auto max-w-5xl rounded-[32px] border border-[#fc9dca]/20 bg-white/90 px-4 py-3 shadow-[0_16px_40px_rgba(17,24,39,0.12)] backdrop-blur-xl sm:px-6">
+            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-4">
+              {challengeHighlightItems.map(({ icon: Icon, label, value }, index) => (
+                <div
+                  key={label}
+                  className={`flex items-start gap-3 ${
+                    index > 0 ? "sm:border-l sm:border-gray-200 sm:pl-4" : ""
+                  }`}
+                >
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#fc9dca]/12">
+                    <Icon className="h-4 w-4 text-[#fc9dca]" />
+                  </span>
+                  <div className="text-left">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gray-500">
+                      {label}
+                    </p>
+                    <p className="text-sm font-semibold leading-snug text-gray-900">
+                      {value}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
@@ -697,6 +751,25 @@ export default function SixWeekChallengePage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+                <div className="rounded-2xl border border-[#fc9dca]/20 bg-[#fc9dca]/5 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#fc9dca]">
+                    Kickoff details
+                  </p>
+                  <div className="mt-3 space-y-3">
+                    {challengeHighlightItems.map(({ icon: Icon, label, value }) => (
+                      <div key={label} className="flex items-start gap-3 text-sm text-gray-700">
+                        <Icon className="mt-0.5 h-4 w-4 shrink-0 text-[#fc9dca]" />
+                        <div>
+                          <p className="font-medium text-gray-900">{label}</p>
+                          <p>{value}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <Separator />
+
                 {isLoadingStatus ? (
                   <p className="text-sm text-gray-500">Loading availability...</p>
                 ) : statusError ? (

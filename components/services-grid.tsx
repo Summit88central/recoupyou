@@ -1,5 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
+import { CHALLENGE_CONFIG } from "@/lib/challenge";
 
 export function ServicesGrid() {
   return (
@@ -30,7 +31,11 @@ export function ServicesGrid() {
               SCULPT SERIES: Glutes & Core Edition
             </h3>
             <p className="text-sm text-gray-200">
-              Limited to 10 people. Apply and pay online to secure your spot.
+              Limited to 10 people. Starts {CHALLENGE_CONFIG.kickoff.startDate} at{" "}
+              {CHALLENGE_CONFIG.kickoff.time}.
+            </p>
+            <p className="text-sm text-gray-300">
+              {CHALLENGE_CONFIG.kickoff.location}
             </p>
           </div>
           <a
