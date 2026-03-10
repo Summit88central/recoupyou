@@ -122,12 +122,40 @@ export default function SixWeekChallengePage() {
     setIsClient(true);
   }, []);
 
+  const parseJsonResponse = async <T>(response: Response): Promise<T> => {
+    const contentType = response.headers.get("content-type") || "";
+    const body = await response.text();
+
+    if (!contentType.includes("application/json")) {
+      throw new Error(
+        `Invalid response from ${response.url}. Status ${response.status}: ${body.slice(
+          0,
+          180
+        )}`
+      );
+    }
+
+    try {
+      return JSON.parse(body) as T;
+    } catch (error) {
+      throw new Error(
+        `Invalid JSON from ${response.url}. Status ${response.status}: ${body.slice(
+          0,
+          180
+        )}`
+      );
+    }
+  };
+
   const loadStatus = async () => {
     setIsLoadingStatus(true);
     setStatusError(null);
     try {
       const response = await fetch("/api/challenge");
-      const payload = await response.json();
+      const payload = await parseJsonResponse<{
+        status: ChallengeStatus;
+        error?: string;
+      }>(response);
       if (!response.ok) {
         throw new Error(payload.error || "Unable to load challenge availability.");
       }
@@ -232,7 +260,11 @@ export default function SixWeekChallengePage() {
         body: JSON.stringify(payload),
       });
 
-      const result = await response.json();
+      const result = await parseJsonResponse<{
+        status: ChallengeStatus;
+        error?: string;
+        discountApplied?: boolean;
+      }>(response);
 
       if (!response.ok) {
         throw new Error(
