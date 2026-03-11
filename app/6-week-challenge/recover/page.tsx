@@ -29,7 +29,6 @@ import {
   GOAL_LABELS,
   GOAL_OPTIONS,
   PAYMENT_OPTION_LABELS,
-  normalizePromoCode,
   type ChallengeActivityLevel,
   type ChallengeDietaryPreference,
   type ChallengeGoal,
@@ -41,10 +40,6 @@ type ChallengeStatus = {
   participantsSignedUp: number;
   spotsRemaining: number;
   isSoldOut: boolean;
-  discountCode: string;
-  discountMaxUses: number;
-  discountUses: number;
-  discountRemaining: number;
 };
 
 type ChallengeFormState = {
@@ -63,7 +58,6 @@ type ChallengeFormState = {
   activityLevel: ChallengeActivityLevel;
   alcoholFrequency: string;
   instagramHandle: string;
-  promoCode: string;
   termsAccepted: boolean;
   liabilityAccepted: boolean;
   agreementSignature: string;
@@ -88,7 +82,6 @@ const initialFormState: ChallengeFormState = {
   activityLevel: "sedentary",
   alcoholFrequency: "",
   instagramHandle: "",
-  promoCode: CHALLENGE_CONFIG.discount.code,
   termsAccepted: false,
   liabilityAccepted: false,
   agreementSignature: "",
@@ -184,7 +177,6 @@ export default function RecoverChallengeRegistrationPage() {
   };
 
   const ageNumber = Number(formData.age);
-  const normalizedPromoCode = normalizePromoCode(formData.promoCode);
   const spotsRemaining = status?.spotsRemaining ?? CHALLENGE_CONFIG.maxParticipants;
   const isSoldOut = status?.isSoldOut ?? false;
 
@@ -229,7 +221,6 @@ export default function RecoverChallengeRegistrationPage() {
         ...formData,
         age: ageNumber,
         paymentReference: formData.paymentReference.trim(),
-        promoCode: normalizedPromoCode || "",
       };
 
       const response = await fetch("/api/challenge/recover", {
@@ -671,21 +662,6 @@ export default function RecoverChallengeRegistrationPage() {
                     </div>
                   </div>
                 </section>
-
-                <div className="space-y-3">
-                  <Label htmlFor="promoCode">Discount code (prefilled)</Label>
-                  <Input
-                    id="promoCode"
-                    value={formData.promoCode}
-                    disabled
-                    readOnly
-                    className="bg-[#fc9dca]/5"
-                  />
-                  <p className="text-sm text-gray-500">
-                    We will restore your record with the discount you should have
-                    received.
-                  </p>
-                </div>
 
                 <div className="pt-2">
                   <div className="flex justify-center">

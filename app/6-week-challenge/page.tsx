@@ -40,9 +40,6 @@ import {
   GOAL_OPTIONS,
   PAYMENT_OPTION_LABELS,
   getBaseChallengeAmount,
-  getDiscountedAmount,
-  getDiscountValue,
-  normalizePromoCode,
   type ChallengeActivityLevel,
   type ChallengeDietaryPreference,
   type ChallengeGoal,
@@ -59,10 +56,6 @@ type ChallengeStatus = {
   participantsSignedUp: number;
   spotsRemaining: number;
   isSoldOut: boolean;
-  discountCode: string;
-  discountMaxUses: number;
-  discountUses: number;
-  discountRemaining: number;
 };
 
 type ChallengeFormState = {
@@ -80,7 +73,6 @@ type ChallengeFormState = {
   activityLevel: ChallengeActivityLevel;
   alcoholFrequency: string;
   instagramHandle: string;
-  promoCode: string;
   termsAccepted: boolean;
   liabilityAccepted: boolean;
   agreementSignature: string;
@@ -110,7 +102,6 @@ const initialFormState: ChallengeFormState = {
   activityLevel: "sedentary",
   alcoholFrequency: "",
   instagramHandle: "",
-  promoCode: "",
   termsAccepted: false,
   liabilityAccepted: false,
   agreementSignature: "",
@@ -229,14 +220,7 @@ export default function SixWeekChallengePage() {
 
   const ageNumber = Number(formData.age);
   const baseAmount = getBaseChallengeAmount(formData.paymentOption);
-  const normalizedPromoCode = normalizePromoCode(formData.promoCode);
-  const promoMatches = normalizedPromoCode === CHALLENGE_CONFIG.discount.code;
-  const discountRemaining =
-    status?.discountRemaining ?? CHALLENGE_CONFIG.discount.maxUses;
-  const discountCanBeApplied = promoMatches && discountRemaining > 0;
-  const discountedAmount = getDiscountedAmount(baseAmount);
-  const discountValue = getDiscountValue(baseAmount);
-  const finalAmount = discountCanBeApplied ? discountedAmount : baseAmount;
+  const finalAmount = baseAmount;
   const spotsRemaining = status?.spotsRemaining ?? CHALLENGE_CONFIG.maxParticipants;
   const isSoldOut = status?.isSoldOut ?? false;
   const paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || "";
@@ -276,7 +260,6 @@ export default function SixWeekChallengePage() {
         age: ageNumber,
         paymentReference: reference.reference,
         amountPaid: finalAmount,
-        promoCode: normalizedPromoCode || "",
       };
 
       const response = await fetch("/api/challenge", {
@@ -290,7 +273,6 @@ export default function SixWeekChallengePage() {
       const result = await parseJsonResponse<{
         status: ChallengeStatus;
         error?: string;
-        discountApplied?: boolean;
       }>(response);
 
       if (!response.ok) {
@@ -784,9 +766,6 @@ export default function SixWeekChallengePage() {
                         {spotsRemaining} / {CHALLENGE_CONFIG.maxParticipants}
                       </span>
                     </p>
-                    <p className="text-sm text-gray-700">
-                      Discount: 20% (limited to first 5)
-                    </p>
                     {isSoldOut && (
                       <p className="text-sm font-medium text-red-600">
                         This challenge is currently sold out.
@@ -797,41 +776,12 @@ export default function SixWeekChallengePage() {
 
                 <Separator />
 
-                <div className="space-y-2">
-                  <Label htmlFor="promoCode">20% (limited to first 5)</Label>
-                  <Input
-                    id="promoCode"
-                    value={formData.promoCode}
-                    onChange={(e) => updateField("promoCode", e.target.value)}
-                    placeholder={`Use ${CHALLENGE_CONFIG.discount.code}`}
-                  />
-                  {formData.promoCode && (
-                    <p
-                      className={`text-sm ${
-                        discountCanBeApplied ? "text-green-600" : "text-red-600"
-                      }`}
-                    >
-                      {discountCanBeApplied
-                        ? `Discount active: -${formatPrice(discountValue)} (${CHALLENGE_CONFIG.discount.percent}% off)`
-                        : "Discount code is invalid or no discount spots remain."}
-                    </p>
-                  )}
-                </div>
-
                 <Separator />
 
                 <div className="space-y-2 text-sm text-gray-700">
                   <div className="flex items-center justify-between">
                     <span>Base price</span>
                     <span>{formatPrice(baseAmount)}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Discount</span>
-                    <span className="text-green-600">
-                      {discountCanBeApplied
-                        ? `- ${formatPrice(discountValue)}`
-                        : formatPrice(0)}
-                    </span>
                   </div>
                   <div className="flex items-center justify-between text-base font-semibold text-gray-900">
                     <span>Total due</span>
