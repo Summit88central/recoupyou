@@ -892,18 +892,6 @@ export default function SixWeekChallengePage() {
                     verification.
                   </p>
                 </div>
-                <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">
-                  If payment was successful but your registration details were not
-                  saved, use the recovery form to re-submit them and restore your
-                  dashboard entry.
-                  <div className="mt-2">
-                    <Link href="/6-week-challenge/recover">
-                      <Button className="h-8 rounded-md border border-amber-300 bg-white px-3 text-xs text-amber-800 hover:bg-amber-100">
-                        Recover challenge registration
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
               </CardContent>
             </Card>
 
