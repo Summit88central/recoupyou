@@ -381,7 +381,7 @@ export default function SixWeekChallengePage() {
           </p>
         </div>
 
-        <div className="sticky top-20 z-30 mb-8 md:top-24">
+        <div className="mb-8">
           <div className="mx-auto max-w-5xl rounded-[32px] border border-[#fc9dca]/20 bg-white/90 px-4 py-3 shadow-[0_16px_40px_rgba(17,24,39,0.12)] backdrop-blur-xl sm:px-6">
             <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-4">
               {challengeHighlightItems.map(({ icon: Icon, label, value }, index) => (
@@ -740,7 +740,7 @@ export default function SixWeekChallengePage() {
           </Card>
 
           <div className="space-y-6">
-            <Card className="border-gray-200 shadow-md lg:sticky lg:top-24">
+            <Card className="border-gray-200 shadow-md">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Users className="h-5 w-5 text-[#fc9dca]" />
