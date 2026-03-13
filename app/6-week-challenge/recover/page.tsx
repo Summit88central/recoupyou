@@ -58,6 +58,7 @@ type ChallengeFormState = {
   activityLevel: ChallengeActivityLevel;
   alcoholFrequency: string;
   instagramHandle: string;
+  promoCode: string;
   termsAccepted: boolean;
   liabilityAccepted: boolean;
   agreementSignature: string;
@@ -82,6 +83,7 @@ const initialFormState: ChallengeFormState = {
   activityLevel: "sedentary",
   alcoholFrequency: "",
   instagramHandle: "",
+  promoCode: "",
   termsAccepted: false,
   liabilityAccepted: false,
   agreementSignature: "",
@@ -136,13 +138,19 @@ export default function RecoverChallengeRegistrationPage() {
     const params = new URLSearchParams(window.location.search);
     const reference = params.get("reference")?.trim();
     const email = params.get("email")?.trim();
+    const paymentOptionParam = params.get("paymentOption")?.trim().toLowerCase();
+    const promoCode = params.get("promoCode")?.trim();
 
     if (reference || email) {
       setFormData((prev) => ({
         ...prev,
         ...(reference ? { paymentReference: reference } : {}),
         ...(email ? { email } : {}),
-        paymentOption: "member",
+        ...((paymentOptionParam === "member" ||
+        paymentOptionParam === "non_member")
+          ? { paymentOption: paymentOptionParam }
+          : { paymentOption: "member" }),
+        ...(promoCode ? { promoCode } : {}),
       }));
     }
 
@@ -221,6 +229,7 @@ export default function RecoverChallengeRegistrationPage() {
         ...formData,
         age: ageNumber,
         paymentReference: formData.paymentReference.trim(),
+        promoCode: formData.promoCode.trim(),
       };
 
       const response = await fetch("/api/challenge/recover", {

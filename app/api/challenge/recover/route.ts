@@ -205,9 +205,7 @@ export async function POST(request: NextRequest) {
 
     const status = await getChallengeStatus(supabase);
     const baseAmount = getBaseChallengeAmount(body.paymentOption);
-    const normalizedPromoCode = normalizePromoCode(
-      body.promoCode || CHALLENGE_CONFIG.discount.code
-    );
+    const normalizedPromoCode = normalizePromoCode(body.promoCode || "");
     const discountAmount = getDiscountedAmount(baseAmount);
     const discountApplied =
       normalizedPromoCode === CHALLENGE_CONFIG.discount.code &&
