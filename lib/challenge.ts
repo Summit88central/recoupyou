@@ -1,6 +1,6 @@
 export const CHALLENGE_CONFIG = {
   title: "SCULPT SERIES: Glutes & Core Edition",
-  maxParticipants: 10,
+  maxParticipants: 12,
   kickoff: {
     startDate: "30 March 2026",
     time: "16:30 - 17:30",
