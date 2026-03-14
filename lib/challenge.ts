@@ -22,7 +22,7 @@ export const CHALLENGE_RECOVERY_LOCK = {
   paidRecoveryReferences: [
     "challenge_1773470484490",
     "challenge_1773474880468",
-  ],
+  ] as string[],
 } as const;
 
 export type ChallengePaymentOption = "member" | "non_member";
