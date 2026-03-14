@@ -17,6 +17,14 @@ export const CHALLENGE_CONFIG = {
   },
 } as const;
 
+export const CHALLENGE_RECOVERY_LOCK = {
+  isActive: true,
+  paidRecoveryReferences: [
+    "challenge_1773470484490",
+    "challenge_1773474880468",
+  ],
+} as const;
+
 export type ChallengePaymentOption = "member" | "non_member";
 export type ChallengeGoal = "lose_body_fat" | "maintain" | "build_muscle";
 export type ChallengeActivityLevel =

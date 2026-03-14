@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   ACTIVITY_OPTIONS,
   CHALLENGE_CONFIG,
+  CHALLENGE_RECOVERY_LOCK,
   DIETARY_OPTIONS,
   GOAL_OPTIONS,
   getBaseChallengeAmount,
@@ -207,11 +208,17 @@ export async function POST(request: NextRequest) {
     const baseAmount = getBaseChallengeAmount(body.paymentOption);
     const normalizedPromoCode = normalizePromoCode(body.promoCode || "");
     const discountAmount = getDiscountedAmount(baseAmount);
+    const isRecoveryReference =
+      CHALLENGE_RECOVERY_LOCK.isActive &&
+      CHALLENGE_RECOVERY_LOCK.paidRecoveryReferences.includes(
+        paymentReference
+      );
     const discountApplied =
       normalizedPromoCode === CHALLENGE_CONFIG.discount.code &&
       status.discountRemaining > 0;
     const recoveredAmount = discountApplied ? discountAmount : baseAmount;
-    const paymentStatus = status.isSoldOut ? "waitlist" : "paid";
+    const paymentStatus =
+      status.isSoldOut && !isRecoveryReference ? "waitlist" : "paid";
 
     const { data, error } = await supabase
       .from("challenge_registrations")
@@ -244,6 +251,7 @@ export async function POST(request: NextRequest) {
         payment_status: paymentStatus,
         registration_payload: {
           recovered: true,
+          paidRecovery: isRecoveryReference,
           manual_recovery: true,
           processed_at: new Date().toISOString(),
         },

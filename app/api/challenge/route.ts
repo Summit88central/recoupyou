@@ -3,6 +3,7 @@ import { type SupabaseClient, createClient } from "@supabase/supabase-js";
 import {
   ACTIVITY_OPTIONS,
   CHALLENGE_CONFIG,
+  CHALLENGE_RECOVERY_LOCK,
   DIETARY_OPTIONS,
   GOAL_OPTIONS,
   getBaseChallengeAmount,
@@ -94,6 +95,7 @@ async function getChallengeStatus(): Promise<ChallengeStatus> {
   const signedUp = participantsSignedUp ?? 0;
   const discounted = discountUses ?? 0;
   const spotsRemaining = Math.max(0, CHALLENGE_CONFIG.maxParticipants - signedUp);
+  const isSoldOut = CHALLENGE_RECOVERY_LOCK.isActive || spotsRemaining <= 0;
   const discountRemaining = Math.max(
     0,
     CHALLENGE_CONFIG.discount.maxUses - discounted
@@ -102,8 +104,8 @@ async function getChallengeStatus(): Promise<ChallengeStatus> {
   return {
     maxParticipants: CHALLENGE_CONFIG.maxParticipants,
     participantsSignedUp: signedUp,
-    spotsRemaining,
-    isSoldOut: spotsRemaining <= 0,
+    spotsRemaining: isSoldOut ? 0 : spotsRemaining,
+    isSoldOut,
     discountCode: CHALLENGE_CONFIG.discount.code,
     discountMaxUses: CHALLENGE_CONFIG.discount.maxUses,
     discountUses: discounted,
