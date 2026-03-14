@@ -18,7 +18,7 @@ export const CHALLENGE_CONFIG = {
 } as const;
 
 export const CHALLENGE_RECOVERY_LOCK = {
-  isActive: true,
+  isActive: false,
   paidRecoveryReferences: [
     "challenge_1773470484490",
     "challenge_1773474880468",
