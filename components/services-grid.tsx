@@ -30,6 +30,9 @@ export function ServicesGrid() {
             <h3 className="text-xl sm:text-2xl font-semibold tracking-tight">
               SCULPT SERIES: Glutes & Core Edition
             </h3>
+            <p className="mt-2 inline-flex w-fit items-center gap-2 rounded-full bg-rose-500/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-rose-200">
+              Sold Out
+            </p>
             <p className="text-sm text-gray-200">
               Limited to 10 people. Starts {CHALLENGE_CONFIG.kickoff.startDate} at{" "}
               {CHALLENGE_CONFIG.kickoff.time}.
@@ -67,7 +70,7 @@ export function ServicesGrid() {
                       RY Gym Membership
                     </h2>
                     <p className="mt-3 text-sm sm:text-base text-white/90">
-                      Apply now and start your fitness journey with us.
+                      Apply now and start training yourself at our gym.
                     </p>
                   </div>
                   <a
