@@ -34,8 +34,8 @@ export function ServicesGrid() {
               Sold Out
             </p>
             <p className="text-sm text-gray-200">
-              Limited to 10 people. Starts {CHALLENGE_CONFIG.kickoff.startDate} at{" "}
-              {CHALLENGE_CONFIG.kickoff.time}.
+              Limited to {CHALLENGE_CONFIG.maxParticipants} people. Starts{" "}
+              {CHALLENGE_CONFIG.kickoff.startDate} at {CHALLENGE_CONFIG.kickoff.time}.
             </p>
             <p className="text-sm text-gray-300">
               {CHALLENGE_CONFIG.kickoff.location}
