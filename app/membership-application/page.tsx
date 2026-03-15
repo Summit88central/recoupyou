@@ -398,10 +398,6 @@ export default function MembershipApplicationPage() {
 
                   <div className="space-y-3">
                     <Label>Would you like to purchase any of these? *</Label>
-                    <p className="text-sm text-gray-600">
-                      Personal training fee includes membership fee, training
-                      and eating guide
-                    </p>
                     <div className="space-y-2">
                       {[
                         {
@@ -415,11 +411,6 @@ export default function MembershipApplicationPage() {
                         {
                           id: "both-guides",
                           label: "Both of the above (R750)",
-                        },
-                        {
-                          id: "personal-training",
-                          label:
-                            "Personal Training (R250/session or R2400 monthly)",
                         },
                         { id: "none", label: "None of the above" },
                       ].map((service) => (
