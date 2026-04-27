@@ -352,7 +352,7 @@ export default function SixWeekChallengePage() {
       <div className="mx-auto max-w-6xl px-4 py-10">
         <div className="mb-8 text-center">
           <Badge className="mb-4 bg-[#fc9dca]/10 text-[#fc9dca] border-[#fc9dca]/20">
-            Limited to 10 Participants
+            Limited to {CHALLENGE_CONFIG.maxParticipants} Participants
           </Badge>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
             {CHALLENGE_CONFIG.title}

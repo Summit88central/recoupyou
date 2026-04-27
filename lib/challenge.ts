@@ -1,8 +1,8 @@
 export const CHALLENGE_CONFIG = {
-  title: "SCULPT SERIES: Glutes & Core Edition",
+  title: "SCULPT SERIES: Glutes & Core Reloaded",
   maxParticipants: 13,
   kickoff: {
-    startDate: "30 March 2026",
+    startDate: "11 May 2026",
     time: "16:30 - 17:30",
     location: "72 Kleinenberg Street, Old Bendor, Polokwane",
   },
@@ -19,10 +19,7 @@ export const CHALLENGE_CONFIG = {
 
 export const CHALLENGE_RECOVERY_LOCK = {
   isActive: false,
-  paidRecoveryReferences: [
-    "challenge_1773470484490",
-    "challenge_1773474880468",
-  ] as string[],
+  paidRecoveryReferences: [] as string[],
 } as const;
 
 export type ChallengePaymentOption = "member" | "non_member";
@@ -75,7 +72,7 @@ Date:
 This Challenge agreement is between RECOUPYOU Pty Ltd (RECOUPYOU GYM) and You.
 
 This Agreement is intended:
-a) to set out the terms of RECOUPYOU GYM's SCULPT SERIES: Glutes & Core Edition (the Challenge); and
+a) to set out the terms of RECOUPYOU GYM's SCULPT SERIES: Glutes & Core Reloaded (the Challenge); and
 b) to protect the intellectual property of RECOUPYOU made available to you during the Challenge.
 
 In this agreement unless the contrary intention appears:

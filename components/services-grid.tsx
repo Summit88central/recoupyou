@@ -28,12 +28,18 @@ export function ServicesGrid() {
         <div className="flex flex-col sm:flex-row items-center justify-between mb-8 px-6 py-4 rounded-2xl bg-[#2a2a2a] text-white">
           <div>
             <h3 className="text-xl sm:text-2xl font-semibold tracking-tight">
-              SCULPT SERIES: Glutes & Core Edition
+              SCULPT SERIES: Glutes &amp; Core Reloaded
             </h3>
-            <p className="mt-2 inline-flex w-fit items-center gap-2 rounded-full bg-rose-500/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-rose-200">
-              Sold Out
-            </p>
-            <p className="text-sm text-gray-200">
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <p className="inline-flex w-fit items-center gap-1.5 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-emerald-300">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Enrolling Now
+              </p>
+              <p className="inline-flex w-fit items-center gap-1.5 rounded-full bg-amber-500/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-amber-300">
+                🔥 Previous round sold out in 4 days
+              </p>
+            </div>
+            <p className="mt-2 text-sm text-gray-200">
               Limited to {CHALLENGE_CONFIG.maxParticipants} people. Starts{" "}
               {CHALLENGE_CONFIG.kickoff.startDate} at {CHALLENGE_CONFIG.kickoff.time}.
             </p>
