@@ -18,7 +18,7 @@ export const CHALLENGE_CONFIG = {
 } as const;
 
 export const CHALLENGE_RECOVERY_LOCK = {
-  isActive: true,
+  isActive: false,
   message:
     "Challenge registrations are temporarily paused while we recover paid applications. Please use your recovery link if you have already paid.",
   paidRecoveryReferences: [

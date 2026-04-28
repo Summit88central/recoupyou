@@ -51,6 +51,27 @@ type ChallengeStatus = {
   discountRemaining: number;
 };
 
+async function getPendingRecoverySpotCount(
+  supabase: SupabaseClient
+): Promise<number> {
+  const reservedReferences = CHALLENGE_RECOVERY_LOCK.paidRecoveryReferences;
+
+  if (reservedReferences.length === 0) {
+    return 0;
+  }
+
+  const { count, error } = await supabase
+    .from("challenge_registrations")
+    .select("*", { count: "exact", head: true })
+    .in("payment_reference", reservedReferences);
+
+  if (error) {
+    throw new Error(error.message || "Unable to load reserved recovery spots.");
+  }
+
+  return Math.max(0, reservedReferences.length - (count ?? 0));
+}
+
 function getSupabaseClient(): SupabaseClient | null {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -128,7 +149,11 @@ function isValidRegistrationBody(
 }
 
 async function getChallengeStatus(supabase: SupabaseClient): Promise<ChallengeStatus> {
-  const [{ count: participantsSignedUp, error: participantsError }, { count: discountUses, error: discountError }] =
+  const [
+    { count: participantsSignedUp, error: participantsError },
+    { count: discountUses, error: discountError },
+    pendingRecoverySpotCount,
+  ] =
     await Promise.all([
       supabase
         .from("challenge_registrations")
@@ -139,6 +164,7 @@ async function getChallengeStatus(supabase: SupabaseClient): Promise<ChallengeSt
         .select("*", { count: "exact", head: true })
         .eq("payment_status", "paid")
         .eq("discount_applied", true),
+      getPendingRecoverySpotCount(supabase),
     ]);
 
   if (participantsError || discountError) {
@@ -149,26 +175,22 @@ async function getChallengeStatus(supabase: SupabaseClient): Promise<ChallengeSt
 
   const signedUp = participantsSignedUp ?? 0;
   const discounted = discountUses ?? 0;
-  const spotsRemaining = Math.max(0, CHALLENGE_CONFIG.maxParticipants - signedUp);
+  const publicCapacity = Math.max(
+    0,
+    CHALLENGE_CONFIG.maxParticipants - pendingRecoverySpotCount
+  );
+  const spotsRemaining = Math.max(0, publicCapacity - signedUp);
   const discountRemaining = Math.max(0, CHALLENGE_CONFIG.discount.maxUses - discounted);
 
   return {
     maxParticipants: CHALLENGE_CONFIG.maxParticipants,
     participantsSignedUp: signedUp,
-    spotsRemaining:
-      CHALLENGE_REGISTRATION.isOpen && !CHALLENGE_RECOVERY_LOCK.isActive
-        ? spotsRemaining
-        : 0,
-    isSoldOut:
-      !CHALLENGE_REGISTRATION.isOpen ||
-      CHALLENGE_RECOVERY_LOCK.isActive ||
-      spotsRemaining <= 0,
+    spotsRemaining: CHALLENGE_REGISTRATION.isOpen ? spotsRemaining : 0,
+    isSoldOut: !CHALLENGE_REGISTRATION.isOpen || spotsRemaining <= 0,
     isRegistrationOpen: CHALLENGE_REGISTRATION.isOpen,
-    closedMessage: CHALLENGE_RECOVERY_LOCK.isActive
-      ? CHALLENGE_RECOVERY_LOCK.message
-      : CHALLENGE_REGISTRATION.isOpen
-        ? null
-        : CHALLENGE_REGISTRATION.closedMessage,
+    closedMessage: CHALLENGE_REGISTRATION.isOpen
+      ? null
+      : CHALLENGE_REGISTRATION.closedMessage,
     discountLabel: CHALLENGE_CONFIG.discount.label,
     discountMaxUses: CHALLENGE_CONFIG.discount.maxUses,
     discountUses: discounted,
@@ -246,13 +268,6 @@ export async function POST(request: NextRequest) {
       !CHALLENGE_RECOVERY_LOCK.isActive ||
       CHALLENGE_RECOVERY_LOCK.paidRecoveryReferences.includes(paymentReference);
 
-    if (!isRecoveryReference) {
-      return NextResponse.json(
-        { error: CHALLENGE_RECOVERY_LOCK.message },
-        { status: 403 }
-      );
-    }
-
     const discountApplied = isLegacyDiscountPayment;
     const paymentStatus = "paid";
 
@@ -287,7 +302,7 @@ export async function POST(request: NextRequest) {
         payment_status: paymentStatus,
         registration_payload: {
           recovered: true,
-          paidRecovery: true,
+          paidRecovery: isRecoveryReference,
           manual_recovery: true,
           verified_amount: verifiedAmount,
           verified_paid_at: verifiedPayment.paidAt,
