@@ -7,13 +7,13 @@ export const CHALLENGE_CONFIG = {
     location: "72 Kleinenberg Street, Old Bendor, Polokwane",
   },
   discount: {
-    code: "FIRST5",
+    label: "First 3 people",
     percent: 20,
-    maxUses: 5,
+    maxUses: 3,
   },
   pricing: {
     member: 1300,
-    nonMember: 1500,
+    nonMember: 1600,
   },
 } as const;
 
@@ -147,7 +147,7 @@ Payment:
 31. Payments are non-refundable, non-transferable and non-exchangeable.
 
 Method A - Member (R1300): because I am a current member.
-Method B - Non-Member (R1500): because I am not currently a member.
+Method B - Non-Member (R1600): because I am not currently a member.
 I understand that none of these payment methods are refundable.
 
 Please continue for the next part of your challenge contract:
@@ -225,8 +225,4 @@ export function getDiscountedAmount(baseAmount: number): number {
 
 export function getDiscountValue(baseAmount: number): number {
   return Math.max(0, baseAmount - getDiscountedAmount(baseAmount));
-}
-
-export function normalizePromoCode(code: string): string {
-  return code.trim().toUpperCase();
 }

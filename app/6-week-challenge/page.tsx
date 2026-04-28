@@ -40,6 +40,8 @@ import {
   GOAL_OPTIONS,
   PAYMENT_OPTION_LABELS,
   getBaseChallengeAmount,
+  getDiscountValue,
+  getDiscountedAmount,
   type ChallengeActivityLevel,
   type ChallengeDietaryPreference,
   type ChallengeGoal,
@@ -56,6 +58,10 @@ type ChallengeStatus = {
   participantsSignedUp: number;
   spotsRemaining: number;
   isSoldOut: boolean;
+  discountLabel: string;
+  discountMaxUses: number;
+  discountUses: number;
+  discountRemaining: number;
 };
 
 type ChallengeFormState = {
@@ -220,7 +226,11 @@ export default function SixWeekChallengePage() {
 
   const ageNumber = Number(formData.age);
   const baseAmount = getBaseChallengeAmount(formData.paymentOption);
-  const finalAmount = baseAmount;
+  const discountApplies = (status?.discountRemaining ?? 0) > 0;
+  const finalAmount = discountApplies
+    ? getDiscountedAmount(baseAmount)
+    : baseAmount;
+  const discountValue = discountApplies ? getDiscountValue(baseAmount) : 0;
   const spotsRemaining = status?.spotsRemaining ?? CHALLENGE_CONFIG.maxParticipants;
   const isSoldOut = status?.isSoldOut ?? false;
   const paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || "";
@@ -771,10 +781,16 @@ export default function SixWeekChallengePage() {
                         This challenge is currently sold out.
                       </p>
                     )}
+                    {status && status.discountRemaining > 0 && (
+                      <p className="text-sm font-medium text-green-700">
+                        {status.discountLabel} get {CHALLENGE_CONFIG.discount.percent}% off automatically.
+                        {status.discountRemaining === 1
+                          ? " 1 discounted spot left."
+                          : ` ${status.discountRemaining} discounted spots left.`}
+                      </p>
+                    )}
                   </div>
                 )}
-
-                <Separator />
 
                 <Separator />
 
@@ -783,6 +799,12 @@ export default function SixWeekChallengePage() {
                     <span>Base price</span>
                     <span>{formatPrice(baseAmount)}</span>
                   </div>
+                  {discountApplies && (
+                    <div className="flex items-center justify-between text-green-700">
+                      <span>Automatic early discount</span>
+                      <span>-{formatPrice(discountValue)}</span>
+                    </div>
+                  )}
                   <div className="flex items-center justify-between text-base font-semibold text-gray-900">
                     <span>Total due</span>
                     <span>{formatPrice(finalAmount)}</span>

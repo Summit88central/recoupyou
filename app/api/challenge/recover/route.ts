@@ -8,7 +8,6 @@ import {
   GOAL_OPTIONS,
   getBaseChallengeAmount,
   getDiscountedAmount,
-  normalizePromoCode,
   type ChallengeActivityLevel,
   type ChallengeDietaryPreference,
   type ChallengeGoal,
@@ -31,7 +30,6 @@ type ChallengeRegistrationBody = {
   activityLevel: ChallengeActivityLevel;
   alcoholFrequency: string;
   instagramHandle: string;
-  promoCode?: string;
   termsAccepted: boolean;
   liabilityAccepted: boolean;
   agreementSignature: string;
@@ -43,7 +41,7 @@ type ChallengeStatus = {
   participantsSignedUp: number;
   spotsRemaining: number;
   isSoldOut: boolean;
-  discountCode: string;
+  discountLabel: string;
   discountMaxUses: number;
   discountUses: number;
   discountRemaining: number;
@@ -155,7 +153,7 @@ async function getChallengeStatus(supabase: SupabaseClient): Promise<ChallengeSt
     participantsSignedUp: signedUp,
     spotsRemaining,
     isSoldOut: spotsRemaining <= 0,
-    discountCode: CHALLENGE_CONFIG.discount.code,
+    discountLabel: CHALLENGE_CONFIG.discount.label,
     discountMaxUses: CHALLENGE_CONFIG.discount.maxUses,
     discountUses: discounted,
     discountRemaining,
@@ -206,16 +204,13 @@ export async function POST(request: NextRequest) {
 
     const status = await getChallengeStatus(supabase);
     const baseAmount = getBaseChallengeAmount(body.paymentOption);
-    const normalizedPromoCode = normalizePromoCode(body.promoCode || "");
     const discountAmount = getDiscountedAmount(baseAmount);
     const isRecoveryReference =
       CHALLENGE_RECOVERY_LOCK.isActive &&
       CHALLENGE_RECOVERY_LOCK.paidRecoveryReferences.includes(
         paymentReference
       );
-    const discountApplied =
-      normalizedPromoCode === CHALLENGE_CONFIG.discount.code &&
-      status.discountRemaining > 0;
+    const discountApplied = status.discountRemaining > 0;
     const recoveredAmount = discountApplied ? discountAmount : baseAmount;
     const paymentStatus =
       status.isSoldOut && !isRecoveryReference ? "waitlist" : "paid";
@@ -230,7 +225,7 @@ export async function POST(request: NextRequest) {
         payment_option: body.paymentOption,
         base_price: baseAmount,
         amount_paid: recoveredAmount,
-        discount_code: normalizedPromoCode || null,
+        discount_code: discountApplied ? "AUTO_FIRST_3_20_OFF" : null,
         discount_applied: discountApplied,
         discount_amount: discountApplied ? baseAmount - recoveredAmount : 0,
         payment_reference: paymentReference,

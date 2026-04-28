@@ -8,7 +8,6 @@ import {
   GOAL_OPTIONS,
   getBaseChallengeAmount,
   getDiscountedAmount,
-  normalizePromoCode,
   type ChallengeActivityLevel,
   type ChallengeDietaryPreference,
   type ChallengeGoal,
@@ -36,7 +35,7 @@ type ChallengeStatus = {
   participantsSignedUp: number;
   spotsRemaining: number;
   isSoldOut: boolean;
-  discountCode: string;
+  discountLabel: string;
   discountMaxUses: number;
   discountUses: number;
   discountRemaining: number;
@@ -64,7 +63,6 @@ type ChallengeRegistrationBody = {
   agreementDate: string;
   paymentReference: string;
   amountPaid: number;
-  promoCode?: string;
 };
 
 async function getChallengeStatus(): Promise<ChallengeStatus> {
@@ -106,7 +104,7 @@ async function getChallengeStatus(): Promise<ChallengeStatus> {
     participantsSignedUp: signedUp,
     spotsRemaining: isSoldOut ? 0 : spotsRemaining,
     isSoldOut,
-    discountCode: CHALLENGE_CONFIG.discount.code,
+    discountLabel: CHALLENGE_CONFIG.discount.label,
     discountMaxUses: CHALLENGE_CONFIG.discount.maxUses,
     discountUses: discounted,
     discountRemaining,
@@ -240,11 +238,8 @@ export async function POST(request: NextRequest) {
     }
 
     const baseAmount = getBaseChallengeAmount(body.paymentOption);
-    const normalizedPromoCode = normalizePromoCode(body.promoCode || "");
     const discountAmount = getDiscountedAmount(baseAmount);
-    const discountEligible =
-      normalizedPromoCode === CHALLENGE_CONFIG.discount.code &&
-      status.discountRemaining > 0;
+    const discountEligible = status.discountRemaining > 0;
     const validAmounts = discountEligible
       ? [baseAmount, discountAmount]
       : [baseAmount];
@@ -271,7 +266,7 @@ export async function POST(request: NextRequest) {
         payment_option: body.paymentOption,
         base_price: baseAmount,
         amount_paid: body.amountPaid,
-        discount_code: normalizedPromoCode || null,
+        discount_code: discountApplied ? "AUTO_FIRST_3_20_OFF" : null,
         discount_applied: discountApplied,
         discount_amount: discountApplied ? baseAmount - body.amountPaid : 0,
         payment_reference: body.paymentReference.trim(),
