@@ -41,8 +41,6 @@ import {
   GOAL_OPTIONS,
   PAYMENT_OPTION_LABELS,
   getBaseChallengeAmount,
-  getDiscountValue,
-  getDiscountedAmount,
   type ChallengeActivityLevel,
   type ChallengeDietaryPreference,
   type ChallengeGoal,
@@ -229,11 +227,7 @@ export default function SixWeekChallengePage() {
 
   const ageNumber = Number(formData.age);
   const baseAmount = getBaseChallengeAmount(formData.paymentOption);
-  const discountApplies = (status?.discountRemaining ?? 0) > 0;
-  const finalAmount = discountApplies
-    ? getDiscountedAmount(baseAmount)
-    : baseAmount;
-  const discountValue = discountApplies ? getDiscountValue(baseAmount) : 0;
+  const finalAmount = baseAmount;
   const spotsRemaining = status?.spotsRemaining ?? CHALLENGE_CONFIG.maxParticipants;
   const isRegistrationOpen =
     status?.isRegistrationOpen ?? CHALLENGE_REGISTRATION.isOpen;
@@ -791,14 +785,6 @@ export default function SixWeekChallengePage() {
                         {registrationClosedMessage || "This challenge is currently unavailable."}
                       </p>
                     )}
-                    {status &&
-                      isRegistrationOpen &&
-                      status.discountRemaining > 0 && (
-                      <p className="text-sm font-medium text-green-700">
-                        {status.discountRemaining} early bird offers left. Get{" "}
-                        {CHALLENGE_CONFIG.discount.percent}% off automatically.
-                      </p>
-                    )}
                   </div>
                 )}
 
@@ -809,12 +795,6 @@ export default function SixWeekChallengePage() {
                     <span>Base price</span>
                     <span>{formatPrice(baseAmount)}</span>
                   </div>
-                  {discountApplies && (
-                    <div className="flex items-center justify-between text-green-700">
-                      <span>Automatic early discount</span>
-                      <span>-{formatPrice(discountValue)}</span>
-                    </div>
-                  )}
                   <div className="flex items-center justify-between text-base font-semibold text-gray-900">
                     <span>Total due</span>
                     <span>{formatPrice(finalAmount)}</span>

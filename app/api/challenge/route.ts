@@ -8,12 +8,12 @@ import {
   DIETARY_OPTIONS,
   GOAL_OPTIONS,
   getBaseChallengeAmount,
-  getDiscountedAmount,
   type ChallengeActivityLevel,
   type ChallengeDietaryPreference,
   type ChallengeGoal,
   type ChallengePaymentOption,
 } from "@/lib/challenge";
+import { verifyChallengePayment } from "@/lib/paystack";
 
 let cachedSupabase: SupabaseClient | null = null;
 
@@ -255,23 +255,17 @@ export async function POST(request: NextRequest) {
     }
 
     const baseAmount = getBaseChallengeAmount(body.paymentOption);
-    const discountAmount = getDiscountedAmount(baseAmount);
-    const discountEligible = status.discountRemaining > 0;
-    const validAmounts = discountEligible
-      ? [baseAmount, discountAmount]
-      : [baseAmount];
+    const verifiedPayment = await verifyChallengePayment(body.paymentReference);
 
-    if (!validAmounts.includes(body.amountPaid)) {
+    if (verifiedPayment.amount !== baseAmount) {
       return NextResponse.json(
         {
           error: "Unexpected payment amount for the selected payment option.",
-          expectedAmounts: validAmounts,
+          expectedAmounts: [baseAmount],
         },
         { status: 400 }
       );
     }
-
-    const discountApplied = discountEligible && body.amountPaid === discountAmount;
 
     const { data, error } = await supabase
       .from("challenge_registrations")
@@ -282,11 +276,11 @@ export async function POST(request: NextRequest) {
         age: body.age,
         payment_option: body.paymentOption,
         base_price: baseAmount,
-        amount_paid: body.amountPaid,
-        discount_code: discountApplied ? "AUTO_FIRST_3_20_OFF" : null,
-        discount_applied: discountApplied,
-        discount_amount: discountApplied ? baseAmount - body.amountPaid : 0,
-        payment_reference: body.paymentReference.trim(),
+        amount_paid: verifiedPayment.amount,
+        discount_code: null,
+        discount_applied: false,
+        discount_amount: 0,
+        payment_reference: verifiedPayment.reference,
         emergency_contact_name: body.emergencyContactName.trim(),
         emergency_contact_number: body.emergencyContactNumber.trim(),
         challenge_goal: body.challengeGoal,
@@ -325,7 +319,7 @@ export async function POST(request: NextRequest) {
       {
         registrationId: data.id,
         status: updatedStatus,
-        discountApplied,
+        discountApplied: false,
       },
       { status: 201 }
     );

@@ -14,6 +14,7 @@ import {
   type ChallengeGoal,
   type ChallengePaymentOption,
 } from "@/lib/challenge";
+import { verifyChallengePayment } from "@/lib/paystack";
 
 type ChallengeRegistrationBody = {
   paymentReference: string;
@@ -216,16 +217,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const status = await getChallengeStatus(supabase);
     const baseAmount = getBaseChallengeAmount(body.paymentOption);
-    const discountAmount = getDiscountedAmount(baseAmount);
+    const legacyDiscountAmount = getDiscountedAmount(baseAmount);
+    const verifiedPayment = await verifyChallengePayment(paymentReference);
+    const verifiedAmount = verifiedPayment.amount;
+    const isLegacyDiscountPayment = verifiedAmount === legacyDiscountAmount;
+
+    if (verifiedAmount !== baseAmount && !isLegacyDiscountPayment) {
+      return NextResponse.json(
+        {
+          error: "Unexpected payment amount for the selected payment option.",
+          expectedAmounts: [baseAmount, legacyDiscountAmount],
+        },
+        { status: 400 }
+      );
+    }
+
+    const status = await getChallengeStatus(supabase);
     const isRecoveryReference =
       CHALLENGE_RECOVERY_LOCK.isActive &&
       CHALLENGE_RECOVERY_LOCK.paidRecoveryReferences.includes(
         paymentReference
       );
-    const discountApplied = status.discountRemaining > 0;
-    const recoveredAmount = discountApplied ? discountAmount : baseAmount;
+    const discountApplied = isLegacyDiscountPayment;
     const paymentStatus =
       status.isSoldOut && !isRecoveryReference ? "waitlist" : "paid";
 
@@ -238,11 +252,11 @@ export async function POST(request: NextRequest) {
         age: body.age,
         payment_option: body.paymentOption,
         base_price: baseAmount,
-        amount_paid: recoveredAmount,
+        amount_paid: verifiedAmount,
         discount_code: discountApplied ? "AUTO_FIRST_3_20_OFF" : null,
         discount_applied: discountApplied,
-        discount_amount: discountApplied ? baseAmount - recoveredAmount : 0,
-        payment_reference: paymentReference,
+        discount_amount: discountApplied ? baseAmount - verifiedAmount : 0,
+        payment_reference: verifiedPayment.reference,
         emergency_contact_name: body.emergencyContactName.trim(),
         emergency_contact_number: body.emergencyContactNumber.trim(),
         challenge_goal: body.challengeGoal,
@@ -262,6 +276,8 @@ export async function POST(request: NextRequest) {
           recovered: true,
           paidRecovery: isRecoveryReference,
           manual_recovery: true,
+          verified_amount: verifiedAmount,
+          verified_paid_at: verifiedPayment.paidAt,
           processed_at: new Date().toISOString(),
         },
       })

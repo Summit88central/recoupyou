@@ -98,7 +98,7 @@ const initialFormState: ChallengeFormState = {
 export default function RecoverChallengeRegistrationPage() {
   const [formData, setFormData] = useState<ChallengeFormState>(initialFormState);
   const [isReferenceLocked, setIsReferenceLocked] = useState(false);
-  const isPaymentOptionLocked = true;
+  const [isPaymentOptionLocked, setIsPaymentOptionLocked] = useState(false);
   const [status, setStatus] = useState<ChallengeStatus | null>(null);
   const [isLoadingStatus, setIsLoadingStatus] = useState(true);
   const [statusError, setStatusError] = useState<string | null>(null);
@@ -144,14 +144,15 @@ export default function RecoverChallengeRegistrationPage() {
     const reference = params.get("reference")?.trim();
     const email = params.get("email")?.trim();
     const paymentOptionParam = params.get("paymentOption")?.trim().toLowerCase();
+    const hasLockedPaymentOption =
+      paymentOptionParam === "member" || paymentOptionParam === "non_member";
 
     if (reference || email) {
       setFormData((prev) => ({
         ...prev,
         ...(reference ? { paymentReference: reference } : {}),
         ...(email ? { email } : {}),
-        ...((paymentOptionParam === "member" ||
-        paymentOptionParam === "non_member")
+        ...(hasLockedPaymentOption
           ? { paymentOption: paymentOptionParam }
           : { paymentOption: "member" }),
       }));
@@ -160,6 +161,8 @@ export default function RecoverChallengeRegistrationPage() {
     if (reference) {
       setIsReferenceLocked(true);
     }
+
+    setIsPaymentOptionLocked(hasLockedPaymentOption);
   }, []);
 
   const updateField = <K extends keyof ChallengeFormState>(
@@ -463,6 +466,11 @@ export default function RecoverChallengeRegistrationPage() {
                       </div>
                     ))}
                   </RadioGroup>
+                  {!isPaymentOptionLocked && (
+                    <p className="text-sm text-gray-500">
+                      Choose the same option that was used for the successful payment.
+                    </p>
+                  )}
                 </section>
 
                 <section className="space-y-4">
