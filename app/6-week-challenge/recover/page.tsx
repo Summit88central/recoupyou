@@ -24,6 +24,7 @@ import {
   ACTIVITY_OPTIONS,
   CHALLENGE_CONFIG,
   CHALLENGE_FULL_TERMS_TEXT,
+  CHALLENGE_REGISTRATION,
   DIETARY_LABELS,
   DIETARY_OPTIONS,
   GOAL_LABELS,
@@ -40,6 +41,8 @@ type ChallengeStatus = {
   participantsSignedUp: number;
   spotsRemaining: number;
   isSoldOut: boolean;
+  isRegistrationOpen: boolean;
+  closedMessage: string | null;
   discountLabel: string;
   discountMaxUses: number;
   discountUses: number;
@@ -186,7 +189,11 @@ export default function RecoverChallengeRegistrationPage() {
 
   const ageNumber = Number(formData.age);
   const spotsRemaining = status?.spotsRemaining ?? CHALLENGE_CONFIG.maxParticipants;
+  const isRegistrationOpen =
+    status?.isRegistrationOpen ?? CHALLENGE_REGISTRATION.isOpen;
   const isSoldOut = status?.isSoldOut ?? false;
+  const registrationClosedMessage =
+    status?.closedMessage ?? CHALLENGE_REGISTRATION.closedMessage;
 
   const isEmailValid = useMemo(() => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -309,14 +316,19 @@ export default function RecoverChallengeRegistrationPage() {
 
   return (
     <main className="min-h-screen bg-white pt-20">
-      <div className="mx-auto max-w-6xl px-4 py-10">
+        <div className="mx-auto max-w-6xl px-4 py-10">
           <div className="mb-8 text-center">
             <Badge className="mb-4 bg-[#fc9dca]/10 text-[#fc9dca] border-[#fc9dca]/20">
-              Recovery Form
+              {isRegistrationOpen ? "Recovery Form" : "Registration Closed"}
             </Badge>
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
               Challenge Recovery
             </h1>
+            {!isRegistrationOpen && (
+              <p className="mx-auto max-w-2xl text-sm text-gray-600">
+                {registrationClosedMessage}
+              </p>
+            )}
           </div>
 
         <div className="mx-auto w-full max-w-4xl">
@@ -329,7 +341,9 @@ export default function RecoverChallengeRegistrationPage() {
               <CardHeader>
                 <CardTitle className="text-gray-900">Recovery Form</CardTitle>
                 <CardDescription>
-                  Fill in the same details as your challenge registration.
+                  {isRegistrationOpen
+                    ? "Fill in the same details as your challenge registration."
+                    : registrationClosedMessage}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-8">
@@ -672,17 +686,26 @@ export default function RecoverChallengeRegistrationPage() {
                 </section>
 
                 <div className="pt-2">
+                  {!isRegistrationOpen && (
+                    <p className="mb-4 text-center text-sm font-medium text-red-600">
+                      {registrationClosedMessage}
+                    </p>
+                  )}
                   <div className="flex justify-center">
                     <Button
                       type="submit"
                       className="rounded-md bg-[#fc9dca] px-16 py-3 text-sm font-medium text-white transition hover:bg-rose-400 disabled:cursor-not-allowed disabled:opacity-50"
-                      disabled={isSubmitting || isLoadingStatus}
+                      disabled={
+                        !isRegistrationOpen || isSubmitting || isLoadingStatus
+                      }
                     >
                       {isSubmitting ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                           Saving...
                         </>
+                      ) : !isRegistrationOpen ? (
+                        "Registration Closed"
                       ) : (
                         "Save"
                       )}

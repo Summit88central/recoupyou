@@ -1,6 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
-import { CHALLENGE_CONFIG } from "@/lib/challenge";
+import { CHALLENGE_CONFIG, CHALLENGE_REGISTRATION } from "@/lib/challenge";
 
 export function ServicesGrid() {
   return (
@@ -33,7 +33,9 @@ export function ServicesGrid() {
             <div className="mt-2 flex flex-wrap items-center gap-2">
               <p className="inline-flex w-fit items-center gap-1.5 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-emerald-300">
                 <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Enrolling Now
+                {CHALLENGE_REGISTRATION.isOpen
+                  ? "Enrolling Now"
+                  : "Registration Closed"}
               </p>
               <p className="inline-flex w-fit items-center gap-1.5 rounded-full bg-amber-500/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-amber-300">
                 🔥 Previous round sold out in 4 days
@@ -51,7 +53,7 @@ export function ServicesGrid() {
             href="/6-week-challenge"
             className="mt-3 sm:mt-0 inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#fc9dca] font-medium text-sm text-white shadow-sm hover:bg-rose-400 transition"
           >
-            Apply Now
+            {CHALLENGE_REGISTRATION.isOpen ? "Apply Now" : "View Details"}
             <ArrowRight className="w-4 h-4" />
           </a>
         </div>

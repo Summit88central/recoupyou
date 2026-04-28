@@ -22,6 +22,12 @@ export const CHALLENGE_RECOVERY_LOCK = {
   paidRecoveryReferences: [] as string[],
 } as const;
 
+export const CHALLENGE_REGISTRATION = {
+  isOpen: false,
+  closedMessage:
+    "Challenge registration is currently closed. Please contact the gym for the next intake.",
+} as const;
+
 export type ChallengePaymentOption = "member" | "non_member";
 export type ChallengeGoal = "lose_body_fat" | "maintain" | "build_muscle";
 export type ChallengeActivityLevel =

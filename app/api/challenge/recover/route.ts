@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   ACTIVITY_OPTIONS,
   CHALLENGE_CONFIG,
+  CHALLENGE_REGISTRATION,
   CHALLENGE_RECOVERY_LOCK,
   DIETARY_OPTIONS,
   GOAL_OPTIONS,
@@ -41,6 +42,8 @@ type ChallengeStatus = {
   participantsSignedUp: number;
   spotsRemaining: number;
   isSoldOut: boolean;
+  isRegistrationOpen: boolean;
+  closedMessage: string | null;
   discountLabel: string;
   discountMaxUses: number;
   discountUses: number;
@@ -151,8 +154,12 @@ async function getChallengeStatus(supabase: SupabaseClient): Promise<ChallengeSt
   return {
     maxParticipants: CHALLENGE_CONFIG.maxParticipants,
     participantsSignedUp: signedUp,
-    spotsRemaining,
-    isSoldOut: spotsRemaining <= 0,
+    spotsRemaining: CHALLENGE_REGISTRATION.isOpen ? spotsRemaining : 0,
+    isSoldOut: !CHALLENGE_REGISTRATION.isOpen || spotsRemaining <= 0,
+    isRegistrationOpen: CHALLENGE_REGISTRATION.isOpen,
+    closedMessage: CHALLENGE_REGISTRATION.isOpen
+      ? null
+      : CHALLENGE_REGISTRATION.closedMessage,
     discountLabel: CHALLENGE_CONFIG.discount.label,
     discountMaxUses: CHALLENGE_CONFIG.discount.maxUses,
     discountUses: discounted,
@@ -162,6 +169,13 @@ async function getChallengeStatus(supabase: SupabaseClient): Promise<ChallengeSt
 
 export async function POST(request: NextRequest) {
   try {
+    if (!CHALLENGE_REGISTRATION.isOpen) {
+      return NextResponse.json(
+        { error: CHALLENGE_REGISTRATION.closedMessage },
+        { status: 403 }
+      );
+    }
+
     const supabase = getSupabaseClient();
     if (!supabase) {
       return NextResponse.json(

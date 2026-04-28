@@ -3,6 +3,7 @@ import { type SupabaseClient, createClient } from "@supabase/supabase-js";
 import {
   ACTIVITY_OPTIONS,
   CHALLENGE_CONFIG,
+  CHALLENGE_REGISTRATION,
   CHALLENGE_RECOVERY_LOCK,
   DIETARY_OPTIONS,
   GOAL_OPTIONS,
@@ -35,6 +36,8 @@ type ChallengeStatus = {
   participantsSignedUp: number;
   spotsRemaining: number;
   isSoldOut: boolean;
+  isRegistrationOpen: boolean;
+  closedMessage: string | null;
   discountLabel: string;
   discountMaxUses: number;
   discountUses: number;
@@ -93,7 +96,10 @@ async function getChallengeStatus(): Promise<ChallengeStatus> {
   const signedUp = participantsSignedUp ?? 0;
   const discounted = discountUses ?? 0;
   const spotsRemaining = Math.max(0, CHALLENGE_CONFIG.maxParticipants - signedUp);
-  const isSoldOut = CHALLENGE_RECOVERY_LOCK.isActive || spotsRemaining <= 0;
+  const isSoldOut =
+    !CHALLENGE_REGISTRATION.isOpen ||
+    CHALLENGE_RECOVERY_LOCK.isActive ||
+    spotsRemaining <= 0;
   const discountRemaining = Math.max(
     0,
     CHALLENGE_CONFIG.discount.maxUses - discounted
@@ -104,6 +110,10 @@ async function getChallengeStatus(): Promise<ChallengeStatus> {
     participantsSignedUp: signedUp,
     spotsRemaining: isSoldOut ? 0 : spotsRemaining,
     isSoldOut,
+    isRegistrationOpen: CHALLENGE_REGISTRATION.isOpen,
+    closedMessage: CHALLENGE_REGISTRATION.isOpen
+      ? null
+      : CHALLENGE_REGISTRATION.closedMessage,
     discountLabel: CHALLENGE_CONFIG.discount.label,
     discountMaxUses: CHALLENGE_CONFIG.discount.maxUses,
     discountUses: discounted,
@@ -195,6 +205,13 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    if (!CHALLENGE_REGISTRATION.isOpen) {
+      return NextResponse.json(
+        { error: CHALLENGE_REGISTRATION.closedMessage },
+        { status: 403 }
+      );
+    }
+
     const supabase = getSupabaseClient();
     if (!supabase) {
       return NextResponse.json(

@@ -34,6 +34,7 @@ import {
   ACTIVITY_OPTIONS,
   CHALLENGE_CONFIG,
   CHALLENGE_FULL_TERMS_TEXT,
+  CHALLENGE_REGISTRATION,
   DIETARY_LABELS,
   DIETARY_OPTIONS,
   GOAL_LABELS,
@@ -58,6 +59,8 @@ type ChallengeStatus = {
   participantsSignedUp: number;
   spotsRemaining: number;
   isSoldOut: boolean;
+  isRegistrationOpen: boolean;
+  closedMessage: string | null;
   discountLabel: string;
   discountMaxUses: number;
   discountUses: number;
@@ -232,7 +235,11 @@ export default function SixWeekChallengePage() {
     : baseAmount;
   const discountValue = discountApplies ? getDiscountValue(baseAmount) : 0;
   const spotsRemaining = status?.spotsRemaining ?? CHALLENGE_CONFIG.maxParticipants;
+  const isRegistrationOpen =
+    status?.isRegistrationOpen ?? CHALLENGE_REGISTRATION.isOpen;
   const isSoldOut = status?.isSoldOut ?? false;
+  const registrationClosedMessage =
+    status?.closedMessage ?? CHALLENGE_REGISTRATION.closedMessage;
   const paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || "";
 
   const isEmailValid = useMemo(() => {
@@ -362,14 +369,17 @@ export default function SixWeekChallengePage() {
       <div className="mx-auto max-w-6xl px-4 py-10">
         <div className="mb-8 text-center">
           <Badge className="mb-4 bg-[#fc9dca]/10 text-[#fc9dca] border-[#fc9dca]/20">
-            Limited to {CHALLENGE_CONFIG.maxParticipants} Participants
+            {isRegistrationOpen
+              ? `Limited to ${CHALLENGE_CONFIG.maxParticipants} Participants`
+              : "Registration Closed"}
           </Badge>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-3">
             {CHALLENGE_CONFIG.title}
           </h1>
           <p className="text-gray-600 max-w-3xl mx-auto">
-            Complete your form, review and sign the terms, then pay securely to
-            lock your place.
+            {isRegistrationOpen
+              ? "Complete your form, review and sign the terms, then pay securely to lock your place."
+              : registrationClosedMessage}
           </p>
         </div>
 
@@ -778,10 +788,12 @@ export default function SixWeekChallengePage() {
                     </p>
                     {isSoldOut && (
                       <p className="text-sm font-medium text-red-600">
-                        This challenge is currently sold out.
+                        {registrationClosedMessage || "This challenge is currently unavailable."}
                       </p>
                     )}
-                    {status && status.discountRemaining > 0 && (
+                    {status &&
+                      isRegistrationOpen &&
+                      status.discountRemaining > 0 && (
                       <p className="text-sm font-medium text-green-700">
                         {status.discountRemaining} early bird offers left. Get{" "}
                         {CHALLENGE_CONFIG.discount.percent}% off automatically.
@@ -825,6 +837,7 @@ export default function SixWeekChallengePage() {
 
                 <div>
                   {isClient &&
+                  isRegistrationOpen &&
                   !isSoldOut &&
                   !isLoadingStatus &&
                   !statusError &&
@@ -847,7 +860,9 @@ export default function SixWeekChallengePage() {
                           Finalizing...
                         </>
                       ) : isSoldOut ? (
-                        "Sold Out"
+                        isRegistrationOpen ? "Sold Out" : "Registration Closed"
+                      ) : !isRegistrationOpen ? (
+                        "Registration Closed"
                       ) : (
                         "Complete Required Fields to Continue"
                       )}
