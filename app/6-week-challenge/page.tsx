@@ -783,10 +783,8 @@ export default function SixWeekChallengePage() {
                     )}
                     {status && status.discountRemaining > 0 && (
                       <p className="text-sm font-medium text-green-700">
-                        {status.discountLabel} get {CHALLENGE_CONFIG.discount.percent}% off automatically.
-                        {status.discountRemaining === 1
-                          ? " 1 discounted spot left."
-                          : ` ${status.discountRemaining} discounted spots left.`}
+                        {status.discountRemaining} early bird offers left. Get{" "}
+                        {CHALLENGE_CONFIG.discount.percent}% off automatically.
                       </p>
                     )}
                   </div>
