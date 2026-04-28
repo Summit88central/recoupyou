@@ -155,12 +155,20 @@ async function getChallengeStatus(supabase: SupabaseClient): Promise<ChallengeSt
   return {
     maxParticipants: CHALLENGE_CONFIG.maxParticipants,
     participantsSignedUp: signedUp,
-    spotsRemaining: CHALLENGE_REGISTRATION.isOpen ? spotsRemaining : 0,
-    isSoldOut: !CHALLENGE_REGISTRATION.isOpen || spotsRemaining <= 0,
+    spotsRemaining:
+      CHALLENGE_REGISTRATION.isOpen && !CHALLENGE_RECOVERY_LOCK.isActive
+        ? spotsRemaining
+        : 0,
+    isSoldOut:
+      !CHALLENGE_REGISTRATION.isOpen ||
+      CHALLENGE_RECOVERY_LOCK.isActive ||
+      spotsRemaining <= 0,
     isRegistrationOpen: CHALLENGE_REGISTRATION.isOpen,
-    closedMessage: CHALLENGE_REGISTRATION.isOpen
-      ? null
-      : CHALLENGE_REGISTRATION.closedMessage,
+    closedMessage: CHALLENGE_RECOVERY_LOCK.isActive
+      ? CHALLENGE_RECOVERY_LOCK.message
+      : CHALLENGE_REGISTRATION.isOpen
+        ? null
+        : CHALLENGE_REGISTRATION.closedMessage,
     discountLabel: CHALLENGE_CONFIG.discount.label,
     discountMaxUses: CHALLENGE_CONFIG.discount.maxUses,
     discountUses: discounted,
@@ -235,13 +243,18 @@ export async function POST(request: NextRequest) {
 
     const status = await getChallengeStatus(supabase);
     const isRecoveryReference =
-      CHALLENGE_RECOVERY_LOCK.isActive &&
-      CHALLENGE_RECOVERY_LOCK.paidRecoveryReferences.includes(
-        paymentReference
+      !CHALLENGE_RECOVERY_LOCK.isActive ||
+      CHALLENGE_RECOVERY_LOCK.paidRecoveryReferences.includes(paymentReference);
+
+    if (!isRecoveryReference) {
+      return NextResponse.json(
+        { error: CHALLENGE_RECOVERY_LOCK.message },
+        { status: 403 }
       );
+    }
+
     const discountApplied = isLegacyDiscountPayment;
-    const paymentStatus =
-      status.isSoldOut && !isRecoveryReference ? "waitlist" : "paid";
+    const paymentStatus = "paid";
 
     const { data, error } = await supabase
       .from("challenge_registrations")
@@ -274,7 +287,7 @@ export async function POST(request: NextRequest) {
         payment_status: paymentStatus,
         registration_payload: {
           recovered: true,
-          paidRecovery: isRecoveryReference,
+          paidRecovery: true,
           manual_recovery: true,
           verified_amount: verifiedAmount,
           verified_paid_at: verifiedPayment.paidAt,

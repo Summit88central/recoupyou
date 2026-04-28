@@ -111,9 +111,11 @@ async function getChallengeStatus(): Promise<ChallengeStatus> {
     spotsRemaining: isSoldOut ? 0 : spotsRemaining,
     isSoldOut,
     isRegistrationOpen: CHALLENGE_REGISTRATION.isOpen,
-    closedMessage: CHALLENGE_REGISTRATION.isOpen
-      ? null
-      : CHALLENGE_REGISTRATION.closedMessage,
+    closedMessage: CHALLENGE_RECOVERY_LOCK.isActive
+      ? CHALLENGE_RECOVERY_LOCK.message
+      : CHALLENGE_REGISTRATION.isOpen
+        ? null
+        : CHALLENGE_REGISTRATION.closedMessage,
     discountLabel: CHALLENGE_CONFIG.discount.label,
     discountMaxUses: CHALLENGE_CONFIG.discount.maxUses,
     discountUses: discounted,
@@ -205,9 +207,13 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    if (!CHALLENGE_REGISTRATION.isOpen) {
+    if (!CHALLENGE_REGISTRATION.isOpen || CHALLENGE_RECOVERY_LOCK.isActive) {
       return NextResponse.json(
-        { error: CHALLENGE_REGISTRATION.closedMessage },
+        {
+          error: CHALLENGE_RECOVERY_LOCK.isActive
+            ? CHALLENGE_RECOVERY_LOCK.message
+            : CHALLENGE_REGISTRATION.closedMessage,
+        },
         { status: 403 }
       );
     }

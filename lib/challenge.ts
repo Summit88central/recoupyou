@@ -18,8 +18,15 @@ export const CHALLENGE_CONFIG = {
 } as const;
 
 export const CHALLENGE_RECOVERY_LOCK = {
-  isActive: false,
-  paidRecoveryReferences: [] as string[],
+  isActive: true,
+  message:
+    "Challenge registrations are temporarily paused while we recover paid applications. Please use your recovery link if you have already paid.",
+  paidRecoveryReferences: [
+    "challenge_1777363621300",
+    "challenge_1777363921506",
+    "challenge_1777364383631",
+    "challenge_1777365509154",
+  ] as string[],
 } as const;
 
 export const CHALLENGE_REGISTRATION = {
