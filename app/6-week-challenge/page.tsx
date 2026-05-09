@@ -831,7 +831,7 @@ export default function SixWeekChallengePage() {
                     />
                   ) : (
                     <Button
-                      className="w-full bg-[#fc9dca] hover:bg-rose-400"
+                      className="w-full bg-gray-300 text-gray-600 hover:bg-gray-300"
                       disabled
                     >
                       {isSubmitting ? (
