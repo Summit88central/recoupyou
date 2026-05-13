@@ -6,23 +6,24 @@ export function ServicesGrid() {
   return (
     <section id="programs" className="min-h-full mt-8">
       <div className="max-w-7xl mx-auto px-6 md:px-8 pb-10 md:pb-14">
-        {/* Free Class - Top Banner */}
+        {/* Wednesday Class - Top Banner */}
         <div className="flex flex-col sm:flex-row items-center justify-between mb-8 px-6 py-4 rounded-2xl bg-[#fc9dca]/10">
           <div>
             <h3 className="text-xl sm:text-2xl font-semibold tracking-tight text-gray-900">
-              Free Class
+              Wednesday Classes
             </h3>
             <p className="text-sm text-gray-600">
-              Join us every Wednesday for a free session !
+              Wednesday classes are currently suspended. We&apos;ll share an
+              update as soon as they resume.
             </p>
           </div>
-          <a
-            href="/wednesday-class"
-            className="mt-3 sm:mt-0 inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#fc9dca] font-medium text-sm text-white shadow-sm hover:bg-rose-400 transition"
+          <span
+            className="mt-3 sm:mt-0 inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#fc9dca] font-medium text-sm text-white shadow-sm opacity-80"
+            aria-disabled="true"
           >
-            RSVP Now
+            Currently Suspended
             <ArrowRight className="w-4 h-4" />
-          </a>
+          </span>
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-between mb-8 px-6 py-4 rounded-2xl bg-[#2a2a2a] text-white">
