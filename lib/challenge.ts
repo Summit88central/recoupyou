@@ -1,5 +1,5 @@
 export const CHALLENGE_CONFIG = {
-  title: "SCULPT SERIES: Glutes & Core Reloaded",
+  title: "SCULPT SERIES: Glutes, Strength & Conditioning",
   maxParticipants: 13,
   kickoff: {
     startDate: "22 June 2026",
@@ -85,7 +85,7 @@ Date:
 This Challenge agreement is between RECOUPYOU Pty Ltd (RECOUPYOU GYM) and You.
 
 This Agreement is intended:
-a) to set out the terms of RECOUPYOU GYM's SCULPT SERIES: Glutes & Core Reloaded (the Challenge); and
+a) to set out the terms of RECOUPYOU GYM's SCULPT SERIES: Glutes, Strength & Conditioning (the Challenge); and
 b) to protect the intellectual property of RECOUPYOU made available to you during the Challenge.
 
 In this agreement unless the contrary intention appears:
