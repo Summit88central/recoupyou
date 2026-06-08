@@ -5,6 +5,22 @@ import { createHmac, timingSafeEqual } from "crypto";
 // ─── Node.js runtime required for crypto and raw body reading ────────────────
 export const runtime = "nodejs";
 
+// ─── Helpers to parse Paystack metadata (values come back as strings) ────────
+
+function toStr(v: unknown): string | null {
+  if (typeof v === "string" && v.trim().length > 0) return v.trim();
+  return null;
+}
+
+function toNum(v: unknown): number | null {
+  if (typeof v === "number" && isFinite(v)) return v;
+  if (typeof v === "string") {
+    const n = Number(v);
+    if (isFinite(n)) return n;
+  }
+  return null;
+}
+
 // ─── Supabase (service role) ──────────────────────────────────────────────────
 
 function getSupabaseClient() {
@@ -210,25 +226,23 @@ export async function POST(request: NextRequest) {
   // 7 — Extract user data from metadata
   const m = verifiedTx.metadata;
 
-  const fullName = typeof m.full_name === "string" ? m.full_name : null;
-  const email = typeof m.email === "string" ? m.email : null;
-  const whatsappNumber =
-    typeof m.whatsapp_number === "string" ? m.whatsapp_number : null;
-  const age = typeof m.age === "number" ? m.age : null;
+  // Paystack returns all metadata values as strings — use toStr/toNum helpers
+  const fullName = toStr(m.full_name);
+  const email = toStr(m.email);
+  const whatsappNumber = toStr(m.whatsapp_number);
+  const age = toNum(m.age);
   const paymentOption =
     m.payment_option === "member" || m.payment_option === "non_member"
-      ? m.payment_option
+      ? (m.payment_option as string)
       : null;
-  const baseAmount =
-    typeof m.base_amount === "number" ? m.base_amount : null;
-  const finalAmount =
-    typeof m.final_amount === "number" ? m.final_amount : verifiedTx.amount;
-  const discountAmount =
-    typeof m.discount_amount === "number" ? m.discount_amount : 0;
-  const discountPercent =
-    typeof m.discount_percent === "number" ? m.discount_percent : 0;
+  const baseAmount = toNum(m.base_amount);
+  const finalAmount = toNum(m.final_amount) ?? verifiedTx.amount;
+  const discountAmount = toNum(m.discount_amount) ?? 0;
+  const discountPercent = toNum(m.discount_percent) ?? 0;
   const promoCodeUsed =
-    typeof m.promo_code_used === "string" ? m.promo_code_used : null;
+    typeof m.promo_code_used === "string" && m.promo_code_used.trim().length > 0
+      ? m.promo_code_used.trim()
+      : null;
 
   if (
     !fullName ||
@@ -275,43 +289,21 @@ export async function POST(request: NextRequest) {
       discount_applied: discountPercent > 0,
       discount_amount: discountAmount,
       payment_reference: reference,
-      emergency_contact_name:
-        typeof m.emergency_contact_name === "string"
-          ? m.emergency_contact_name
-          : "",
-      emergency_contact_number:
-        typeof m.emergency_contact_number === "string"
-          ? m.emergency_contact_number
-          : "",
-      challenge_goal:
-        typeof m.challenge_goal === "string"
-          ? m.challenge_goal
-          : "lose_body_fat",
-      dietary_preferences: Array.isArray(m.dietary_preferences)
-        ? m.dietary_preferences
-        : [],
-      foods_disliked:
-        typeof m.foods_disliked === "string" ? m.foods_disliked : null,
-      medical_conditions:
-        typeof m.medical_conditions === "string" ? m.medical_conditions : null,
-      activity_level:
-        typeof m.activity_level === "string" ? m.activity_level : "sedentary",
-      alcohol_frequency:
-        typeof m.alcohol_frequency === "string" ? m.alcohol_frequency : "",
-      instagram_handle:
-        typeof m.instagram_handle === "string" ? m.instagram_handle : null,
-      guardian_name:
-        typeof m.guardian_name === "string" ? m.guardian_name : null,
+      emergency_contact_name: toStr(m.emergency_contact_name) ?? "",
+      emergency_contact_number: toStr(m.emergency_contact_number) ?? "",
+      challenge_goal: toStr(m.challenge_goal) ?? "lose_body_fat",
+      dietary_preferences: Array.isArray(m.dietary_preferences) ? m.dietary_preferences : [],
+      foods_disliked: toStr(m.foods_disliked),
+      medical_conditions: toStr(m.medical_conditions),
+      activity_level: toStr(m.activity_level) ?? "sedentary",
+      alcohol_frequency: toStr(m.alcohol_frequency) ?? "",
+      instagram_handle: toStr(m.instagram_handle),
+      guardian_name: toStr(m.guardian_name),
       terms_accepted: true,
       liability_accepted: true,
-      agreement_signature:
-        typeof m.agreement_signature === "string"
-          ? m.agreement_signature
-          : fullName,
+      agreement_signature: toStr(m.agreement_signature) ?? fullName,
       agreement_date:
-        typeof m.agreement_date === "string"
-          ? m.agreement_date
-          : new Date().toISOString().split("T")[0],
+        toStr(m.agreement_date) ?? new Date().toISOString().split("T")[0],
       payment_status: "paid",
       promo_code_used: promoCodeUsed,
       status: "confirmed",
