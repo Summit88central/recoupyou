@@ -32,11 +32,14 @@ export function ServicesGrid() {
               SCULPT SERIES: Glutes &amp; Core Reloaded
             </h3>
             <div className="mt-2 flex flex-wrap items-center gap-2">
-              <p className="inline-flex w-fit items-center gap-1.5 rounded-full bg-rose-500/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-rose-200">
-                Sold Out
+              <p className="inline-flex w-fit items-center gap-1.5 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-emerald-300">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                {CHALLENGE_REGISTRATION.isOpen
+                  ? "Enrolling Now"
+                  : "Registration Closed"}
               </p>
               <p className="inline-flex w-fit items-center gap-1.5 rounded-full bg-amber-500/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-amber-300">
-                Next enrolment starts on 8th June
+                🔥 Previous round sold out in 4 days
               </p>
             </div>
             <p className="mt-2 text-sm text-gray-200">
@@ -49,10 +52,9 @@ export function ServicesGrid() {
           </div>
           <a
             href="/6-week-challenge"
-            className="mt-3 sm:mt-0 inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gray-300 font-medium text-sm text-gray-600 shadow-sm transition pointer-events-none"
-            aria-disabled="true"
+            className="mt-3 sm:mt-0 inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#fc9dca] font-medium text-sm text-white shadow-sm hover:bg-rose-400 transition"
           >
-            Apply Now
+            {CHALLENGE_REGISTRATION.isOpen ? "Apply Now" : "View Details"}
             <ArrowRight className="w-4 h-4" />
           </a>
         </div>

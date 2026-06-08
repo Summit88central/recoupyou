@@ -2,18 +2,18 @@ export const CHALLENGE_CONFIG = {
   title: "SCULPT SERIES: Glutes & Core Reloaded",
   maxParticipants: 13,
   kickoff: {
-    startDate: "11 May 2026",
+    startDate: "22 June 2026",
     time: "16:30 - 17:30",
     location: "72 Kleinenberg Street, Old Bendor, Polokwane",
   },
   discount: {
     label: "Early bird",
     percent: 20,
-    maxUses: 0,
+    maxUses: 4,
   },
   pricing: {
-    member: 1400,
-    nonMember: 1600,
+    member: 1600,
+    nonMember: 1800,
   },
 } as const;
 
@@ -94,7 +94,7 @@ In this agreement unless the contrary intention appears:
 
 It is agreed as follows:
 RECOUPYOU GYM will provide to you:
-1. Full access to the GYM between 04:20PM - 05:40PM Monday, Tuesday and Thursday for 6 weeks starting on the commencement date of the challenge (NON-MEMBERS). Full access to the GYM between 5:00am-7:00pm Monday to Friday and 6:00am-12:00pm on Saturdays (MEMBERS).
+1. Full access to the GYM between 04:20PM - 05:40PM Monday to Thursday for 6 weeks starting on the commencement date of the challenge (NON-MEMBERS). Full access to the GYM between 5:00am-7:00pm Monday to Friday and 6:00am-12:00pm on Saturdays (MEMBERS).
 2. Custom eating plan tailored to your goals.
 3. Pre-wellness evaluation meeting to cover the basics of nutrition for your specific goal of the Challenge.
 4. Midway mindset and progress check-in to help encourage and motivate you at the halfway mark of the Challenge. The meeting will be held in the gym or via video call.
@@ -159,8 +159,8 @@ Payment:
 30. You agree to pay the amount stated for your selected method.
 31. Payments are non-refundable, non-transferable and non-exchangeable.
 
-Method A - Member (R1400): because I am a current member.
-Method B - Non-Member (R1600): because I am not currently a member.
+Method A - Member (R1600): because I am a current member.
+Method B - Non-Member (R1800): because I am not currently a member.
 I understand that none of these payment methods are refundable.
 
 Please continue for the next part of your challenge contract:

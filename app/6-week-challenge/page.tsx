@@ -1,16 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import {
-  AlertCircle,
   CalendarDays,
-  CheckCircle2,
   Clock3,
   Loader2,
   MapPin,
   ShieldCheck,
+  Tag,
   Users,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -47,10 +45,7 @@ import {
   type ChallengePaymentOption,
 } from "@/lib/challenge";
 
-const PaystackButton = dynamic(
-  () => import("react-paystack").then((mod) => mod.PaystackButton),
-  { ssr: false }
-);
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 type ChallengeStatus = {
   maxParticipants: number;
@@ -59,10 +54,11 @@ type ChallengeStatus = {
   isSoldOut: boolean;
   isRegistrationOpen: boolean;
   closedMessage: string | null;
-  discountLabel: string;
-  discountMaxUses: number;
-  discountUses: number;
-  discountRemaining: number;
+  earlyBirdLabel: string;
+  earlyBirdPercent: number;
+  earlyBirdMaxUses: number;
+  earlyBirdUses: number;
+  earlyBirdRemaining: number;
 };
 
 type ChallengeFormState = {
@@ -85,6 +81,9 @@ type ChallengeFormState = {
   agreementSignature: string;
   agreementDate: string;
 };
+
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const formatPrice = (value: number) =>
   new Intl.NumberFormat("en-ZA", {
@@ -133,45 +132,34 @@ const challengeHighlightItems = [
   },
 ] as const;
 
+// ─── Component ────────────────────────────────────────────────────────────────
+
 export default function SixWeekChallengePage() {
   const [formData, setFormData] = useState<ChallengeFormState>(initialFormState);
   const [status, setStatus] = useState<ChallengeStatus | null>(null);
   const [isLoadingStatus, setIsLoadingStatus] = useState(true);
   const [statusError, setStatusError] = useState<string | null>(null);
-  const [isClient, setIsClient] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [registeredReference, setRegisteredReference] = useState("");
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
+  // ── Parse JSON response safely ─────────────────────────────────────────────
   async function parseJsonResponse<T>(response: Response): Promise<T> {
     const contentType = response.headers.get("content-type") || "";
     const body = await response.text();
-
     if (!contentType.includes("application/json")) {
       throw new Error(
-        `Invalid response from ${response.url}. Status ${response.status}: ${body.slice(
-          0,
-          180
-        )}`
+        `Invalid response from ${response.url}. Status ${response.status}: ${body.slice(0, 180)}`
       );
     }
-
     try {
       return JSON.parse(body) as T;
-    } catch (error) {
+    } catch {
       throw new Error(
-        `Invalid JSON from ${response.url}. Status ${response.status}: ${body.slice(
-          0,
-          180
-        )}`
+        `Invalid JSON from ${response.url}. Status ${response.status}: ${body.slice(0, 180)}`
       );
     }
   }
 
+  // ── Load challenge status ──────────────────────────────────────────────────
   const loadStatus = async () => {
     setIsLoadingStatus(true);
     setStatusError(null);
@@ -186,11 +174,9 @@ export default function SixWeekChallengePage() {
       }
       setStatus(payload.status);
     } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Unable to load challenge availability.";
-      setStatusError(message);
+      setStatusError(
+        error instanceof Error ? error.message : "Unable to load challenge availability."
+      );
     } finally {
       setIsLoadingStatus(false);
     }
@@ -198,8 +184,10 @@ export default function SixWeekChallengePage() {
 
   useEffect(() => {
     void loadStatus();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // ── Form field updater ─────────────────────────────────────────────────────
   const updateField = <K extends keyof ChallengeFormState>(
     field: K,
     value: ChallengeFormState[K]
@@ -225,16 +213,26 @@ export default function SixWeekChallengePage() {
     }));
   };
 
+  // ── Derived values ─────────────────────────────────────────────────────────
   const ageNumber = Number(formData.age);
   const baseAmount = getBaseChallengeAmount(formData.paymentOption);
-  const finalAmount = baseAmount;
+  // Early bird discount is automatic — applied server-side when spots remain.
+  // Show it on the frontend only when the API confirms slots are available.
+  const earlyBirdRemaining = status?.earlyBirdRemaining ?? 0;
+  const earlyBirdPercent = status?.earlyBirdPercent ?? CHALLENGE_CONFIG.discount.percent;
+  const earlyBirdActive = earlyBirdRemaining > 0;
+  const discountPercent = earlyBirdActive ? earlyBirdPercent : 0;
+  const discountAmount = discountPercent
+    ? Math.round(baseAmount * (discountPercent / 100))
+    : 0;
+  const finalAmount = baseAmount - discountAmount;
+
   const spotsRemaining = status?.spotsRemaining ?? CHALLENGE_CONFIG.maxParticipants;
   const isRegistrationOpen =
     status?.isRegistrationOpen ?? CHALLENGE_REGISTRATION.isOpen;
   const isSoldOut = status?.isSoldOut ?? false;
   const registrationClosedMessage =
     status?.closedMessage ?? CHALLENGE_REGISTRATION.closedMessage;
-  const paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || "";
 
   const isEmailValid = useMemo(() => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -259,108 +257,72 @@ export default function SixWeekChallengePage() {
     ) {
       return false;
     }
-
     return true;
   };
 
-  const handlePaymentSuccess = async (reference: { reference: string }) => {
-    setIsSubmitting(true);
+  // ── Handle submit → redirect to Paystack ─────────────────────────────────
+  const handleSubmit = async () => {
+    if (!isFormValid()) {
+      toast.error("Please complete all required fields before continuing.");
+      return;
+    }
+
+    setIsRedirecting(true);
     try {
       const payload = {
-        ...formData,
+        fullName: formData.fullName.trim(),
+        whatsappNumber: formData.whatsappNumber.trim(),
+        email: formData.email.trim().toLowerCase(),
         age: ageNumber,
-        paymentReference: reference.reference,
-        amountPaid: finalAmount,
+        paymentOption: formData.paymentOption,
+        emergencyContactName: formData.emergencyContactName.trim(),
+        emergencyContactNumber: formData.emergencyContactNumber.trim(),
+        challengeGoal: formData.challengeGoal,
+        dietaryPreferences: formData.dietaryPreferences,
+        foodsDisliked: formData.foodsDisliked,
+        medicalConditions: formData.medicalConditions,
+        activityLevel: formData.activityLevel,
+        alcoholFrequency: formData.alcoholFrequency.trim(),
+        instagramHandle: formData.instagramHandle,
+        termsAccepted: formData.termsAccepted,
+        liabilityAccepted: formData.liabilityAccepted,
+        agreementSignature: formData.agreementSignature.trim(),
+        agreementDate: formData.agreementDate,
+        promoCode: null,
       };
 
       const response = await fetch("/api/challenge", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       const result = await parseJsonResponse<{
-        status: ChallengeStatus;
+        authorizationUrl?: string;
+        reference?: string;
         error?: string;
       }>(response);
 
-      if (!response.ok) {
-        throw new Error(
-          result.error ||
-            "Payment completed, but registration could not be finalized."
-        );
+      if (!response.ok || !result.authorizationUrl) {
+        throw new Error(result.error || "Failed to initialise payment. Please try again.");
       }
 
-      setRegisteredReference(reference.reference);
-      setIsSubmitted(true);
-      setFormData(initialFormState);
-      setStatus(result.status);
-      toast.success("Challenge registration completed successfully.");
+      // Redirect to Paystack hosted checkout
+      window.location.href = result.authorizationUrl;
     } catch (error) {
       const message =
-        error instanceof Error
-          ? error.message
-          : "Registration failed after payment. Please contact support with your payment reference.";
+        error instanceof Error ? error.message : "Something went wrong. Please try again.";
       toast.error(message);
-    } finally {
-      setIsSubmitting(false);
+      setIsRedirecting(false);
     }
   };
 
-  const handlePaymentClose = () => {
-    toast.info("Payment window closed.");
-  };
-
-  const paystackConfig = {
-    reference: `challenge_${Date.now()}`,
-    email: formData.email.trim(),
-    amount: Math.round(finalAmount * 100),
-    currency: "ZAR",
-    publicKey: paystackKey,
-    text: "Pay and Register",
-    onSuccess: handlePaymentSuccess,
-    onClose: handlePaymentClose,
-  };
-
-  if (isSubmitted) {
-    return (
-      <main className="min-h-screen bg-white">
-        <div className="mx-auto max-w-3xl px-4 py-12">
-          <Card className="border-[#fc9dca]/30 shadow-md">
-            <CardContent className="p-8 text-center space-y-4">
-              <CheckCircle2 className="mx-auto h-12 w-12 text-green-600" />
-              <h1 className="text-3xl font-bold text-gray-900">You Are In</h1>
-              <p className="text-gray-600">
-                Your payment and challenge application were received successfully.
-              </p>
-              <p className="text-sm text-gray-500">
-                Payment reference:{" "}
-                <span className="font-semibold text-gray-700">
-                  {registeredReference}
-                </span>
-              </p>
-              <div className="pt-3">
-                <Link href="/">
-                  <Button
-                    variant="outline"
-                    className="border-[#fc9dca] text-[#fc9dca] hover:bg-[#fc9dca] hover:text-white"
-                  >
-                    Back to Home
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
-    );
-  }
+  // ─────────────────────────────────────────────────────────────────────────────
 
   return (
     <main className="min-h-screen bg-white pt-20">
       <div className="mx-auto max-w-6xl px-4 py-10">
+        {/* Header */}
         <div className="mb-8 text-center">
           <Badge className="mb-4 bg-[#fc9dca]/10 text-[#fc9dca] border-[#fc9dca]/20">
             {isRegistrationOpen
@@ -377,6 +339,7 @@ export default function SixWeekChallengePage() {
           </p>
         </div>
 
+        {/* Challenge highlight bar */}
         <div className="mb-8">
           <div className="mx-auto max-w-5xl rounded-[32px] border border-[#fc9dca]/20 bg-white/90 px-4 py-3 shadow-[0_16px_40px_rgba(17,24,39,0.12)] backdrop-blur-xl sm:px-6">
             <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-4">
@@ -405,15 +368,17 @@ export default function SixWeekChallengePage() {
         </div>
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
+          {/* ── Form card ─────────────────────────────────────────────────── */}
           <Card className="border-gray-200 shadow-md">
             <CardHeader>
               <CardTitle className="text-gray-900">Challenge Form</CardTitle>
               <CardDescription>
-                Fill in your details exactly as requested for registration and
-                payment.
+                Fill in your details exactly as requested for registration and payment.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-8">
+
+              {/* Personal Information */}
               <section className="space-y-4">
                 <h2 className="text-lg font-semibold text-[#fc9dca]">
                   Personal Information
@@ -434,9 +399,7 @@ export default function SixWeekChallengePage() {
                     <Input
                       id="whatsapp"
                       value={formData.whatsappNumber}
-                      onChange={(e) =>
-                        updateField("whatsappNumber", e.target.value)
-                      }
+                      onChange={(e) => updateField("whatsappNumber", e.target.value)}
                       placeholder="Enter your WhatsApp number"
                       required
                     />
@@ -467,6 +430,7 @@ export default function SixWeekChallengePage() {
                 </div>
               </section>
 
+              {/* Payment Option */}
               <section className="space-y-4">
                 <h2 className="text-lg font-semibold text-[#fc9dca]">
                   Payment Option
@@ -477,38 +441,38 @@ export default function SixWeekChallengePage() {
                     updateField("paymentOption", value as ChallengePaymentOption)
                   }
                 >
-                  {(
-                    Object.keys(PAYMENT_OPTION_LABELS) as ChallengePaymentOption[]
-                  ).map((option) => (
-                    <div
-                      key={option}
-                      className="flex items-start gap-3 rounded-md border border-gray-200 p-3"
-                    >
-                      <RadioGroupItem value={option} id={`payment-${option}`} />
-                      <div>
-                        <Label
-                          htmlFor={`payment-${option}`}
-                          className="font-medium cursor-pointer"
-                        >
-                          {PAYMENT_OPTION_LABELS[option]}
-                        </Label>
-                        {option === "member" ? (
-                          <p className="text-sm text-gray-500 mt-1">
-                            Challenge fee only. Membership fee continues as
-                            usual.
-                          </p>
-                        ) : (
-                          <p className="text-sm text-gray-500 mt-1">
-                            Challenge fee only. Gym access only on challenge
-                            training days and times.
-                          </p>
-                        )}
+                  {(Object.keys(PAYMENT_OPTION_LABELS) as ChallengePaymentOption[]).map(
+                    (option) => (
+                      <div
+                        key={option}
+                        className="flex items-start gap-3 rounded-md border border-gray-200 p-3"
+                      >
+                        <RadioGroupItem value={option} id={`payment-${option}`} />
+                        <div>
+                          <Label
+                            htmlFor={`payment-${option}`}
+                            className="font-medium cursor-pointer"
+                          >
+                            {PAYMENT_OPTION_LABELS[option]}
+                          </Label>
+                          {option === "member" ? (
+                            <p className="text-sm text-gray-500 mt-1">
+                              Challenge fee only. Membership fee continues as usual.
+                            </p>
+                          ) : (
+                            <p className="text-sm text-gray-500 mt-1">
+                              Challenge fee only. Gym access only on challenge training
+                              days and times.
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  )}
                 </RadioGroup>
               </section>
 
+              {/* Emergency Contact */}
               <section className="space-y-4">
                 <h2 className="text-lg font-semibold text-[#fc9dca]">
                   Emergency Contact
@@ -543,15 +507,15 @@ export default function SixWeekChallengePage() {
                 </div>
               </section>
 
+              {/* Nutrition */}
               <section className="space-y-4">
                 <h2 className="text-lg font-semibold text-[#fc9dca]">Nutrition</h2>
                 <div className="rounded-md border border-[#fc9dca]/30 bg-[#fc9dca]/5 p-3 text-sm text-gray-700">
-                  Challenge Goal - NOTE: It is extremely hard to build muscle and
-                  lose body fat at the same time, especially over a 6 week period.
-                  If you select build muscle, the overall focus is to gain muscle
-                  and not lose fat, and if you select lose fat, the goal is to
-                  drop body fat and maintain your muscle. Please only select one
-                  goal for the challenge.
+                  Challenge Goal — NOTE: It is extremely hard to build muscle and lose
+                  body fat at the same time, especially over a 6 week period. If you
+                  select build muscle, the overall focus is to gain muscle and not lose
+                  fat, and if you select lose fat, the goal is to drop body fat and
+                  maintain your muscle. Please only select one goal for the challenge.
                 </div>
                 <div className="space-y-2">
                   <Label>Challenge goal *</Label>
@@ -608,9 +572,7 @@ export default function SixWeekChallengePage() {
                   <Textarea
                     id="medicalConditions"
                     value={formData.medicalConditions}
-                    onChange={(e) =>
-                      updateField("medicalConditions", e.target.value)
-                    }
+                    onChange={(e) => updateField("medicalConditions", e.target.value)}
                     placeholder="Share anything relevant for training safety"
                   />
                 </div>
@@ -667,6 +629,7 @@ export default function SixWeekChallengePage() {
                 </div>
               </section>
 
+              {/* Terms, Conditions and Signature */}
               <section className="space-y-4">
                 <h2 className="text-lg font-semibold text-[#fc9dca]">
                   Terms, Conditions and Signature
@@ -687,8 +650,8 @@ export default function SixWeekChallengePage() {
                       }
                     />
                     <Label htmlFor="termsAccepted" className="cursor-pointer">
-                      I have read and agree to the full 6-week challenge terms
-                      and conditions.
+                      I have read and agree to the full 6-week challenge terms and
+                      conditions.
                     </Label>
                   </div>
                   <div className="flex items-start gap-3">
@@ -700,8 +663,8 @@ export default function SixWeekChallengePage() {
                       }
                     />
                     <Label htmlFor="liabilityAccepted" className="cursor-pointer">
-                      I understand training carries risk and I accept the
-                      liability and indemnity terms stated above.
+                      I understand training carries risk and I accept the liability and
+                      indemnity terms stated above.
                     </Label>
                   </div>
                   <div className="grid gap-4 md:grid-cols-2">
@@ -735,6 +698,7 @@ export default function SixWeekChallengePage() {
             </CardContent>
           </Card>
 
+          {/* ── Sidebar — Spots, Promo & Payment ──────────────────────────── */}
           <div className="space-y-6">
             <Card className="border-gray-200 shadow-md">
               <CardHeader>
@@ -747,6 +711,8 @@ export default function SixWeekChallengePage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+
+                {/* Kickoff details */}
                 <div className="rounded-2xl border border-[#fc9dca]/20 bg-[#fc9dca]/5 p-4">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#fc9dca]">
                     Kickoff details
@@ -766,6 +732,7 @@ export default function SixWeekChallengePage() {
 
                 <Separator />
 
+                {/* Availability */}
                 {isLoadingStatus ? (
                   <p className="text-sm text-gray-500">Loading availability...</p>
                 ) : statusError ? (
@@ -782,7 +749,8 @@ export default function SixWeekChallengePage() {
                     </p>
                     {isSoldOut && (
                       <p className="text-sm font-medium text-red-600">
-                        {registrationClosedMessage || "This challenge is currently unavailable."}
+                        {registrationClosedMessage ||
+                          "This challenge is currently unavailable."}
                       </p>
                     )}
                   </div>
@@ -790,12 +758,47 @@ export default function SixWeekChallengePage() {
 
                 <Separator />
 
+                {/* Early bird discount banner */}
+                {!isLoadingStatus && !statusError && (
+                  earlyBirdActive ? (
+                    <div className="flex items-center gap-2 rounded-md border border-green-200 bg-green-50 px-3 py-2">
+                      <Tag className="h-4 w-4 text-green-600 shrink-0" />
+                      <p className="text-sm font-medium text-green-800">
+                        🎉 Early bird — {earlyBirdPercent}% off automatically applied!{" "}
+                        <span className="font-normal text-green-700">
+                          ({earlyBirdRemaining} of {status?.earlyBirdMaxUses} spots left)
+                        </span>
+                      </p>
+                    </div>
+                  ) : (
+                    CHALLENGE_CONFIG.discount.maxUses > 0 && (
+                      <div className="flex items-center gap-2 rounded-md border border-gray-200 bg-gray-50 px-3 py-2">
+                        <Tag className="h-4 w-4 text-gray-400 shrink-0" />
+                        <p className="text-sm text-gray-500">
+                          Early bird discount has been claimed.
+                        </p>
+                      </div>
+                    )
+                  )
+                )}
+
+                <Separator />
+
+                {/* Pricing breakdown */}
                 <div className="space-y-2 text-sm text-gray-700">
                   <div className="flex items-center justify-between">
                     <span>Base price</span>
                     <span>{formatPrice(baseAmount)}</span>
                   </div>
-                  <div className="flex items-center justify-between text-base font-semibold text-gray-900">
+                  {discountAmount > 0 && (
+                    <div className="flex items-center justify-between text-green-700">
+                      <span>
+                        Early bird discount ({discountPercent}%)
+                      </span>
+                      <span>- {formatPrice(discountAmount)}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between text-base font-semibold text-gray-900 border-t border-gray-100 pt-2 mt-1">
                     <span>Total due</span>
                     <span>{formatPrice(finalAmount)}</span>
                   </div>
@@ -807,54 +810,42 @@ export default function SixWeekChallengePage() {
                   challenge training days and times.
                 </div>
 
-                {!paystackKey && (
-                  <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
-                    Paystack public key is missing. Add{" "}
-                    <code>NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY</code> to enable
-                    payment.
-                  </div>
-                )}
-
-                <div>
-                  {isClient &&
-                  isRegistrationOpen &&
-                  !isSoldOut &&
-                  !isLoadingStatus &&
-                  !statusError &&
-                  isFormValid() &&
-                  !!paystackKey ? (
-                    <PaystackButton
-                      {...paystackConfig}
-                      className="w-full rounded-md bg-[#fc9dca] px-4 py-3 text-sm font-medium text-white transition hover:bg-rose-400 disabled:cursor-not-allowed disabled:opacity-50"
-                      disabled={isSubmitting}
-                      text={isSubmitting ? "Finalizing..." : "Pay and Register"}
-                    />
+                {/* Pay button */}
+                <Button
+                  id="pay-and-register-btn"
+                  className="w-full bg-[#fc9dca] hover:bg-rose-400 text-white"
+                  onClick={() => void handleSubmit()}
+                  disabled={
+                    isRedirecting ||
+                    isSoldOut ||
+                    !isRegistrationOpen ||
+                    isLoadingStatus ||
+                    !!statusError ||
+                    !isFormValid()
+                  }
+                >
+                  {isRedirecting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Redirecting to payment...
+                    </>
+                  ) : isSoldOut ? (
+                    isRegistrationOpen ? "Sold Out" : "Registration Closed"
+                  ) : !isRegistrationOpen ? (
+                    "Registration Closed"
+                  ) : !isFormValid() ? (
+                    "Complete Required Fields to Continue"
                   ) : (
-                    <Button
-                      className="w-full bg-gray-300 text-gray-600 hover:bg-gray-300"
-                      disabled
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Finalizing...
-                        </>
-                      ) : isSoldOut ? (
-                        isRegistrationOpen ? "Sold Out" : "Registration Closed"
-                      ) : !isRegistrationOpen ? (
-                        "Registration Closed"
-                      ) : (
-                        "Complete Required Fields to Continue"
-                      )}
-                    </Button>
+                    "Pay and Register →"
                   )}
-                </div>
+                </Button>
 
                 <div className="flex items-start gap-2 rounded-md border border-gray-200 p-3 text-xs text-gray-600">
                   <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#fc9dca]" />
                   <p>
-                    Payment and registration are linked by payment reference for
-                    verification.
+                    You will be redirected to Paystack&apos;s secure checkout page.
+                    Your registration is saved after payment is confirmed by
+                    Paystack&apos;s server — not the browser.
                   </p>
                 </div>
               </CardContent>
