@@ -120,6 +120,10 @@ function parseInitBody(raw: unknown): InitBody | null {
 async function getPendingRecoverySpotCount(
   supabase: SupabaseClient
 ): Promise<number> {
+  // Only reserve recovery spots when the lock is explicitly active.
+  // When isActive is false (new round), skip this entirely so stale
+  // references from the previous round don't reduce visible capacity.
+  if (!CHALLENGE_RECOVERY_LOCK.isActive) return 0;
   const refs = CHALLENGE_RECOVERY_LOCK.paidRecoveryReferences;
   if (refs.length === 0) return 0;
   const { count, error } = await supabase
