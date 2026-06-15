@@ -377,20 +377,29 @@ export default function MembershipApplicationPage() {
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem
-                          value="Month to Month – R450 + R120 joining fee"
+                          value="Month to Month – R500"
                           id="monthly-membership"
                         />
                         <Label htmlFor="monthly-membership">
-                          Month to Month – R450 + R120 joining fee
+                          Month to Month – R500
                         </Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem
-                          value="6 months contract – R400/month + R100 joining fee"
-                          id="contract-membership"
+                          value="6 months contract – R450/month"
+                          id="6month-membership"
                         />
-                        <Label htmlFor="contract-membership">
-                          6 months contract – R400/month + R100 joining fee
+                        <Label htmlFor="6month-membership">
+                          6 months contract – R450/month
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem
+                          value="12 months contract – R400/month"
+                          id="12month-membership"
+                        />
+                        <Label htmlFor="12month-membership">
+                          12 months contract (1 year) – R400/month
                         </Label>
                       </div>
                     </RadioGroup>
