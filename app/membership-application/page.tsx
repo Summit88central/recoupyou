@@ -46,9 +46,18 @@ export default function MembershipApplicationPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [membershipPlanError, setMembershipPlanError] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate membership plan (RadioGroup doesn't support native required)
+    if (!formData.membershipPlan) {
+      setMembershipPlanError(true);
+      document.getElementById("membership-plan-group")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    setMembershipPlanError(false);
     setIsSubmitting(true);
 
     try {
@@ -367,13 +376,17 @@ export default function MembershipApplicationPage() {
                     Membership Options
                   </h3>
 
-                  <div className="space-y-3">
-                    <Label>Select your preferred membership plan *</Label>
+                  <div className="space-y-3" id="membership-plan-group">
+                    <Label>
+                      Select your preferred membership plan{" "}
+                      <span className="text-red-500">*</span>
+                    </Label>
                     <RadioGroup
                       value={formData.membershipPlan}
-                      onValueChange={(value) =>
-                        handleInputChange("membershipPlan", value)
-                      }
+                      onValueChange={(value) => {
+                        handleInputChange("membershipPlan", value);
+                        setMembershipPlanError(false);
+                      }}
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem
@@ -403,6 +416,11 @@ export default function MembershipApplicationPage() {
                         </Label>
                       </div>
                     </RadioGroup>
+                    {membershipPlanError && (
+                      <p className="text-sm text-red-500 font-medium">
+                        Please select a membership plan to continue.
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-3">
