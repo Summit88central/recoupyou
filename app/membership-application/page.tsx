@@ -67,7 +67,7 @@ export default function MembershipApplicationPage() {
           medical_conditions: formData.medicalConditions,
           membership_plan: formData.membershipPlan,
           additional_services: formData.additionalServices,
-          start_date: formData.startDate,
+          start_date: formData.startDate || null,
           hear_about: formData.hearAbout,
         });
 
@@ -377,29 +377,29 @@ export default function MembershipApplicationPage() {
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem
-                          value="Month to Month – R500"
+                          value="Month to Month – R450 + R150 joining fee"
                           id="monthly-membership"
                         />
                         <Label htmlFor="monthly-membership">
-                          Month to Month – R500
+                          Month to Month – R450 + R150 joining fee
                         </Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem
-                          value="6 months contract – R450/month"
+                          value="6 months contract – R400/month + R120 joining fee"
                           id="6month-membership"
                         />
                         <Label htmlFor="6month-membership">
-                          6 months contract – R450/month
+                          6 months contract – R400/month + R120 joining fee
                         </Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem
-                          value="12 months contract – R400/month"
+                          value="12 months contract – R400/month + R100 joining fee"
                           id="12month-membership"
                         />
                         <Label htmlFor="12month-membership">
-                          12 months contract (1 year) – R400/month
+                          12 months contract – R400/month + R100 joining fee
                         </Label>
                       </div>
                     </RadioGroup>

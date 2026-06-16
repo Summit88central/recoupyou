@@ -63,7 +63,7 @@ export default function ApplyOnlineCoachingPage() {
           gym_access: formData.gymAccess,
           dietary_restrictions: formData.dietaryRestrictions,
           package: formData.package,
-          start_date: formData.startDate,
+          start_date: formData.startDate || null,
           additional_info: formData.additionalInfo,
         });
 
