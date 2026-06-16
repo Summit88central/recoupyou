@@ -47,17 +47,47 @@ export default function MembershipApplicationPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [membershipPlanError, setMembershipPlanError] = useState(false);
+  const [additionalServicesError, setAdditionalServicesError] = useState(false);
+  const [hearAboutError, setHearAboutError] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    let hasError = false;
+
     // Validate membership plan (RadioGroup doesn't support native required)
     if (!formData.membershipPlan) {
       setMembershipPlanError(true);
-      document.getElementById("membership-plan-group")?.scrollIntoView({ behavior: "smooth", block: "center" });
-      return;
+      if (!hasError) {
+        document.getElementById("membership-plan-group")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      hasError = true;
+    } else {
+      setMembershipPlanError(false);
     }
-    setMembershipPlanError(false);
+
+    if (formData.additionalServices.length === 0) {
+      setAdditionalServicesError(true);
+      if (!hasError) {
+        document.getElementById("additional-services-group")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      hasError = true;
+    } else {
+      setAdditionalServicesError(false);
+    }
+
+    if (!formData.hearAbout) {
+      setHearAboutError(true);
+      if (!hasError) {
+        document.getElementById("hear-about-group")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      hasError = true;
+    } else {
+      setHearAboutError(false);
+    }
+
+    if (hasError) return;
+
     setIsSubmitting(true);
 
     try {
@@ -423,7 +453,7 @@ export default function MembershipApplicationPage() {
                     )}
                   </div>
 
-                  <div className="space-y-3">
+                  <div className="space-y-3" id="additional-services-group">
                     <Label>Would you like to purchase any of these? *</Label>
                     <div className="space-y-2">
                       {[
@@ -450,22 +480,28 @@ export default function MembershipApplicationPage() {
                             checked={formData.additionalServices.includes(
                               service.id
                             )}
-                            onCheckedChange={(checked) =>
+                            onCheckedChange={(checked) => {
                               handleServiceChange(
                                 service.id,
                                 checked as boolean
-                              )
-                            }
+                              );
+                              setAdditionalServicesError(false);
+                            }}
                           />
                           <Label htmlFor={service.id}>{service.label}</Label>
                         </div>
                       ))}
                     </div>
+                    {additionalServicesError && (
+                      <p className="text-sm text-red-500 font-medium">
+                        Please select at least one option.
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="startDate">
-                      When would you like to start?
+                      When would you like to start? *
                     </Label>
                     <Input
                       id="startDate"
@@ -474,16 +510,18 @@ export default function MembershipApplicationPage() {
                       onChange={(e) =>
                         handleInputChange("startDate", e.target.value)
                       }
+                      required
                     />
                   </div>
 
-                  <div className="space-y-3">
+                  <div className="space-y-3" id="hear-about-group">
                     <Label>How did you hear about our gym? *</Label>
                     <RadioGroup
                       value={formData.hearAbout}
-                      onValueChange={(value) =>
-                        handleInputChange("hearAbout", value)
-                      }
+                      onValueChange={(value) => {
+                        handleInputChange("hearAbout", value);
+                        setHearAboutError(false);
+                      }}
                     >
                       {[
                         "Online Search",
@@ -513,6 +551,11 @@ export default function MembershipApplicationPage() {
                         </div>
                       ))}
                     </RadioGroup>
+                    {hearAboutError && (
+                      <p className="text-sm text-red-500 font-medium">
+                        Please tell us how you heard about us.
+                      </p>
+                    )}
                   </div>
                 </section>
 
