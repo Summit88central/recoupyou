@@ -47,49 +47,17 @@ export default function MembershipApplicationPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [membershipPlanError, setMembershipPlanError] = useState(false);
-  const [additionalServicesError, setAdditionalServicesError] = useState(false);
-  const [startDateError, setStartDateError] = useState(false);
-  const [hearAboutError, setHearAboutError] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate all Membership Options fields
-    let hasError = false;
-
+    // Validate membership plan (RadioGroup doesn't support native required)
     if (!formData.membershipPlan) {
       setMembershipPlanError(true);
-      hasError = true;
-    } else {
-      setMembershipPlanError(false);
-    }
-
-    if (formData.additionalServices.length === 0) {
-      setAdditionalServicesError(true);
-      hasError = true;
-    } else {
-      setAdditionalServicesError(false);
-    }
-
-    if (!formData.startDate) {
-      setStartDateError(true);
-      hasError = true;
-    } else {
-      setStartDateError(false);
-    }
-
-    if (!formData.hearAbout) {
-      setHearAboutError(true);
-      hasError = true;
-    } else {
-      setHearAboutError(false);
-    }
-
-    if (hasError) {
       document.getElementById("membership-plan-group")?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
-
+    setMembershipPlanError(false);
     setIsSubmitting(true);
 
     try {
@@ -422,20 +390,20 @@ export default function MembershipApplicationPage() {
                     >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem
-                          value="Month to Month – R450 + R150 joining fee"
+                          value="Month to Month – R500 + R150 joining fee"
                           id="monthly-membership"
                         />
                         <Label htmlFor="monthly-membership">
-                          Month to Month – R450 + R150 joining fee
+                          Month to Month – R500 + R150 joining fee
                         </Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem
-                          value="6 months contract – R400/month + R120 joining fee"
+                          value="6 months contract – R450/month + R120 joining fee"
                           id="6month-membership"
                         />
                         <Label htmlFor="6month-membership">
-                          6 months contract – R400/month + R120 joining fee
+                          6 months contract – R450/month + R120 joining fee
                         </Label>
                       </div>
                       <div className="flex items-center space-x-2">
@@ -456,10 +424,7 @@ export default function MembershipApplicationPage() {
                   </div>
 
                   <div className="space-y-3">
-                    <Label>
-                      Would you like to purchase any of these?{" "}
-                      <span className="text-red-500">*</span>
-                    </Label>
+                    <Label>Would you like to purchase any of these? *</Label>
                     <div className="space-y-2">
                       {[
                         {
@@ -485,58 +450,40 @@ export default function MembershipApplicationPage() {
                             checked={formData.additionalServices.includes(
                               service.id
                             )}
-                            onCheckedChange={(checked) => {
+                            onCheckedChange={(checked) =>
                               handleServiceChange(
                                 service.id,
                                 checked as boolean
-                              );
-                              setAdditionalServicesError(false);
-                            }}
+                              )
+                            }
                           />
                           <Label htmlFor={service.id}>{service.label}</Label>
                         </div>
                       ))}
                     </div>
-                    {additionalServicesError && (
-                      <p className="text-sm text-red-500 font-medium">
-                        Please select at least one option to continue.
-                      </p>
-                    )}
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="startDate">
-                      When would you like to start?{" "}
-                      <span className="text-red-500">*</span>
+                      When would you like to start?
                     </Label>
                     <Input
                       id="startDate"
                       type="date"
                       value={formData.startDate}
-                      onChange={(e) => {
-                        handleInputChange("startDate", e.target.value);
-                        setStartDateError(false);
-                      }}
-                      required
+                      onChange={(e) =>
+                        handleInputChange("startDate", e.target.value)
+                      }
                     />
-                    {startDateError && (
-                      <p className="text-sm text-red-500 font-medium">
-                        Please select a start date to continue.
-                      </p>
-                    )}
                   </div>
 
                   <div className="space-y-3">
-                    <Label>
-                      How did you hear about our gym?{" "}
-                      <span className="text-red-500">*</span>
-                    </Label>
+                    <Label>How did you hear about our gym? *</Label>
                     <RadioGroup
                       value={formData.hearAbout}
-                      onValueChange={(value) => {
-                        handleInputChange("hearAbout", value);
-                        setHearAboutError(false);
-                      }}
+                      onValueChange={(value) =>
+                        handleInputChange("hearAbout", value)
+                      }
                     >
                       {[
                         "Online Search",
@@ -566,11 +513,6 @@ export default function MembershipApplicationPage() {
                         </div>
                       ))}
                     </RadioGroup>
-                    {hearAboutError && (
-                      <p className="text-sm text-red-500 font-medium">
-                        Please select how you heard about us to continue.
-                      </p>
-                    )}
                   </div>
                 </section>
 
