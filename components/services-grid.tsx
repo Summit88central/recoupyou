@@ -32,14 +32,13 @@ export function ServicesGrid() {
               SCULPT SERIES: Glutes, Strength &amp; Conditioning
             </h3>
             <div className="mt-2 flex flex-wrap items-center gap-2">
-              <p className="inline-flex w-fit items-center gap-1.5 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-emerald-300">
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <p className={`inline-flex w-fit items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${CHALLENGE_REGISTRATION.isOpen ? "bg-emerald-500/20 text-emerald-300" : "bg-red-500/20 text-red-400"}`}>
+                {CHALLENGE_REGISTRATION.isOpen && (
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                )}
                 {CHALLENGE_REGISTRATION.isOpen
                   ? "Enrolling Now"
                   : "Registration Closed"}
-              </p>
-              <p className="inline-flex w-fit items-center gap-1.5 rounded-full bg-amber-500/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-amber-300">
-                🔥 Previous round sold out in 4 days
               </p>
             </div>
             <p className="mt-2 text-sm text-gray-200">
