@@ -120,7 +120,8 @@ Behaviour expectations:
    a) Entry will be refused or you may be requested to leave the GYM if:
       i. You are using abusive or threatening language or behaving in a threatening way.
       ii. You are under the influence of drugs or alcohol.
-   b) The club is a non-smoking facility.
+      iii. You’re a non-member of the Gym who has been disqualified from the challenge
+   b) The GYM is a non-smoking facility.
    c) Fully enclosed, clean sports shoes are encouraged to be worn during workouts for safety reasons, but not compelled. Members can wear sports bras, crop tops or t-shirts at all times in the GYM. Clothing must be clean and tidy with no offensive prints or designs.
 
 Your obligation in relation to your health:
@@ -142,22 +143,23 @@ Reservations to RECOUPYOU GYM:
 20. RECOUPYOU GYM reserves the right to make changes to exercise equipment supplied in the GYM at any time.
 21. RECOUPYOU GYM also reserves the right to make changes at any time (for example, alter class type and instructors).
 
-Booking system:
+Booking system, attendance and participation:
 22. You must notify RECOUPYOU GYM if you are unable to attend class at least one hour before class starts.
 23. If you do not give notice as per paragraph 22 on two occasions in one week, you may not attend class for three (3) days from the date of the missed class.
 24. If you do not give notice as per paragraph 22 on three occasions in two weeks, you may not attend class for seven (7) days from the date of the missed class.
-25. If RECOUPYOU GYM imposes these limitations, you are not entitled to any refund of fees or compensation.
+25. If you refuse to participate in the challenge by not sending your meals and steps, you may be disqualified from the challenge as you’re defeating the purpose and thus are uncoachable.
+26. If RECOUPYOU GYM imposes these limitations, you are not entitled to any refund of fees or compensation.
 
 Suspension for unforeseen circumstances:
-26. If the GYM becomes inaccessible due to events beyond the control of RECOUPYOU GYM, including load shedding, fire, flood, pandemic, infectious disease, government lockdown, or act of God, the Challenge will be suspended automatically from the date of inaccessibility until access is restored. No refund applies for this period.
+27. If the GYM becomes inaccessible due to events beyond the control of RECOUPYOU GYM, including load shedding, fire, flood, pandemic, infectious disease, government lockdown, or act of God, the Challenge will be suspended automatically from the date of inaccessibility until access is restored. No refund applies for this period.
 
-27. If you are under 18 years of age, this agreement must be executed on your behalf by your parent or guardian.
+28. If you are under 18 years of age, this agreement must be executed on your behalf by your parent or guardian.
 
 Payment:
-28. You agree to pay for services under this agreement using Method A (Member) or Method B (Non-Member).
-29. You will select your payment method at the conclusion of this document.
-30. You agree to pay the amount stated for your selected method.
-31. Payments are non-refundable, non-transferable and non-exchangeable.
+29. You agree to pay for services under this agreement using Method A (Member) or Method B (Non-Member).
+30. You will select your payment method at the conclusion of this document.
+31. You agree to pay the amount stated for your selected method.
+32. Payments are non-refundable, non-transferable and non-exchangeable.
 
 Method A - Member (R1600): because I am a current member.
 Method B - Non-Member (R1800): because I am not currently a member.
