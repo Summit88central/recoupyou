@@ -2,7 +2,7 @@ export const CHALLENGE_CONFIG = {
   title: "SCULPT SERIES: Glutes, Strength & Conditioning",
   maxParticipants: 13,
   kickoff: {
-    startDate: "22 June 2026",
+    startDate: "3 August 2026",
     time: "16:30 - 17:30",
     location: "72 Kleinenberg Street, Old Bendor, Polokwane",
   },
@@ -30,7 +30,7 @@ export const CHALLENGE_RECOVERY_LOCK = {
 } as const;
 
 export const CHALLENGE_REGISTRATION = {
-  isOpen: false,
+  isOpen: true,
   closedMessage:
     "Challenge registration is currently closed. Please contact the gym for the next intake.",
 } as const;
