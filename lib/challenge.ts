@@ -30,7 +30,7 @@ export const CHALLENGE_RECOVERY_LOCK = {
 } as const;
 
 export const CHALLENGE_REGISTRATION = {
-  isOpen: true,
+  isOpen: false,
   closedMessage:
     "Challenge registration is currently closed. Please contact the gym for the next intake.",
 } as const;
