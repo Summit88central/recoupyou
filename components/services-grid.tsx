@@ -40,11 +40,6 @@ export function ServicesGrid() {
                   ? "Enrolling Now"
                   : "Registration Closed"}
               </p>
-              {!CHALLENGE_REGISTRATION.isOpen && (
-                <p className="inline-flex w-fit items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide bg-blue-500/20 text-blue-300">
-                  Next enrolment 31 August
-                </p>
-              )}
             </div>
             <p className="mt-2 text-sm text-gray-200">
               Limited to {CHALLENGE_CONFIG.maxParticipants} people. Starts{" "}
