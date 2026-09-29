@@ -322,7 +322,7 @@ export async function POST(request: NextRequest) {
     // 5 — Generate reference and callback URL
     const reference = `challenge_${Date.now()}`;
     const baseUrl =
-      process.env.NEXT_PUBLIC_BASE_URL || "https://recoupyou.co.za";
+      process.env.NEXT_PUBLIC_BASE_URL || "https://recoupyou.summit88.co.za";
     const callbackUrl = `${baseUrl}/6-week-challenge/success`;
 
     // 6 — Build Paystack metadata

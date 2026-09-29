@@ -23,7 +23,7 @@ When a user pays, Paystack sends a `charge.success` event to your webhook URL. T
 3. Under **Webhook URL**, enter:
 
    ```
-   https://recoupyou.co.za/api/challenge/webhook
+   https://recoupyou.summit88.co.za/api/challenge/webhook
    ```
 
    For test mode, use your test-mode webhook setting and point it at your live or tunnelled URL.
