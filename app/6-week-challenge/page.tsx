@@ -11,6 +11,7 @@ import {
   ShieldCheck,
   Tag,
   Users,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -142,6 +143,7 @@ export default function SixWeekChallengePage() {
   const [statusError, setStatusError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [registrationSubmitted, setRegistrationSubmitted] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   // ── Parse JSON response safely ─────────────────────────────────────────────
   async function parseJsonResponse<T>(response: Response): Promise<T> {
@@ -310,6 +312,7 @@ export default function SixWeekChallengePage() {
       }
 
       setRegistrationSubmitted(true);
+      setShowPaymentModal(true);
       toast.success("Your application has been submitted.");
     } catch (error) {
       const message =
@@ -323,6 +326,51 @@ export default function SixWeekChallengePage() {
 
   return (
     <main className="min-h-screen bg-white pt-20">
+
+      {/* Payment details modal — auto-opens after form submission */}
+      {showPaymentModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={() => setShowPaymentModal(false)}
+          />
+          {/* Modal card */}
+          <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 z-10">
+            <button
+              onClick={() => setShowPaymentModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="text-center mb-4">
+              <div className="text-4xl mb-2">💳</div>
+              <h2 className="text-lg font-bold text-gray-900">Payment Details</h2>
+              <p className="text-sm text-gray-500 mt-1">
+                Please complete your EFT payment to secure your spot.
+              </p>
+            </div>
+            <div className="rounded-lg border border-[#fc9dca]/40 bg-[#fff0f8] p-4 space-y-1 text-sm text-gray-700">
+              <p><span className="font-medium">Payment method:</span> EFT</p>
+              <p><span className="font-medium">Bank:</span> FNB</p>
+              <p><span className="font-medium">Account type:</span> Cheque account</p>
+              <p><span className="font-medium">Account number:</span> 63131752643</p>
+              <p><span className="font-medium">Account holder:</span> RecoupYou</p>
+              <p className="text-xs text-gray-500 pt-2">
+                Please use your <span className="font-semibold text-gray-700">full name</span> as the payment reference. All payments are non-refundable.
+              </p>
+            </div>
+            <Button
+              onClick={() => setShowPaymentModal(false)}
+              className="w-full mt-4 bg-[#fc9dca] hover:bg-[#fc9dca]/90 text-white"
+            >
+              Got it!
+            </Button>
+          </div>
+        </div>
+      )}
+
       <div className="mx-auto max-w-6xl px-4 py-10">
         {/* Header */}
         <div className="mb-8 text-center">
@@ -807,13 +855,22 @@ export default function SixWeekChallengePage() {
                 </div>
 
                 {registrationSubmitted && (
-                  <div className="space-y-2 rounded-md border border-[#fc9dca]/30 bg-[#fc9dca]/5 p-4 text-sm text-gray-800">
-                    <p className="font-semibold">Payment method: EFT</p>
-                    <p>Bank: FNB</p>
-                    <p>Account type: Cheque account</p>
-                    <p>Account number: 63131752643</p>
-                    <p>Account holder: RecoupYou</p>
-                    <p className="pt-1 font-medium">Please use your full name as the payment reference. All payments are non-refundable.</p>
+                  <div className="space-y-3">
+                    <div className="space-y-2 rounded-md border border-[#fc9dca]/30 bg-[#fc9dca]/5 p-4 text-sm text-gray-800">
+                      <p className="font-semibold">💳 Payment method: EFT</p>
+                      <p>Bank: FNB</p>
+                      <p>Account type: Cheque account</p>
+                      <p>Account number: 63131752643</p>
+                      <p>Account holder: RecoupYou</p>
+                      <p className="pt-1 font-medium">Please use your full name as the payment reference. All payments are non-refundable.</p>
+                    </div>
+                    <Button
+                      variant="outline"
+                      className="w-full border-[#fc9dca] text-[#fc9dca] hover:bg-[#fc9dca] hover:text-white bg-transparent"
+                      onClick={() => setShowPaymentModal(true)}
+                    >
+                      View Payment Details
+                    </Button>
                   </div>
                 )}
 
