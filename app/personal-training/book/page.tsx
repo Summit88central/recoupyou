@@ -53,7 +53,7 @@ export default function BookPersonalTrainingPage() {
 
       const combinedAdditionalInfo = `${formData.additionalInfo}${formData.startDate ? `\nPreferred start date: ${formData.startDate}` : ""}`.trim();
       // Insert into Supabase
-      const { data: insertData, error: insertError } = await supabase
+      const { error: insertError } = await supabase
         .from("personal_training_applications")
         .insert({
           full_name: formData.fullName,
@@ -66,11 +66,13 @@ export default function BookPersonalTrainingPage() {
 
       if (insertError) throw insertError;
 
-      // Send email
+      // Email notification is best-effort. The application has already been
+      // saved, so a temporary mail-provider/configuration failure must not
+      // make the user resubmit and potentially create a duplicate booking.
       const emailResult = await sendPersonalTrainingEmail(formData);
 
       if (!emailResult.success) {
-        throw new Error("Email sending failed");
+        console.error("Personal training application email failed:", emailResult.error);
       }
 
       setIsSubmitted(true);
