@@ -511,7 +511,7 @@ export default function RecoverChallengeRegistrationPage() {
                   <h2 className="text-lg font-semibold text-[#fc9dca]">Nutrition</h2>
                   <div className="rounded-md border border-[#fc9dca]/30 bg-[#fc9dca]/5 p-3 text-sm text-gray-700">
                     Challenge Goal - NOTE: It is extremely hard to build muscle and
-                    lose body fat at the same time, especially over a 6 week period.
+                    lose body fat at the same time, especially during a short coaching program.
                     If you select build muscle, the overall focus is to gain muscle
                     and not lose fat, and if you select lose fat, the goal is to
                     drop body fat and maintain your muscle. Please only select one
@@ -647,7 +647,7 @@ export default function RecoverChallengeRegistrationPage() {
                         }
                       />
                       <Label htmlFor="termsAccepted" className="cursor-pointer">
-                        I have read and agree to the full 6-week challenge terms
+                        I have read and agree to the full 4 weeks coaching terms
                         and conditions.
                       </Label>
                     </div>

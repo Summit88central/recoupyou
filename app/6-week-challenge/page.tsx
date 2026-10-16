@@ -140,7 +140,8 @@ export default function SixWeekChallengePage() {
   const [status, setStatus] = useState<ChallengeStatus | null>(null);
   const [isLoadingStatus, setIsLoadingStatus] = useState(true);
   const [statusError, setStatusError] = useState<string | null>(null);
-  const [isRedirecting, setIsRedirecting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [registrationSubmitted, setRegistrationSubmitted] = useState(false);
 
   // ── Parse JSON response safely ─────────────────────────────────────────────
   async function parseJsonResponse<T>(response: Response): Promise<T> {
@@ -261,14 +262,14 @@ export default function SixWeekChallengePage() {
     return true;
   };
 
-  // ── Handle submit → redirect to Paystack ─────────────────────────────────
+  // ── Handle registration submission ────────────────────────────────────────
   const handleSubmit = async () => {
     if (!isFormValid()) {
       toast.error("Please complete all required fields before continuing.");
       return;
     }
 
-    setIsRedirecting(true);
+    setIsSubmitting(true);
     try {
       const payload = {
         fullName: formData.fullName.trim(),
@@ -299,22 +300,22 @@ export default function SixWeekChallengePage() {
       });
 
       const result = await parseJsonResponse<{
-        authorizationUrl?: string;
+        submitted?: boolean;
         reference?: string;
         error?: string;
       }>(response);
 
-      if (!response.ok || !result.authorizationUrl) {
-        throw new Error(result.error || "Failed to initialise payment. Please try again.");
+      if (!response.ok || !result.submitted) {
+        throw new Error(result.error || "Failed to submit your application. Please try again.");
       }
 
-      // Redirect to Paystack hosted checkout
-      window.location.href = result.authorizationUrl;
+      setRegistrationSubmitted(true);
+      toast.success("Your application has been submitted.");
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Something went wrong. Please try again.";
       toast.error(message);
-      setIsRedirecting(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -512,11 +513,7 @@ export default function SixWeekChallengePage() {
               <section className="space-y-4">
                 <h2 className="text-lg font-semibold text-[#fc9dca]">Nutrition</h2>
                 <div className="rounded-md border border-[#fc9dca]/30 bg-[#fc9dca]/5 p-3 text-sm text-gray-700">
-                  Challenge Goal — NOTE: It is extremely hard to build muscle and lose
-                  body fat at the same time, especially over a 6 week period. If you
-                  select build muscle, the overall focus is to gain muscle and not lose
-                  fat, and if you select lose fat, the goal is to drop body fat and
-                  maintain your muscle. Please only select one goal for the challenge.
+                  Challenge Goal — NOTE: Results take time, consistency and commitment. We do not promise specific results within one month, as every woman’s body and progress are different. Our approach is to take things one step at a time, focusing on building sustainable habits and making progress month by month. The goal is to help you stay consistent, trust the process and keep working towards your goals. Remember, this is a journey, not a quick fix.
                 </div>
                 <div className="space-y-2">
                   <Label>Challenge goal *</Label>
@@ -651,7 +648,7 @@ export default function SixWeekChallengePage() {
                       }
                     />
                     <Label htmlFor="termsAccepted" className="cursor-pointer">
-                      I have read and agree to the full 6-week challenge terms and
+                      I have read and agree to the full 4 weeks coaching terms and
                       conditions.
                     </Label>
                   </div>
@@ -707,9 +704,7 @@ export default function SixWeekChallengePage() {
                   <Users className="h-5 w-5 text-[#fc9dca]" />
                   Spots and Payment
                 </CardTitle>
-                <CardDescription>
-                  Complete payment to secure your challenge spot.
-                </CardDescription>
+                <CardDescription>Submit your form, then pay by bank transfer.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
 
@@ -811,13 +806,24 @@ export default function SixWeekChallengePage() {
                   challenge training days and times.
                 </div>
 
-                {/* Pay button */}
+                {registrationSubmitted && (
+                  <div className="space-y-2 rounded-md border border-[#fc9dca]/30 bg-[#fc9dca]/5 p-4 text-sm text-gray-800">
+                    <p className="font-semibold">Payment method: EFT</p>
+                    <p>Bank: FNB</p>
+                    <p>Account type: Cheque account</p>
+                    <p>Account number: 63131752643</p>
+                    <p>Account holder: RecoupYou</p>
+                    <p className="pt-1 font-medium">Please use your full name as the payment reference. All payments are non-refundable.</p>
+                  </div>
+                )}
+
+                {/* Submit form */}
                 <Button
-                  id="pay-and-register-btn"
+                id="challenge-registration-submit"
                   className="w-full bg-[#fc9dca] hover:bg-rose-400 text-white"
                   onClick={() => void handleSubmit()}
                   disabled={
-                    isRedirecting ||
+                    isSubmitting || registrationSubmitted ||
                     isSoldOut ||
                     !isRegistrationOpen ||
                     isLoadingStatus ||
@@ -825,11 +831,13 @@ export default function SixWeekChallengePage() {
                     !isFormValid()
                   }
                 >
-                  {isRedirecting ? (
+                  {isSubmitting ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Redirecting to payment...
+                      Submitting your form...
                     </>
+                  ) : registrationSubmitted ? (
+                    "Form Submitted"
                   ) : isSoldOut ? (
                     isRegistrationOpen ? "Sold Out" : "Registration Closed"
                   ) : !isRegistrationOpen ? (
@@ -837,16 +845,14 @@ export default function SixWeekChallengePage() {
                   ) : !isFormValid() ? (
                     "Complete Required Fields to Continue"
                   ) : (
-                    "Pay and Register →"
+                    "Submit Form →"
                   )}
                 </Button>
 
                 <div className="flex items-start gap-2 rounded-md border border-gray-200 p-3 text-xs text-gray-600">
                   <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#fc9dca]" />
                   <p>
-                    You will be redirected to Paystack&apos;s secure checkout page.
-                    Your registration is saved after payment is confirmed by
-                    Paystack&apos;s server — not the browser.
+                    Submit your completed form first. Bank transfer details will appear here; your place is confirmed once payment is received.
                   </p>
                 </div>
               </CardContent>

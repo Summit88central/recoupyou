@@ -29,7 +29,7 @@ export function ServicesGrid() {
         <div className="flex flex-col sm:flex-row items-center justify-between mb-8 px-6 py-4 rounded-2xl bg-[#2a2a2a] text-white">
           <div>
             <h3 className="text-xl sm:text-2xl font-semibold tracking-tight">
-              SCULPT SERIES: Glutes, Strength &amp; Conditioning
+              {CHALLENGE_CONFIG.title}
             </h3>
             <div className="mt-2 flex flex-wrap items-center gap-2">
               <p className={`inline-flex w-fit items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${CHALLENGE_REGISTRATION.isOpen ? "bg-emerald-500/20 text-emerald-300" : "bg-red-500/20 text-red-400"}`}>

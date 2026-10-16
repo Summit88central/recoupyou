@@ -1,19 +1,19 @@
 export const CHALLENGE_CONFIG = {
-  title: "SCULPT SERIES: Glutes, Strength & Conditioning",
-  maxParticipants: 13,
+  title: "November Coaching Program Strength and Conditioning",
+  maxParticipants: 10,
   kickoff: {
-    startDate: "14 September 2026",
+    startDate: "November 2026",
     time: "16:30 - 17:30",
     location: "72 Kleinenberg Street, Old Bendor, Polokwane",
   },
   discount: {
     label: "Early bird",
-    percent: 20,
-    maxUses: 3,
+    percent: 0,
+    maxUses: 0,
   },
   pricing: {
-    member: 1600,
-    nonMember: 1800,
+    member: 1100,
+    nonMember: 1300,
   },
 } as const;
 
@@ -30,7 +30,7 @@ export const CHALLENGE_RECOVERY_LOCK = {
 } as const;
 
 export const CHALLENGE_REGISTRATION = {
-  isOpen: false,
+  isOpen: true,
   closedMessage:
     "Challenge registration is currently closed. Please contact the gym for the next intake.",
 } as const;
@@ -78,14 +78,14 @@ export const DIETARY_OPTIONS = Object.keys(
   DIETARY_LABELS
 ) as ChallengeDietaryPreference[];
 
-export const CHALLENGE_FULL_TERMS_TEXT = `6 WEEK CHALLENGE TERMS AND CONDITIONS & ACCESS - PLEASE REVIEW, READ AND SIGN.
+export const CHALLENGE_FULL_TERMS_TEXT = `4 WEEKS COACHING TERMS AND CONDITIONS & ACCESS - PLEASE REVIEW, READ AND SIGN.
 
 Challenge Agreement Terms
 Date:
 This Challenge agreement is between RECOUPYOU Pty Ltd (RECOUPYOU GYM) and You.
 
 This Agreement is intended:
-a) to set out the terms of RECOUPYOU GYM's SCULPT SERIES: Glutes, Strength & Conditioning (the Challenge); and
+a) to set out the terms of RECOUPYOU GYM's November Coaching Program Strength and Conditioning (the Challenge); and
 b) to protect the intellectual property of RECOUPYOU made available to you during the Challenge.
 
 In this agreement unless the contrary intention appears:
@@ -94,11 +94,11 @@ In this agreement unless the contrary intention appears:
 
 It is agreed as follows:
 RECOUPYOU GYM will provide to you:
-1. Full access to the GYM between 04:20PM - 05:40PM Monday to Thursday for 6 weeks starting on the commencement date of the challenge (NON-MEMBERS). Full access to the GYM between 5:00am-7:00pm Monday to Friday and 6:00am-12:00pm on Saturdays (MEMBERS).
+1. Full access to the GYM between 04:20PM - 05:40PM Monday to Thursday for 4 weeks starting on the commencement date of the challenge (NON-MEMBERS). Full access to the GYM between 5:00am-7:00pm Monday to Friday and 6:00am-12:00pm on Saturdays (MEMBERS).
 2. Custom eating plan tailored to your goals.
 3. Pre-wellness evaluation meeting to cover the basics of nutrition for your specific goal of the Challenge.
 4. Midway mindset and progress check-in to help encourage and motivate you at the halfway mark of the Challenge. The meeting will be held in the gym or via video call.
-5. Post-wellness evaluation meeting to teach you how to maintain your results after the Challenge and set new goals. The meeting will be held in the gym or via video call at a specified date in week 5.
+5. Post-wellness evaluation meeting to teach you how to maintain your results after the Challenge and set new goals. The meeting will be held in the gym or via video call at a specified date in week 4.
 6. Weekly evaluations including but not limited to:
    a) Photos - taken only on day 1, halfway through the challenge and final day.
    b) Measurements - optional.
@@ -161,15 +161,15 @@ Payment:
 31. You agree to pay the amount stated for your selected method.
 32. Payments are non-refundable, non-transferable and non-exchangeable.
 
-Method A - Member (R1600): because I am a current member.
-Method B - Non-Member (R1800): because I am not currently a member.
+Method A - Member (R1100): because I am a current member.
+Method B - Non-Member (R1300): because I am not currently a member.
 I understand that none of these payment methods are refundable.
 
 Please continue for the next part of your challenge contract:
 T&C's for access
 
 RECOUPYOU STUDIO Pty LTD Membership Agreement -
-6 WEEK CHALLENGE - LIMITED ACCESS FOR NON-MEMBERS AND FULL ACCESS FOR MEMBERS.
+4 WEEKS COACHING - LIMITED ACCESS FOR NON-MEMBERS AND FULL ACCESS FOR MEMBERS.
 
 Gym Address: 72 Kleinenberg Street, Old Bendor, Polokwane.
 
@@ -221,7 +221,7 @@ By signing this agreement, you consent to receiving all notices, communications 
 - Amendments and policy changes: RECOUPYOU Pty LTD may update terms and policies with reasonable notice.
 
 By signing below, you confirm that you have read and agree to the terms of this agreement.
-By signing this, you agree to the 6-week challenge agreement and the terms and conditions for both challenge and access to the gym.`;
+By signing this, you agree to the 4 weeks coaching agreement and the terms and conditions for both challenge and access to the gym.`;
 
 export function getBaseChallengeAmount(
   paymentOption: ChallengePaymentOption

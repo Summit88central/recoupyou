@@ -188,50 +188,6 @@ async function getChallengeStatus(): Promise<ChallengeStatus> {
   };
 }
 
-// ─── Paystack initialise ──────────────────────────────────────────────────────
-
-async function initialisePaystack(params: {
-  reference: string;
-  email: string;
-  amountKobo: number;
-  callbackUrl: string;
-  metadata: Record<string, unknown>;
-}): Promise<{ authorization_url: string; reference: string }> {
-  const secretKey = process.env.PAYSTACK_SECRET_KEY;
-  if (!secretKey) throw new Error("PAYSTACK_SECRET_KEY is missing.");
-
-  const res = await fetch("https://api.paystack.co/transaction/initialize", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${secretKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      reference: params.reference,
-      email: params.email,
-      amount: params.amountKobo,
-      currency: "ZAR",
-      callback_url: params.callbackUrl,
-      metadata: params.metadata,
-    }),
-    cache: "no-store",
-  });
-
-  const payload = (await res.json().catch(() => null)) as {
-    status: boolean;
-    message?: string;
-    data?: { authorization_url: string; reference: string };
-  } | null;
-
-  if (!res.ok || !payload?.status || !payload.data) {
-    throw new Error(
-      payload?.message || "Failed to initialise Paystack transaction."
-    );
-  }
-
-  return payload.data;
-}
-
 // ─── GET — challenge status ───────────────────────────────────────────────────
 
 export async function GET() {
@@ -250,7 +206,7 @@ export async function GET() {
   }
 }
 
-// ─── POST — initialise Paystack transaction ───────────────────────────────────
+// ─── POST — save application for manual payment ────────────────────────────────
 
 export async function POST(request: NextRequest) {
   try {
@@ -299,96 +255,50 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 3 — Apply automatic early bird discount (first N registrations get X% off)
-    //     Discount is applied automatically — no promo code needed.
-    //     Re-fetch status here so the count is fresh at submit time.
-    const freshStatus = await getChallengeStatus();
-    const earlyBirdAvailable =
-      CHALLENGE_CONFIG.discount.maxUses > 0 &&
-      freshStatus.earlyBirdRemaining > 0;
-    const discountPercent = earlyBirdAvailable
-      ? CHALLENGE_CONFIG.discount.percent
-      : 0;
-    const promoCodeId: string | null = null;
-
-    // 4 — Compute final amount
+    // 3 — Save the application as awaiting manual bank transfer.
     const baseAmount = getBaseChallengeAmount(body.paymentOption);
-    const discountAmount = discountPercent
-      ? Math.round(baseAmount * (discountPercent / 100))
-      : 0;
-    const finalAmount = baseAmount - discountAmount;
-    const amountKobo = Math.round(finalAmount * 100);
-
-    // 5 — Generate reference and callback URL
     const reference = `challenge_${Date.now()}`;
-    const baseUrl =
-      process.env.NEXT_PUBLIC_BASE_URL || "https://recoupyou.summit88.co.za";
-    const callbackUrl = `${baseUrl}/6-week-challenge/success`;
+    const { error: insertError } = await supabase
+      .from("challenge_registrations")
+      .insert({
+        full_name: body.fullName.trim(),
+        whatsapp_number: body.whatsappNumber.trim(),
+        email: body.email.trim().toLowerCase(),
+        age: body.age,
+        payment_option: body.paymentOption,
+        base_price: baseAmount,
+        amount_paid: 0,
+        discount_code: null,
+        discount_applied: false,
+        discount_amount: 0,
+        payment_reference: reference,
+        emergency_contact_name: body.emergencyContactName.trim(),
+        emergency_contact_number: body.emergencyContactNumber.trim(),
+        challenge_goal: body.challengeGoal,
+        dietary_preferences: body.dietaryPreferences,
+        foods_disliked: body.foodsDisliked.trim() || null,
+        medical_conditions: body.medicalConditions.trim() || null,
+        activity_level: body.activityLevel,
+        alcohol_frequency: body.alcoholFrequency.trim(),
+        instagram_handle: body.instagramHandle.trim() || null,
+        guardian_name: body.age < 18 ? body.guardianName?.trim() || null : null,
+        terms_accepted: true,
+        liability_accepted: true,
+        agreement_signature: body.agreementSignature.trim(),
+        agreement_date: body.agreementDate,
+        payment_status: "pending",
+      });
 
-    // 6 — Build Paystack metadata
-    //     The webhook reconstructs the full registration from this object alone —
-    //     no session or frontend state is relied upon.
-    const metadata: Record<string, unknown> = {
-      // Challenge identifiers
-      challenge_name: CHALLENGE_CONFIG.title,
-
-      // Discount info
-      promo_code_used: null,
-      promo_code_id: promoCodeId,
-      discount_percent: discountPercent,
-      discount_amount: discountAmount,
-      base_amount: baseAmount,
-      final_amount: finalAmount,
-
-      // Personal details
-      full_name: body.fullName.trim(),
-      email: body.email.trim().toLowerCase(),
-      phone: body.whatsappNumber.trim(),
-      whatsapp_number: body.whatsappNumber.trim(),
-      age: body.age,
-      payment_option: body.paymentOption,
-
-      // Emergency contact
-      emergency_contact_name: body.emergencyContactName.trim(),
-      emergency_contact_number: body.emergencyContactNumber.trim(),
-
-      // Health & nutrition
-      challenge_goal: body.challengeGoal,
-      dietary_preferences: body.dietaryPreferences,
-      foods_disliked: body.foodsDisliked.trim() || null,
-      medical_conditions: body.medicalConditions.trim() || null,
-      activity_level: body.activityLevel,
-      alcohol_frequency: body.alcoholFrequency.trim(),
-      instagram_handle: body.instagramHandle.trim() || null,
-
-      // Guardian (minors)
-      guardian_name:
-        body.age < 18 ? body.guardianName?.trim() || null : null,
-
-      // Agreement
-      terms_accepted: true,
-      liability_accepted: true,
-      agreement_signature: body.agreementSignature.trim(),
-      agreement_date: body.agreementDate,
-    };
-
-    // 7 — Initialise Paystack transaction
-    const paystack = await initialisePaystack({
-      reference,
-      email: body.email.trim().toLowerCase(),
-      amountKobo,
-      callbackUrl,
-      metadata,
-    });
+    if (insertError) throw new Error(insertError.message);
 
     return NextResponse.json({
-      authorizationUrl: paystack.authorization_url,
-      reference: paystack.reference,
+      submitted: true,
+      reference,
     });
   } catch (error) {
-    console.error("Error initialising challenge payment:", error);
+    console.error("Error submitting challenge registration:", error);
     return NextResponse.json(
-      { error: "Internal server error while initialising payment." },
+      { error: "Internal server error while submitting your application." },
       { status: 500 }
     );
   }
