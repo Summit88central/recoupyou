@@ -2,7 +2,7 @@ export const CHALLENGE_CONFIG = {
   title: "November Coaching Program Strength and Conditioning",
   maxParticipants: 10,
   kickoff: {
-    startDate: "November 2026",
+    startDate: "26 October",
     time: "16:30 - 17:30",
     location: "72 Kleinenberg Street, Old Bendor, Polokwane",
   },
