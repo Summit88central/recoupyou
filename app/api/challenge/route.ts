@@ -143,10 +143,11 @@ async function getChallengeStatus(): Promise<ChallengeStatus> {
     { count: discountUses, error: discountError },
     pendingRecovery,
   ] = await Promise.all([
+    // Count both paid AND pending — pending = manual EFT submitted, spot is reserved
     supabase
       .from("challenge_registrations")
       .select("*", { count: "exact", head: true })
-      .eq("payment_status", "paid"),
+      .in("payment_status", ["paid", "pending"]),
     supabase
       .from("challenge_registrations")
       .select("*", { count: "exact", head: true })
