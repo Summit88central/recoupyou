@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import dynamic from 'next/dynamic';
 import { useCart } from '@/contexts/CartContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,12 +10,6 @@ import { Separator } from '@/components/ui/separator';
 import { ShoppingBag, Mail, User, ArrowLeft, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import Link from 'next/link';
-
-// Dynamically import PaystackButton to avoid SSR issues
-const PaystackButton = dynamic(
-  () => import('react-paystack').then((mod) => mod.PaystackButton),
-  { ssr: false }
-);
 
 const CheckoutPage: React.FC = () => {
   const { state, clearCart } = useCart();
@@ -330,28 +323,20 @@ const CheckoutPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="mt-6">
-                  {isClient && isFormValid() ? (
-                    <PaystackButton
-                      {...paystackConfig}
-                      className="w-full bg-pink-600 hover:bg-pink-700 text-white font-medium py-3 px-4 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                      disabled={isProcessing}
-                      text={isProcessing ? "Processing..." : "Pay Now"}
-                    />
-                  ) : (
-                    <Button
-                      onClick={() => validateForm()}
-                      className="w-full bg-pink-600 hover:bg-pink-700"
-                      disabled={isProcessing}
-                    >
-                      {isProcessing ? (
-                        <>
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          Processing...
-                        </>
-                      ) : isClient && isFormValid() ? 'Pay Now' : 'Complete Information to Pay'}
-                    </Button>
-                  )}
+                {/* PAYMENTS TEMPORARILY DISABLED */}
+                <div className="mt-6 rounded-lg border border-yellow-300 bg-yellow-50 p-4 text-center space-y-2">
+                  <p className="font-semibold text-yellow-800 text-sm">🚧 Online payments are temporarily unavailable</p>
+                  <p className="text-yellow-700 text-sm">
+                    Please contact us directly to complete your purchase.
+                  </p>
+                  <a
+                    href="https://wa.me/27729324503"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block mt-2 bg-green-500 hover:bg-green-600 text-white text-sm font-medium py-2 px-6 rounded-md transition-colors"
+                  >
+                    Contact us on WhatsApp
+                  </a>
                 </div>
 
                 <div className="mt-4 text-center">

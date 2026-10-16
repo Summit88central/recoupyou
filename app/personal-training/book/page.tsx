@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ArrowLeft, Loader2, Calendar as CalendarIcon } from "lucide-react";
+import { ArrowLeft, Loader2, Calendar as CalendarIcon, X } from "lucide-react";
 import Link from "next/link";
 import { sendPersonalTrainingEmail } from "@/lib/emailjs";
 import { createClient } from "@supabase/supabase-js";
@@ -24,6 +24,63 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
+
+// Reusable payment details content
+function PaymentDetails() {
+  return (
+    <div className="text-left space-y-2 text-sm">
+      <div className="text-gray-700 space-y-1">
+        <p><span className="font-medium">Payment method:</span> EFT</p>
+        <p><span className="font-medium">Bank:</span> FNB</p>
+        <p><span className="font-medium">Account type:</span> Cheque account</p>
+        <p><span className="font-medium">Account number:</span> 63131752643</p>
+        <p><span className="font-medium">Account holder:</span> RecoupYou</p>
+      </div>
+      <p className="text-gray-500 text-xs pt-1">
+        Please use your <span className="font-semibold text-gray-700">full name</span> as the payment reference. All payments are non-refundable.
+      </p>
+    </div>
+  );
+}
+
+// Payment details modal
+function PaymentModal({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      {/* Modal */}
+      <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 z-10">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+          aria-label="Close"
+        >
+          <X className="w-5 h-5" />
+        </button>
+        <div className="text-center mb-4">
+          <div className="text-4xl mb-2">💳</div>
+          <h2 className="text-lg font-bold text-gray-900">Payment Details</h2>
+          <p className="text-sm text-gray-500 mt-1">
+            Please complete your payment using the details below.
+          </p>
+        </div>
+        <div className="rounded-lg border border-[#fc9dca]/40 bg-[#fff0f8] p-4">
+          <PaymentDetails />
+        </div>
+        <Button
+          onClick={onClose}
+          className="w-full mt-4 bg-[#fc9dca] hover:bg-[#fc9dca]/90 text-white"
+        >
+          Got it!
+        </Button>
+      </div>
+    </div>
+  );
+}
 
 export default function BookPersonalTrainingPage() {
   const [formData, setFormData] = useState({
@@ -38,6 +95,7 @@ export default function BookPersonalTrainingPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,6 +110,7 @@ export default function BookPersonalTrainingPage() {
       }
 
       const combinedAdditionalInfo = `${formData.additionalInfo}${formData.startDate ? `\nPreferred start date: ${formData.startDate}` : ""}`.trim();
+
       // Insert into Supabase
       const { error: insertError } = await supabase
         .from("personal_training_applications")
@@ -66,16 +125,10 @@ export default function BookPersonalTrainingPage() {
 
       if (insertError) throw insertError;
 
-      // Email notification is best-effort. The application has already been
-      // saved, so a temporary mail-provider/configuration failure must not
-      // make the user resubmit and potentially create a duplicate booking.
-      const emailResult = await sendPersonalTrainingEmail(formData);
-
-      if (!emailResult.success) {
-        console.error("Personal training application email failed:", emailResult.error);
-      }
-
+      // Mark as submitted immediately — don't block on email
       setIsSubmitted(true);
+      setShowPaymentModal(true);
+
       // Reset form
       setFormData({
         fullName: "",
@@ -85,6 +138,13 @@ export default function BookPersonalTrainingPage() {
         package: "",
         additionalInfo: "",
         startDate: "",
+      });
+
+      // Fire email in the background — best-effort, won't block UI
+      sendPersonalTrainingEmail(formData).then((result) => {
+        if (!result.success) {
+          console.error("Personal training application email failed:", result.error);
+        }
       });
     } catch (error) {
       console.error("Form submission error:", error);
@@ -103,6 +163,11 @@ export default function BookPersonalTrainingPage() {
   if (isSubmitted) {
     return (
       <main className="min-h-screen bg-white">
+        {/* Payment popup */}
+        {showPaymentModal && (
+          <PaymentModal onClose={() => setShowPaymentModal(false)} />
+        )}
+
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-2xl mx-auto text-center">
             <Card>
@@ -111,25 +176,38 @@ export default function BookPersonalTrainingPage() {
                 <h1 className="text-2xl font-bold text-gray-900 mb-4">
                   Thank You!
                 </h1>
-                <p className="text-gray-600 mb-6">
+                <p className="text-gray-600 mb-4">
                   Your personal training application has been submitted
                   successfully. Coach Dee will get in touch within the next 48
                   hours to get you started!
                 </p>
-                <div className="space-y-2 text-sm text-gray-500">
-                  <p>
-                    Feel free to reach out via Instagram DM or Whatsapp if you
-                    have any questions.
-                  </p>
+                <p className="text-sm text-gray-500 mb-6">
+                  Feel free to reach out via Instagram DM or WhatsApp if you
+                  have any questions.
+                </p>
+
+                {/* Payment details always visible on thank you */}
+                <div className="rounded-lg border border-[#fc9dca]/40 bg-[#fff0f8] p-4 mb-6 text-left">
+                  <p className="font-semibold text-gray-800 mb-2 text-sm">💳 Payment Details</p>
+                  <PaymentDetails />
                 </div>
-                <Link href="/personal-training" className="inline-block mt-6">
+
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <Button
-                    variant="outline"
-                    className="border-[#fc9dca] text-[#fc9dca] hover:bg-[#fc9dca] hover:text-white bg-transparent"
+                    onClick={() => setShowPaymentModal(true)}
+                    className="bg-[#fc9dca] hover:bg-[#fc9dca]/90 text-white"
                   >
-                    Back to Personal Training
+                    View Payment Details
                   </Button>
-                </Link>
+                  <Link href="/personal-training" className="inline-block">
+                    <Button
+                      variant="outline"
+                      className="w-full border-[#fc9dca] text-[#fc9dca] hover:bg-[#fc9dca] hover:text-white bg-transparent"
+                    >
+                      Back to Personal Training
+                    </Button>
+                  </Link>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -278,6 +356,12 @@ export default function BookPersonalTrainingPage() {
                       handleInputChange("additionalInfo", e.target.value)
                     }
                   />
+                </div>
+
+                {/* Payment Details — always visible on form */}
+                <div className="rounded-lg border border-[#fc9dca]/40 bg-[#fff0f8] p-4 space-y-2 text-sm">
+                  <p className="font-semibold text-gray-800">💳 Payment Details</p>
+                  <PaymentDetails />
                 </div>
 
                 <Button
