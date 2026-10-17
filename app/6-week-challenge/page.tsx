@@ -318,6 +318,7 @@ export default function SixWeekChallengePage() {
       const message =
         error instanceof Error ? error.message : "Something went wrong. Please try again.";
       toast.error(message);
+    } finally {
       setIsSubmitting(false);
     }
   };
