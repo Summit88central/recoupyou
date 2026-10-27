@@ -38,7 +38,7 @@ export function ServicesGrid() {
                 )}
                 {CHALLENGE_REGISTRATION.isOpen
                   ? "Enrolling Now"
-                  : "Registration Closed"}
+                  : "Next Enrolment Opens 16 November"}
               </p>
             </div>
             <p className="mt-2 text-sm text-gray-200">
