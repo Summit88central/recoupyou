@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "recoupyou@summit88.co.za";
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "recoupyou@recoupyou.co.za";
 const TO_EMAIL = process.env.NEXT_PUBLIC_COACH_EMAIL || "recoupyou@gmail.com";
 
 // Base HTML CSS Styles

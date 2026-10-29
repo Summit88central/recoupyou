@@ -15,7 +15,7 @@ Allow: /online-coaching
 Allow: /personal-training
 
 # Sitemap location
-Sitemap: https://recoupyou.summit88.co.za/sitemap.xml
+Sitemap: https://www.recoupyou.co.za/sitemap.xml
 
 # Crawl-delay for respectful crawling
 Crawl-delay: 1

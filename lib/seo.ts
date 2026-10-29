@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 // Base URL - replace with your actual domain
-const BASE_URL = "https://recoupyou.summit88.co.za";
+const BASE_URL = "https://www.recoupyou.co.za";
 
 // Default metadata that can be shared across pages
 export const defaultMetadata = {

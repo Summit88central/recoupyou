@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_ZA",
-    url: "https://recoupyou.summit88.co.za", // Replace with your actual domain
+    url: "https://www.recoupyou.co.za", // Replace with your actual domain
     siteName: "RecoupYou Fitness",
     title: "RecoupYou",
     description:
@@ -78,7 +78,7 @@ export const metadata: Metadata = {
   },
 
   // Other metadata
-  metadataBase: new URL("https://recoupyou.summit88.co.za"), // Replace with your actual domain
+  metadataBase: new URL("https://www.recoupyou.co.za"), // Replace with your actual domain
   alternates: {
     canonical: "/",
   },
@@ -109,7 +109,7 @@ export default function RootLayout({
     <html lang="en-ZA" className={inter.variable}>
       <head>
         {/* Additional SEO tags */}
-        <link rel="canonical" href="https://recoupyou.summit88.co.za" />
+        <link rel="canonical" href="https://www.recoupyou.co.za" />
         <link rel="icon" href="/favicon.ico" />
         <link
           rel="apple-touch-icon"
@@ -137,19 +137,19 @@ export default function RootLayout({
               "@graph": [
                 {
                   "@type": "Organization",
-                  "@id": "https://recoupyou.summit88.co.za/#organization",
+                  "@id": "https://www.recoupyou.co.za/#organization",
                   name: "RecoupYou",
-                  url: "https://recoupyou.summit88.co.za",
+                  url: "https://www.recoupyou.co.za",
                   logo: {
                     "@type": "ImageObject",
-                    "@id": "https://recoupyou.summit88.co.za/#logo",
-                    url: "https://recoupyou.summit88.co.za/logo.png",
-                    contentUrl: "https://recoupyou.summit88.co.za/logo.png",
+                    "@id": "https://www.recoupyou.co.za/#logo",
+                    url: "https://www.recoupyou.co.za/logo.png",
+                    contentUrl: "https://www.recoupyou.co.za/logo.png",
                     width: 300,
                     height: 100,
                     caption: "RecoupYou Fitness",
                   },
-                  image: { "@id": "https://recoupyou.summit88.co.za/#logo" },
+                  image: { "@id": "https://www.recoupyou.co.za/#logo" },
                   description:
                     "Leading fitness company in South Africa offering gym memberships, online coaching, and personal training.",
                   address: {
@@ -175,10 +175,10 @@ export default function RootLayout({
                 },
                 {
                   "@type": "LocalBusiness",
-                  "@id": "https://recoupyou.summit88.co.za/#localbusiness",
+                  "@id": "https://www.recoupyou.co.za/#localbusiness",
                   name: "RecoupYou Fitness",
-                  image: "https://recoupyou.summit88.co.za/gym-image.jpg",
-                  url: "https://recoupyou.summit88.co.za",
+                  image: "https://www.recoupyou.co.za/gym-image.jpg",
+                  url: "https://www.recoupyou.co.za",
                   telephone: "+27-XX-XXX-XXXX", // Replace with actual phone
                   priceRange: "$$",
                   address: {
@@ -222,19 +222,19 @@ export default function RootLayout({
                 },
                 {
                   "@type": "WebSite",
-                  "@id": "https://recoupyou.summit88.co.za/#website",
-                  url: "https://recoupyou.summit88.co.za",
+                  "@id": "https://www.recoupyou.co.za/#website",
+                  url: "https://www.recoupyou.co.za",
                   name: "RecoupYou Fitness",
                   description:
                     "Transform your fitness journey with professional training and coaching in South Africa",
-                  publisher: { "@id": "https://recoupyou.summit88.co.za/#organization" },
+                  publisher: { "@id": "https://www.recoupyou.co.za/#organization" },
                   potentialAction: [
                     {
                       "@type": "SearchAction",
                       target: {
                         "@type": "EntryPoint",
                         urlTemplate:
-                          "https://recoupyou.summit88.co.za/?s={search_term_string}",
+                          "https://www.recoupyou.co.za/?s={search_term_string}",
                       },
                       "query-input": "required name=search_term_string",
                     },

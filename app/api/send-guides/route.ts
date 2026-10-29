@@ -8,7 +8,7 @@ const supabase = createClient(
 );
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'recoupyou@summit88.co.za';
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'recoupyou@recoupyou.co.za';
 
 
 export async function POST(request: NextRequest) {
